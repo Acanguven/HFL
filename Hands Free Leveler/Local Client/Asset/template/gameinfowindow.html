@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/language.js"></script>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script src="../js/storage.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 700;
+			win.height = 315;
+		</script>
+	</head>
+	<body class="metro" ng-controller="language">
+		<div class="panel" style="border:none;">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("gs")}}
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("gs1")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="showMinimap" onchange="saveLocalSetting('statuswindowMinimap',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("gs2")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="showKda" onchange="saveLocalSetting('statuswindowKda',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <script>
+         		document.getElementsByName("showMinimap")[0].checked = upSettings.statuswindowMinimap? true: false;
+         		document.getElementsByName("showKda")[0].checked = upSettings.statuswindowKda? true: false;
+            </script>
+		</div>
+	</body>
+</html>

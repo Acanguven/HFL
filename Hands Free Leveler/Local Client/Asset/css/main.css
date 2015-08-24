@@ -1,0 +1,30 @@
+*{
+	-webkit-app-region: no-drag;
+	-webkit-user-select: none;
+}
+.navigation-bar a{
+	cursor: pointer;
+}
+.splash{
+	text-align: center;
+}
+body {
+    overflow:hidden;
+}
+.leftHome{
+	float: left;
+	border-right: 1px dotted #ccc;
+	height: 100%;
+	padding-right: 4%;
+	width: 45%;
+}
+
+.rightHome{
+	float: right;
+	height: 100%;
+	width: 50%;
+}
+.chatsAutoList li:hover{
+	cursor:pointer;
+	color:red;
+}

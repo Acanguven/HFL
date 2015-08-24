@@ -1,0 +1,54 @@
+<div style="padding:10px;height:100%;">
+	<input type="file" type="file" nwdirectory id="lolFolder" onchange="setLolFolder(this.value)" style="display:none"/>
+	<input type="file" type="file" nwdirectory id="bolFolder" onchange="setBolFolder(this.value)" style="display:none"/>
+	<div ng-if="part==1">
+		<h3>{{service.translator("l1")}}</h3>
+		<div style="padding-left:30px;">
+			<ol>
+				<li ng-if="partLevel>=1">{{service.translator("l11")}}</li>
+				<li ng-if="partLevel>=1">{{service.translator("l12")}}</li>
+				<li ng-if="partLevel>=1">{{service.translator("l13")}}</li>
+			</ol>
+		</div>
+	</div>
+	<div ng-if="part==2">
+		<h3>{{service.translator("l2")}}</h3>
+		<div style="padding-left:30px;">
+			<ol>
+				<li ng-if="partLevel>=1">{{service.translator("l21")}}</li>
+				<li ng-if="partLevel>=2">{{service.translator("l22")}}</li>
+				<li ng-if="partLevel>=3">{{service.translator("l23")}}</li>
+			</ol>
+		</div>
+	</div>
+	<div ng-if="part==3">
+		<h3>{{service.translator("l3")}}</h3>
+		<div style="padding-left:30px;">
+			<ol>
+				<li ng-if="partLevel>=1">{{service.translator("l31")}}</li>
+				<li ng-if="partLevel>=2">{{service.translator("l32")}}</li>
+			</ol>
+		</div>
+	</div>
+	<div ng-if="part==4">
+		<h3>{{service.translator("l4")}}</h3>
+		<div style="padding-left:30px;">
+			<ol>
+				<li ng-if="partLevel>=1">{{service.translator("l41")}}</li>
+			</ol>
+		</div>
+	</div>
+	<div ng-if="part>=5">
+		<h3>{{service.translator("l5")}}</h3>
+		<div style="padding-left:30px;">
+			<ol>
+				<li ng-if="partLevel>=1">{{service.translator("l51")}}</li>
+				<li ng-if="partLevel>=1">{{service.translator("l52")}}</li>
+				<li ng-if="partLevel>=1">{{service.translator("l53")}}</li>
+			</ol>
+		</div>
+	</div>
+	<div class="stepper diamond" data-role="stepper" style="position: absolute;bottom: 0px;width: 607px;" data-steps="5">
+
+	</div>
+</div>

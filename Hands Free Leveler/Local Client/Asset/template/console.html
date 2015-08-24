@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 400;
+			win.height = 700;
+		</script>
+	</head>
+	<body class="metro" ng-controller="console" style="background-color:black;">
+		<div class="panel" style="border:none;height:100%">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        Console
+		    </div>
+		    <ol style="color:green;padding-left:5px;overflow-y: auto;height: 100%;" id="liste">
+		    	<li ng-repeat="log in logs">{{log}}</li>
+		    </ol>
+		</div>
+	</body>
+</html>

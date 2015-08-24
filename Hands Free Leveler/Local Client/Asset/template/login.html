@@ -1,0 +1,41 @@
+<div class="login">
+	<div class="content" style="padding:10px;">
+		<img src="Asset/img/splash.png"/>
+	    <form class="user-input">
+	        <label>{{service.translator("username")}}</label>
+	        <div class="input-control text">
+	            <input type="text" name="login" 
+		            data-popover="popover"
+		            data-popover-mode="focus"
+		            data-popover-shadow="true"
+		            data-popover-timeout="1000"
+		            data-popover-position="top"
+		            data-popover-text="You must enter the username sent to your mail address."
+		            data-popover-background="bg-cyan"
+		            data-popover-color="fg-white">
+	            <button class="btn-clear" tabindex="-1" type="button"></button>
+	        </div>
+	        <label>{{service.translator("password")}}</label>
+	        <div class="input-control password">
+	            <input type="password" name="password"
+	            	data-popover="popover"
+		            data-popover-mode="focus"
+		            data-popover-shadow="true"
+		            data-popover-timeout="1000"
+		            data-popover-position="bottom"
+		            data-popover-text="You must enter the password sent to your mail address."
+		            data-popover-background="bg-orange"
+		            data-popover-color="fg-white">
+	            <button class="btn-reveal" tabindex="-1" type="button"></button>
+	        </div>
+	        <div class="input-control checkbox">
+	            <label>
+	                <input type="checkbox" name="c1" checked=""><span class="check"></span>Check me out</label>
+	        </div>
+	        <div class="form-actions">
+	            <button class="button primary" ng-click="login()">{{service.translator("login")}}</button>&nbsp;
+	            <button class="button" type="button" ng-click="quit()">{{service.translator("exit")}}</button>
+	        </div>
+	    </form>
+	</div>
+</div>

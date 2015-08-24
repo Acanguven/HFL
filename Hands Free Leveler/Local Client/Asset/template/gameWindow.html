@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Game Window</title>
+	<link rel="stylesheet" href="../css/metro-bootstrap.css">
+	<link rel="stylesheet" href="../css/main.css">
+
+	<script>
+		var gui = require('nw.gui');
+		var win = gui.Window.get();
+		win.width = 170;
+		win.height = 283;
+		win.setShowIn = false;
+		win.setAlwaysOnTop(true);
+
+		String.prototype.toHHMMSS = function () {
+		    var sec_num = parseInt(this, 10); // don't forget the second param
+		    var hours   = Math.floor(sec_num / 3600);
+		    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+		    var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+		    if (hours   < 10) {hours   = "0"+hours;}
+		    if (minutes < 10) {minutes = "0"+minutes;}
+		    if (seconds < 10) {seconds = "0"+seconds;}
+		    var time    = hours+':'+minutes+':'+seconds;
+		    return time;
+		}
+
+		function updateWindow(summoner,champion,level,x,y,gameTime,map){
+			document.getElementById("summoner").innerHTML = "summoner";
+			document.getElementById("champion").src = "../img/champSquare/"+champion+"_Square_0.png";
+			document.getElementById("championMini").src = "../img/champSquare/"+champion+"_Square_0.png";
+			document.getElementById("gameTime").innerHTML = "Time: " + parseInt(gameTime).toString().toHHMMSS();
+			document.getElementById("level").innerHTML = "Level: " +level;
+			if(map.indexOf("Howling") === 0){
+				document.getElementById("map").src = "../img/ProvingGrounds.png";
+				var absX = (170*parseInt(x))/14828-8;
+				var absY = (170*parseInt(y))/14716-10;
+				document.getElementById("championMini").style.left = absX + "px";
+				document.getElementById("championMini").style.bottom = absY + "px";
+			}else{
+				document.getElementById("map").src = "../img/SummonersRift.png";
+				var absX = (170*parseInt(x))/14828-8;
+				var absY = (170*parseInt(y))/14716-10;
+				document.getElementById("championMini").style.left = absX + "px";
+				document.getElementById("championMini").style.bottom = absY + "px";
+			}
+
+			if (win.height != 283 || win.width != 170) {
+				win.resizeTo(170,283);
+			};
+		}
+	</script>
+</head>
+<body class="metro" style="overflow:hidden;">
+	<div class="panel" style="border:none;">
+		<div class="panel-header bg-lightBlue fg-white" id="summoner" style="text-align:center;">
+		    
+		</div>
+	</div>
+	<div>
+		<img style="float:left;" src="../img/SummonersRift.png" width="50" height="50" id="champion"/>
+		<span style="float:left;margin-left:5px;margin-top:5px;font-size:14px;" id="level">Level: </span>
+		<span style="float:left;margin-left:5px;font-size:14px;" id="gameTime">Time: </span>
+	</div>
+	<div>
+		<img src=".." width="170" height="170" id="map"/>
+		<img src="" width="15" height="15" id="championMini" style="border-radius:50%;position:absolute;"/>
+	</div>	
+</body>
+</html>

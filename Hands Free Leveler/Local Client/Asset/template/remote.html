@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/language.js"></script>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script src="../js/storage.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 700;
+			win.height = 285;
+		</script>
+	</head>
+	<body class="metro" ng-controller="remote">
+		<div class="panel" style="border:none;">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("rsTitle")}}
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("rs1")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="remote" onchange="saveLocalSetting('remote',this.checked)">
+			                <script>
+			             		document.getElementsByName("remote")[0].checked = upSettings.remote? true: false;
+			                </script>
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		    	<div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+			    	<label>
+		                {{service.translator("rs2")}}
+
+		                <div style="float:right;padding-right:20px;">
+		                	<a>Http://www.handsfreeleveler.com/remote/</a>
+		                </div>
+			        </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		    	<div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+			    	<label>
+			            {{service.translator("rs3")}}
+			        </label>
+		        </div>
+		    </div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "remote": true,
+  "notifygameStart": true,
+  "notifygameEnded": true,
+  "notifylevelUp": true,
+  "notifysmurfComplete": true,
+  "statuswindowMinimap": true,
+  "statuswindowKda": true,
+  "champSettings": {},
+  "smurfs": [],
+  "lang": "EN"
+}

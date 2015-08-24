@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/language.js"></script>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script src="../js/storage.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 800;
+			win.height = 545;
+		</script>
+		<style>
+			span{
+				cursor: default;
+			}
+		</style>
+	</head>
+	<body class="metro" ng-controller="smurf">
+		<div class="panel" style="border:none;" ng-if="!creatorMode">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("slistTitle")}}
+		        <button style="float:right;" ng-click="add()">{{service.translator("addnewsm")}}</button>
+		        <button style="float:right;margin-right:10px;display:none;" ng-click="creator()">{{service.translator("smc")}}</button>
+		    </div>
+		    <table class="table bordered hovered">
+                <thead>
+	                <tr>
+						<th class="text-center">No</th>
+		                <th class="text-center">{{service.translator("username")}}</th>
+		                <th class="text-center">{{service.translator("password")}}</th>
+		                <th class="text-center">{{service.translator("level")}}</th>
+		                <th class="text-center">{{service.translator("action")}}</th>
+	                </tr>
+                </thead>
+
+                <tbody>
+	                <tr ng-repeat="smurf in smurfs track by $index">
+						<td class="text-center" style="width: 30px;">{{$index + 1}}</td>
+		                <td class="text-center" style="width: 80px;">
+		                	<span ng-if="contentEdit != $index">{{smurf.username}}</span>
+		                	<input ng-if="contentEdit == $index" type="text" ng-model="smurfs[$index].username"/>
+		                </td>
+		                <td class="text-center" style="width: 80px;">
+		                	<span ng-if="contentEdit != $index">{{smurf.password}}</span>
+		                	<input ng-if="contentEdit == $index" type="text" ng-model="smurfs[$index].password"/>
+		                </td>
+		                <td class="text-center" style="width: 80px;">
+		                	<span ng-if="contentEdit != $index">{{smurf.dl}}</span>
+		                	<input ng-if="contentEdit == $index" type="text" ng-model="smurfs[$index].dl"/>
+		                </td>
+		                <td class="text-center" style="width: 140px;">
+		                	<button class="default" ng-click="edit($index)" ng-if="contentEdit != $index"><i class="icon-pencil on-right on-left"></i></button>
+		                	<button class="success" ng-click="edit(44444)" ng-if="contentEdit == $index"><i class="icon-checkmark on-right on-left"></i></button>
+		                	<button ng-if="contentEdit == 44444" ng-disabled="$index == 0" ng-click="pushUp($index)"><i class="icon-arrow-up on-right on-left"></i></button>
+		                	<button ng-if="contentEdit == 44444" ng-disabled="$index == (smurfs.length-1)" ng-click="pushDown($index)"><i class="icon-arrow-down on-right on-left"></i></button>
+		                	<button ng-if="contentEdit == 44444" ng-click="del($index)"><i class="icon-cancel-2 on-right on-left"></i></button>
+		                </td>
+	                </tr>
+                </tbody>
+            </table>
+		</div>
+		<div class="panel" style="border:none;" ng-if="creatorMode">
+			<div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("smc")}}
+		        <button style="float:right;" ng-click="creator()">{{service.translator("back")}}</button>
+		    </div>
+		</div>
+	</body>
+</html>

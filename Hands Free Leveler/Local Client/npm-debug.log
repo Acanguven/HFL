@@ -1,0 +1,93 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'c:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'child_process',
+1 verbose cli   '--save' ]
+2 info using npm@2.10.1
+3 info using node@v0.12.4
+4 verbose install initial load of c:\Hands Free Leveler\Local Client\package.json
+5 warn package.json HandsFreeLocalClient@1.0.0 No description
+6 warn package.json HandsFreeLocalClient@1.0.0 No README data
+7 verbose installManyTop reading scoped package data from c:\Hands Free Leveler\Local Client\node_modules\path\package.json
+8 verbose installManyTop reading scoped package data from c:\Hands Free Leveler\Local Client\node_modules\websocket\package.json
+9 info package.json path@0.11.14 path is also the name of a node core module.
+10 info package.json websocket@1.0.18 No license field.
+11 verbose readDependencies loading dependencies from c:\Hands Free Leveler\Local Client\package.json
+12 silly cache add args [ 'child_process', null ]
+13 verbose cache add spec child_process
+14 silly cache add parsed spec { raw: 'child_process',
+14 silly cache add   scope: null,
+14 silly cache add   name: 'child_process',
+14 silly cache add   rawSpec: '',
+14 silly cache add   spec: '*',
+14 silly cache add   type: 'range' }
+15 silly addNamed child_process@*
+16 verbose addNamed "*" is a valid semver range for child_process
+17 silly addNameRange { name: 'child_process', range: '*', hasData: false }
+18 silly mapToRegistry name child_process
+19 silly mapToRegistry using default registry
+20 silly mapToRegistry registry https://registry.npmjs.org/
+21 silly mapToRegistry uri https://registry.npmjs.org/child_process
+22 verbose addNameRange registry:https://registry.npmjs.org/child_process not in flight; fetching
+23 verbose request uri https://registry.npmjs.org/child_process
+24 verbose request no auth needed
+25 info attempt registry request try #1 at 11:52:59
+26 verbose request id b507469f65a97d96
+27 http request GET https://registry.npmjs.org/child_process
+28 http 404 https://registry.npmjs.org/child_process
+29 verbose headers { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+29 verbose headers   'content-type': 'application/json',
+29 verbose headers   'cache-control': 'max-age=0',
+29 verbose headers   'content-length': '51',
+29 verbose headers   'accept-ranges': 'bytes',
+29 verbose headers   date: 'Fri, 17 Jul 2015 08:52:59 GMT',
+29 verbose headers   via: '1.1 varnish',
+29 verbose headers   age: '0',
+29 verbose headers   connection: 'keep-alive',
+29 verbose headers   'x-served-by': 'cache-fra1236-FRA',
+29 verbose headers   'x-cache': 'MISS',
+29 verbose headers   'x-cache-hits': '0',
+29 verbose headers   'x-timer': 'S1437123179.464197,VS0,VE187' }
+30 silly get cb [ 404,
+30 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+30 silly get     'content-type': 'application/json',
+30 silly get     'cache-control': 'max-age=0',
+30 silly get     'content-length': '51',
+30 silly get     'accept-ranges': 'bytes',
+30 silly get     date: 'Fri, 17 Jul 2015 08:52:59 GMT',
+30 silly get     via: '1.1 varnish',
+30 silly get     age: '0',
+30 silly get     connection: 'keep-alive',
+30 silly get     'x-served-by': 'cache-fra1236-FRA',
+30 silly get     'x-cache': 'MISS',
+30 silly get     'x-cache-hits': '0',
+30 silly get     'x-timer': 'S1437123179.464197,VS0,VE187' } ]
+31 verbose stack Error: 404 Not Found: child_process
+31 verbose stack     at CachingRegistryClient.<anonymous> (c:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:245:14)
+31 verbose stack     at Request._callback (c:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-client\lib\request.js:170:14)
+31 verbose stack     at Request.self.callback (c:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:368:22)
+31 verbose stack     at Request.emit (events.js:110:17)
+31 verbose stack     at Request.<anonymous> (c:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:1219:14)
+31 verbose stack     at Request.emit (events.js:129:20)
+31 verbose stack     at IncomingMessage.<anonymous> (c:\Program Files\nodejs\node_modules\npm\node_modules\request\request.js:1167:12)
+31 verbose stack     at IncomingMessage.emit (events.js:129:20)
+31 verbose stack     at _stream_readable.js:908:16
+31 verbose stack     at process._tickCallback (node.js:355:11)
+32 verbose statusCode 404
+33 verbose pkgid child_process
+34 verbose cwd c:\Hands Free Leveler\Local Client
+35 error Windows_NT 6.1.7601
+36 error argv "c:\\Program Files\\nodejs\\node.exe" "c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "child_process" "--save"
+37 error node v0.12.4
+38 error npm  v2.10.1
+39 error code E404
+40 error 404 Not Found: child_process
+40 error 404
+40 error 404 'child_process' is not in the npm registry.
+40 error 404 You should bug the author to publish it (or use the name yourself!)
+40 error 404 It was specified as a dependency of 'HandsFreeLocalClient'
+40 error 404
+40 error 404 Note that you can also install from a
+40 error 404 tarball, folder, http url, or git url.
+41 verbose exit [ 1, true ]

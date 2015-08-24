@@ -1,0 +1,122 @@
+<nav class="navigation-bar dark">
+    <div class="navigation-bar-content">
+        <a class="element"> Hands Free Leveler <sup>1.0.0</sup></a>
+        <span class="element-divider"></span>
+
+        <a class="pull-menu"></a>
+        <ul class="element-menu">
+            <li>
+                <a class="dropdown-toggle">{{service.translator("settings")}}</a>
+                <ul class="dropdown-menu dark" data-role="dropdown">
+                    <li><a ng-click="remoteSettings()">{{service.translator("rs")}}</a></li>
+                    <li>
+                        <a class="dropdown-toggle">{{service.translator("ai")}}</a>
+                        <ul class="dropdown-menu dark" data-role="dropdown">
+                            <li><a ng-click="champs()">{{service.translator("aic")}}</a></li>
+                            <div class="divider"></div>
+                            <li><a ng-click="autoChat()">{{service.translator("aiac")}}</a></li>
+                        </ul>
+                    </li>
+                    <li><a ng-click="notificationSettings()">{{service.translator("nf")}}</a></li>
+                    <li><a ng-click="gameInfoSettings()">{{service.translator("gs")}}</a></li>
+                    <li class="divider"></li>
+                    <li class="disabled"><a>Virtualization (Soon)</a></li>
+                    <li class="divider"></li>
+                    <li><a>{{service.translator("logout")}}</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <span class="element-divider"></span>
+        <a class="element" ng-click="smurfSettings()">{{service.translator("ss")}}</a>
+
+        <span class="element-divider"></span>
+        <a class="element" ng-click="news()">{{service.translator("news")}}</a>
+
+        <span class="element-divider"></span>
+        <a class="element" ng-click="console()">{{service.translator("Console")}}</a>
+
+        <span class="element-divider"></span>
+        <ul class="element-menu">
+	        <li>
+	        <a class="dropdown-toggle">Bot Of Legends</a>
+	        	<ul class="dropdown-menu dark" data-role="dropdown">
+	                <li><a>Official Topic</a></li>
+	                <li><a>Skype Group</a></li>
+	                <div class="divider"></div>
+	                <li><a>The Law</a></li>
+	            </ul>
+	        </li>
+        </ul>
+        <span class="element-divider"></span>
+
+        <ul class="element-menu">
+	        <li>
+	        <a class="dropdown-toggle">Language</a>
+	        	<ul class="dropdown-menu dark" data-role="dropdown">
+	                <li><a ng-click="lang('EN')">English</a></li>
+	                <li><a ng-click="lang('TR')">Türkçe</a></li>
+	                <li><a ng-click="lang('GER')">Deutsch</a></li>
+	                <li><a ng-click="lang('FR')">Français</a></li>
+	                <li><a ng-click="lang('PR')">Português</a></li>
+	            </ul>
+	        </li>
+        </ul>
+
+        <div class="no-tablet-portrait">
+            <button class="element image-button image-left place-right" style="text-align:center;padding-right:20px;" >
+                The Law
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="content" style="padding:20px;height:92%;">
+	<div style="height:100%;">
+		<div class="leftHome">
+			<h2>{{service.translator("accInfotxt")}}</h2>
+			<ul>
+			    <li><b>{{service.translator("accUsername")}}</b>&nbsp;&nbsp;The Law</li>
+			    <li><b>{{service.translator("accType")}}</b>&nbsp;&nbsp;{{service.translator("trial")}}<br><br><button class="info">{{service.translator("buy")}}</button></li>
+			</ul>
+			<hr>
+
+			<h2>{{service.translator("status")}} {{status.current}}</h2>
+			<ul>
+				<li><p class="text-muted" ng-if="!status.bolRunning">{{service.translator("bolnot")}}</p><p class="text-success" ng-if="status.bolRunning">{{service.translator("bolworks")}}</p></li>
+				<li><p class="text-muted" ng-if="!remoteConnection">{{service.translator("remoteNot")}}</p><p class="text-success" ng-if="remoteConnection">{{service.translator("remoteWorks")}}</p></li>
+			</ul>
+			<hr>
+			<center><button class="success large" ng-click="hflDecide()" ng-if="!hfl">{{service.translator("start")}}</button><button class="danger large" ng-click="hflDecide()" ng-if="hfl">{{service.translator("stop")}}</button></center>
+		</div>
+		<div class="rightHome">
+			<h2>{{service.translator("slist")}}</h2>
+			<table class="table hovered border myClass">
+		        <thead>
+		            <tr>
+		                <th class="text-center">No</th>
+		                <th class="text-center">{{service.translator("username")}}</th>
+		                <th class="text-center">{{service.translator("level")}}</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr ng-repeat="smurf in smurfs">
+		                <td class="text-center" style="width: 50px;background-color:lightGreen;" ng-if="smurf.working=='working'">{{$index + 1}}</td>
+		                <td class="text-center" style="width: 80px;background-color:lightGreen;" ng-if="smurf.working=='working'">{{smurf.username}}</td>
+		                <td class="text-center" style="width: 80px;background-color:lightGreen;" ng-if="smurf.working=='working'">{{smurf.level ? smurf.level : "Loading..."}}</td>
+
+
+		                <td class="text-center" style="width: 50px;" ng-if="!smurf.working">{{$index + 1}}</td>
+		                <td class="text-center" style="width: 80px;" ng-if="!smurf.working">{{smurf.username}}</td>
+		                <td class="text-center" style="width: 80px;" ng-if="!smurf.working">{{smurf.level ? smurf.level : "Loading..."}}</td>
+
+		                <td class="text-center" style="width: 50px;background-color:lightcoral;" ng-if="smurf.working=='disconnected'">{{$index + 1}}</td>
+		                <td class="text-center" style="width: 80px;background-color:lightcoral;" ng-if="smurf.working=='disconnected'">{{smurf.username}}</td>
+		                <td class="text-center" style="width: 80px;background-color:lightcoral;" ng-if="smurf.working=='disconnected'">{{smurf.level ? smurf.level : "Loading..."}}</td>
+		            </tr>
+		        </tbody>
+		    </table>
+		</div>
+	</div>
+</div>
+

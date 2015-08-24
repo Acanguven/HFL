@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/language.js"></script>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<link rel="stylesheet" href="../css/metro.min.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script src="../js/storage.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 850;
+			win.height = 700;
+		</script>
+	</head>
+	<body class="metro" style="overflow-y:scroll" ng-controller="autoChat">
+		<div class="panel" style="border:none;">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("aiacTitle")}}
+		    </div>
+		    <div class="accordion" data-role="accordion" data-close-any="true">
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c1")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c2")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c3")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c4")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c5")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c6")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c7")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c8")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c9")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c10")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c11")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c12")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			    <div class="frame">
+			        <div class="heading">{{service.translator("c13")}}</div>
+			        <div class="content">
+			        	<label>{{service.translator("usep")}}</label>
+			        	<div class="input-control select">
+			        		<select><option ng-repeat="n in [] | range:100" value="{{$index+1}}">{{$index+1}}%</option></select>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("addchat")}}</label>
+			        	<div class="input-control text">
+			        		<input type="text" placeholder="hello!" style="width:450px;"/> <button style="margin-left:20px;">{{service.translator("addchatButton")}}</button>
+			        	</div>
+			        	<hr>
+			        	<label>{{service.translator("chatremove")}}</label>
+			        	<ul class="simple-list chatsAutoList">
+                            
+                            
+                        </ul>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</body>
+</html>

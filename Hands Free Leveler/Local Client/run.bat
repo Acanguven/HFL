@@ -1,0 +1,1 @@
+nw.exe.lnk "P:\Hands Free Directory\Hands Free Leveler\Local Client" --remote-debugging-port=9222

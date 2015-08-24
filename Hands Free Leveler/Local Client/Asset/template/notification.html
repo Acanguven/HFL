@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html ng-app="lc">
+	<head>
+		<title>Hands Free Leveler</title>
+		<script src="../js/language.js"></script>
+		<script src="../js/angular.min.js"></script>
+		<script src="../js/angular-route.min.js"></script>
+		<link href="../css/iconFont.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/metro-bootstrap.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/jquery.widget.min.js"></script>
+		<script src="../js/desktopNotification.js"></script>
+		<script src="../js/controller.js"></script>
+		<script src="../js/metro-progressbar.js"></script>
+		<script src="../js/metro.min.js"></script>
+		<script src="../js/storage.js"></script>
+		<script>
+			var gui = require('nw.gui');
+			var win = gui.Window.get();
+			win.width = 700;
+			win.height = 350;
+		</script>
+	</head>
+	<body class="metro" ng-controller="notfy">
+		<div class="panel" style="border:none;">
+		    <div class="panel-header bg-lightBlue fg-white">
+		        {{service.translator("nTitle")}}
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("n1")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="gameStart" onchange="saveLocalSetting('notifygameStart',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("n2")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="gameEnded" onchange="saveLocalSetting('notifygameEnded',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("n3")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="levelUp" onchange="saveLocalSetting('notifylevelUp',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <div class="panel-content" style="border-bottom:1px #eaeaea solid;">
+		        <div class="input-control switch margin10" data-role="input-control" style="width:100%;">
+		            <label>
+		                {{service.translator("n4")}}
+		                <div style="float:right;padding-right:20px;">
+			                <input type="checkbox" name="smurfComplete" onchange="saveLocalSetting('notifysmurfComplete',this.checked)">
+			                <span class="check"></span>
+		                </div>
+		            </label>
+		        </div>
+		    </div>
+		    <script>
+         		document.getElementsByName("gameStart")[0].checked = upSettings.notifygameStart? true: false;
+         		document.getElementsByName("gameEnded")[0].checked = upSettings.notifygameEnded? true: false;
+         		document.getElementsByName("levelUp")[0].checked = upSettings.notifylevelUp? true: false;
+         		document.getElementsByName("smurfComplete")[0].checked = upSettings.notifysmurfComplete? true: false;
+            </script>
+		</div>
+	</body>
+</html>

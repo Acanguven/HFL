@@ -1,0 +1,32 @@
+{
+  "name": "HandsFreeLocalClient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thelaw44/HandsFreeLeveler.git"
+  },
+  "window": {
+    "title": "Hands Free Leveler",
+    "toolbar": false,
+    "frame": true,
+    "width": 850,
+    "height": 500,
+    "position": "center",
+    "resizable": false,
+    "icon": "Asset/img/icon.png"
+  },
+  "author": "The Law",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thelaw44/HandsFreeLeveler/issues"
+  },
+  "homepage": "https://github.com/thelaw44/HandsFreeLeveler",
+  "dependencies": {
+    "path": "^0.11.14"
+  }
+}

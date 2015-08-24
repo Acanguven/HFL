@@ -1,0 +1,8 @@
+<form class="form-signin">
+	<h2 class="form-signin-heading">Please sign in</h2>
+	<label for="inputEmail" class="sr-only">Bol Username</label>
+	<input type="text" id="inputEmail" class="form-control" placeholder="Bol Username" required autofocus ng-model="username" style="margin-bottom:15px;">
+	<label for="inputPassword" class="sr-only">System Key</label>
+	<input type="text" id="inputPassword" class="form-control" placeholder="System Key" required ng-model="key" style="margin-bottom:15px;">
+	<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="login(username,key)">Sign in</button>
+</form>

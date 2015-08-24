@@ -8,7 +8,7 @@ var sha1 = require('sha1');
 var sha256 = require("sha256");
 var transporter = nodemailer.createTransport();
 
-app.use(logger({path: __dirname +"/public/logger.txt"}));
+app.use(logger({path: __dirname +"/logs/logger.txt"}));
 
 
 function strongHash(text){
@@ -34,7 +34,7 @@ app.get("/client2", function(req, res) {
 });
 
 
-app.post("/user/add", function(req, res) { 
+app.post("/user/add", function(req, res) {
     /* some server side logic */
     res.send("OK");
 });
@@ -53,10 +53,10 @@ app.post("/gotPaymentpaypalIpnsecureLink", function(req,res){
     }
     res.end("thanks");
 });
- 
+
  /* serves all the static files */
 app.use(express.static('public'));
- 
+
 var port = 80;
 app.listen(port, function() {
     console.log("Listening on " + port);
@@ -69,7 +69,7 @@ var WebSocketServer = require('ws').Server
   , wss = new WebSocketServer({ port: 4444 });
 
 wss.on('connection', function connection(ws) {
-    
+
     ws.on('message', function incoming(message) {
         var data = validJsonParse(message);
         if (data && data.type){
@@ -89,7 +89,7 @@ wss.on('connection', function connection(ws) {
                         ws.send(JSON.stringify({type:"err",msg:"Username or key not defined"}));
                     }
                 break;
-                
+
                 case "client":
                     if(data.username && data.key){
                         clients[data.key] = ws;

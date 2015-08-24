@@ -1,0 +1,52 @@
+<div class="container" style="background-color:white;">
+        <h1>Dashboard <small style="font-size:18px;">Where you manage your computer and bot</small></h1>
+        <hr>
+        <div class="row">
+            <div class="col-xs-4 col-sm-4">
+                <ul class="list-group">
+                  <li class="list-group-item" ng-class="pc.bol ? 'list-group-item-success' : 'list-group-item-danger'">BOL</li>
+                  <li class="list-group-item" ng-class="pc.hfl ? 'list-group-item-success' : 'list-group-item-danger'">HFL</li>
+                </ul>
+
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-info">PC</li>
+                  <li class="list-group-item list-group-item-info">SS</li>
+                </ul>
+            </div>
+            <div class="col-xs-2 col-sm-2">
+                <div class="row">
+                    <div class="btn-group-vertical" role="group" aria-label="...">
+                      <button type="button" class="btn btn-default" style="height:42px;">{{pc.bol? 'Stop' : 'Start'}}</button>
+                      <button type="button" class="btn btn-default" style="height:42px;">{{pc.hfl? 'Stop' : 'Start'}}</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="btn-group-vertical" role="group" aria-label="...">
+                      <button type="button" class="btn btn-default" style="height:42px;">Stop</button>
+                      <button type="button" class="btn btn-default" style="height:42px;">Show</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-6">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <span class="badge">{{pc.rs}}</span>
+                    Running smurfs
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">{{pc.ut}} Minutes</span>
+                    Up time
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">{{pc.ng}}</span>
+                    Number of games
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">{{pc.wg}}</span>
+                    Number of wins
+                  </li>
+                </ul>
+            </div>
+        </div>
+    </div>

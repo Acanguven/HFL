@@ -1,0 +1,75 @@
+<div class="container" ng-if="form === 4" style="background-color:white;">
+    <h1>Live Controller <small style="font-size:18px;">Live details of running smurfs</small></h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-group">
+              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
+              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
+              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
+              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
+              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
+              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
+            </ul>
+        </div>
+
+        <div class="col-md-10">
+            <div class="col-md-6">
+                <h4>Details of account Osman</h4>
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <span class="badge">12</span>
+                    Level
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">Katarina</span>
+                    Champion
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">13:42</span>
+                    Game Time
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">15</span>
+                    Kills
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">6</span>
+                    Deaths
+                  </li>
+                  <li class="list-group-item">
+                    <span class="badge">12</span>
+                    Assists
+                  </li>
+                </ul>
+                <div class="row" style="margin-bottom:15px;">
+                    <div class="col-md-12">
+                        <textarea class="form-control" rows="5" disabled style="max-width:100%;">Annie(ally): Nice dude!
+Veigar(enemy): Thanks dude
+Ashe(enemy): OMG!!
+                </textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-md-12">
+                        <textarea class="form-control" rows="1"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-md-6" style="margin-bottom:15px;">
+                        <button type="button" class="btn btn-success" style="width:100%;">Send</button>
+                    </div>
+                    <div class="col-md-6" style="margin-bottom:15px;">
+                        <button type="button" class="btn btn-danger" style="width:100%;">Send All</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row" style="text-align:center;">
+                    <h4>Live Map</h4>
+                    <img src="/img/sr.jpg" width="100%" style="margin-bottom:20px;"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

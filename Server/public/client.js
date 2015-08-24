@@ -1,62 +1,122 @@
-var app = angular.module("remote", []);
+var app = angular.module("remote", ["ngRoute"]);
 
-app.controller("main" , function($scope){
-    $scope.remoteSocket = new WebSocket("ws://handsfreeleveler.com:4444");
-    $scope.form = 2;
-    $scope.user = {
-        username:false,
-        key:false,
-    };
-    
-    $scope.pc = {
+app.config(function($routeProvider) {
+    $routeProvider
+    .when('/Dashboard', {
+        templateUrl : 'view/dashboard.html',
+        controller  : 'dashboard'
+    })
+    .when('/Login', {
+        templateUrl : 'view/login.html',
+        controller  : 'login'
+    })
+    .when('/LiveController', {
+        templateUrl : 'view/livecontroller.html',
+        controller  : 'live'
+    })
+    .when('/SmurfList', {
+        templateUrl : 'view/smurflist.html',
+        controller  : 'smurfs'
+    })
+    .otherwise({ redirectTo: '/Login' })
+});
+
+app.service('service', function($location){
+    var _self = this;
+    /* Watch feeds */
+    this.user = {
+        username: false,
+        key: false,
+        type:2
+    }
+    this.acc = {
         hfl: true,
         bol: true,
         rs : 3,
         ut: 154,
         ng: 12,
         wg: 12,
-        smurfs:[]
+        smurfs:[],
+        settings:{},
+        items:{},
+        spells:{},
+        ai:{}
     }
-    
-   
-    $scope.remoteSocket.onopen = function (event) {
-        $scope.rSend({type:"welcome"});
+    this.liveStatus = [];
+
+
+    /* Ws */
+    this.socket = new WebSocket("ws://localhost:4444");
+    this.socket.onopen = function (event) {
+        console.log("Socket live")
     };
-    
-    $scope.login = function(username,key){
-        if(username&&key){
-            $scope.rSend({type:"login",username:username,key:key});
-        }
-    };
-    
-    $scope.rSend = function(obj){
-        var jst = JSON.stringify(obj);
-        if(jst){
-            $scope.remoteSocket.send(jst); 
-        }
-    };
-    
-    $scope.remoteSocket.onmessage = function (msg) {
+    this.socket.onmessage = function (msg) {
         var data = validJsonParse(msg.data);
         if(data && data.type){
             switch(data.type){
                 case "access":
-                    $scope.$apply(function(){
-                        $scope.user.username = data.username;
-                        $scope.user.key = data.key;
-                        $scope.form = 2;
-                    });
+                    _self.user.username = data.username;
+                    _self.user.key = data.key;
+                    $location.path("/Dashboard")
                 break;
-                
+
                 case "err":
                     alert(data.msg);
                 break;
             }
         }
     };
-    
-    $scope.formC = function(i){
-        $scope.form = i;
+    this.rSend = function(obj){
+        var jst = JSON.stringify(obj);
+        if(jst){
+            this.socket.send(jst);
+        }
+    };
+});
+
+
+app.controller("main" , function($scope,service,$location){
+
+    $scope.loggedIn = false;
+    $scope.$watch(function(){
+        return JSON.stringify(service.user)
+    }, function(e){
+        $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
+        if(!$scope.loggedIn){
+            $location.path("/Login");
+            $scope.form = 1;
+        }else{
+            $scope.form = 2;
+        }
+    },true)
+
+    $scope.formC = function(id){
+        $scope.form = id;
+    }
+});
+
+app.controller("live", function($scope){
+
+})
+
+app.controller("smurfs", function($scope){
+
+})
+
+app.controller("dashboard", function($scope, service){
+    $scope.pc = service.acc;
+    $scope.$watch(function(){
+        return JSON.stringify(service.acc)
+    }, function(e){
+        $scope.pc = service.acc;
+    },true)
+});
+
+app.controller("login", function($scope,service){
+    $scope.login = function(username,key){
+        if(username&&key){
+            service.rSend({type:"login",username:username,key:key});
+        }
     };
 });
 

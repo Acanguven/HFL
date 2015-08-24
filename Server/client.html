@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-route.min.js"></script>
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -14,7 +15,7 @@
     	    body {
               background-color: #eee;
             }
-            
+
             .form-signin {
               max-width: 330px;
               padding: 15px;
@@ -53,11 +54,11 @@
                 background-color: white;
             }
     	</style>
-    	<script src="client.js"></script> 
+    	<script src="/client.js"></script>
     </head>
-    
+
     <body ng-controller="main">
-        <nav class="navbar navbar-default" ng-if="form > 1">
+        <nav class="navbar navbar-default" ng-if="loggedIn">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -67,17 +68,17 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">HFL <small>Remote Controller</small></a>
+              <a class="navbar-brand" href="#/Dashboard" ng-click="formC(2)">HFL <small>Remote Controller</small></a>
             </div>
-        
+
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
-                <li ng-class="form === 2 ? 'active' : '' " ng-click="formC(2)"><a href="#">Dashboard</a></li>
-                <li ng-class="form === 3 ? 'active' : '' " ng-click="formC(3)"><a href="#">Smurf List</a></li>
-                <li ng-class="form === 4 ? 'active' : '' " ng-click="formC(4)"><a href="#">Live Controller</a></li>
+                <li ng-class="form === 2 ? 'active' : '' " ng-click="formC(2)"><a href="#/Dashboard">Dashboard</a></li>
+                <li ng-class="form === 3 ? 'active' : '' " ng-click="formC(3)"><a href="#/SmurfList">Smurf List</a></li>
+                <li ng-class="form === 4 ? 'active' : '' " ng-click="formC(4)"><a href="#/LiveController">Live Controller</a></li>
                 <li ng-class="dropdown" ng-class="form === 6 || form === 7 || form === 8 ? 'active' : '' ">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AI Settings<span class="caret"></span></a>
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AI Settings<span class="caret"></span></a>
                     <ul  class="dropdown-menu">
                         <li ng-class="form === 6 ? 'active' : '' " ng-click="formC(6)"><a href="#">Behaviours</a></li>
                         <li ng-class="form === 7 ? 'active' : '' " ng-click="formC(7)"><a href="#">Items</a></li>
@@ -91,210 +92,7 @@
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>
-    	<div class="container">
-    
-    		<form class="form-signin" ng-if="form === 1">
-    			<h2 class="form-signin-heading">Please sign in</h2>
-    			<label for="inputEmail" class="sr-only">Bol Username</label>
-    			<input type="text" id="inputEmail" class="form-control" placeholder="Bol Username" required autofocus ng-model="username">
-    			<label for="inputPassword" class="sr-only">System Key</label>
-    			<input type="text" id="inputPassword" class="form-control" placeholder="System Key" required ng-model="key">
-    			<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="login(username,key)">Sign in</button>
-    		</form>
-    		
-		    <div class="container" ng-if="form === 2" style="background-color:white;">
-                <h1>Dashboard <small style="font-size:18px;">Where you manage your computer and bot</small></h1> 
-                <hr>
-                <div class="row">
-                    <div class="col-xs-4 col-sm-4">
-                        <ul class="list-group">
-                          <li class="list-group-item" ng-class="pc.bol ? 'list-group-item-success' : 'list-group-item-danger'">BOL</li>
-                          <li class="list-group-item" ng-class="pc.hflq ? 'list-group-item-success' : 'list-group-item-danger'">HFL</li>
-                        </ul>
-                        
-                        <ul class="list-group">
-                          <li class="list-group-item list-group-item-info">PC</li>
-                          <li class="list-group-item list-group-item-info">SS</li>
-                        </ul>
-                    </div>
-                    <div class="col-xs-2 col-sm-2">
-                        <div class="row">
-                            <div class="btn-group-vertical" role="group" aria-label="...">
-                              <button type="button" class="btn btn-default" style="height:42px;">{{pc.bol? 'Stop' : 'Start'}}</button>
-                              <button type="button" class="btn btn-default" style="height:42px;">{{pc.hfl? 'Stop' : 'Start'}}</button>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="btn-group-vertical" role="group" aria-label="...">
-                              <button type="button" class="btn btn-default" style="height:42px;">Stop</button>
-                              <button type="button" class="btn btn-default" style="height:42px;">Show</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <ul class="list-group">
-                          <li class="list-group-item">
-                            <span class="badge">{{pc.rs}}</span>
-                            Running smurfs
-                          </li>
-                          <li class="list-group-item">
-                            <span class="badge">{{pc.ut}} Minutes</span>
-                            Up time
-                          </li>
-                          <li class="list-group-item">
-                            <span class="badge">{{pc.ng}}</span>
-                            Number of games
-                          </li>
-                          <li class="list-group-item">
-                            <span class="badge">{{pc.wg}}</span>
-                            Number of wins
-                          </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="container" ng-if="form === 3" style="background-color:white;">
-                <h1>Smurf List <small style="font-size:18px;">Manage you smurf accounts list (Changes are live on your computer if it is running)</small></h1> 
-                <hr>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                          <label for="usr">Username</label>
-                          <input type="text" class="form-control" id="usr">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                          <label for="usr">Password</label>
-                          <input type="text" class="form-control" id="usr">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                          <label for="usr">Desired Level</label>
-                          <input type="text" class="form-control" id="usr">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="usr">&nbsp;</label>
-                            <button type="button" class="btn btn-info form-control">Add Smurf</button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-12" style="overflow-x : auto;">
-                        <table class="table table-striped">
-                            <thead>
-                              <tr>
-                                <th>Username</th>
-                                <th>Password</th>
-                                <th>Current Level</th>
-                                <th>Desired Level</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>test</td>
-                                <td>pass</td>
-                                <td>2</td>
-                                <td>31</td>
-                                <td><button type="button" class="btn btn-danger">Delete</button></td>
-                              </tr>
-                              <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>12</td>
-                                <td>31</td>
-                                <td><button type="button" class="btn btn-danger">Delete</button></td>
-                              </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="container" ng-if="form === 4" style="background-color:white;">
-                <h1>Live Controller <small style="font-size:18px;">Live details of running smurfs</small></h1> 
-                <hr>
-                <div class="row">
-                    <div class="col-md-2">
-                        <ul class="list-group">
-                          <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-                          <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-                          <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-                          <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-                          <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-                          <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="col-md-10">
-                        <div class="col-md-6">
-                            <h4>Details of account Osman</h4>
-                            <ul class="list-group">
-                              <li class="list-group-item">
-                                <span class="badge">12</span>
-                                Level
-                              </li>
-                              <li class="list-group-item">
-                                <span class="badge">Katarina</span>
-                                Champion
-                              </li>
-                              <li class="list-group-item">
-                                <span class="badge">13:42</span>
-                                Game Time
-                              </li>
-                              <li class="list-group-item">
-                                <span class="badge">15</span>
-                                Kills
-                              </li>
-                              <li class="list-group-item">
-                                <span class="badge">6</span>
-                                Deaths
-                              </li>
-                              <li class="list-group-item">
-                                <span class="badge">12</span>
-                                Assists
-                              </li>
-                            </ul>
-                            <div class="row" style="margin-bottom:15px;">
-                                <div class="col-md-12">
-                                    <textarea class="form-control" rows="5" disabled style="max-width:100%;">Annie(ally): Nice dude!
-Veigar(enemy): Thanks dude
-Ashe(enemy): OMG!!
-                            </textarea>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-bottom: 15px;">
-                                <div class="col-md-12">
-                                    <textarea class="form-control" rows="1"></textarea>
-                                </div>
-                            </div>
-                            <div class="row" style="margin-bottom: 15px;">
-                                <div class="col-md-6" style="margin-bottom:15px;">
-                                    <button type="button" class="btn btn-success" style="width:100%;">Send</button>
-                                </div>
-                                <div class="col-md-6" style="margin-bottom:15px;">
-                                    <button type="button" class="btn btn-danger" style="width:100%;">Send All</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="row" style="text-align:center;">
-                                <h4>Live Map</h4>
-                                <img src="/img/sr.jpg" width="100%" style="margin-bottom:20px;"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-    	</div>
+    	<div class="container" ng-view></div>
     </body>
 
 </html>

@@ -1,0 +1,34 @@
+<div class="container" style="background-color:white;">
+    <h1>Behaviour Settings <small style="font-size:18px;">Change how {{champ}} will react</small></h1>
+    <hr>
+   	<div class="row">
+        <div class="col-md-1 col-xs-3 col-sm-3" >
+            <img src="/img/{{champ}}.png" width="100%"/>
+        </div>
+        <div class="col-md-11 col-xs-9 col-sm-9">
+            <p>Behaivour Settings are set in script settings by default. Changing this settings will change your default settings in script. So please take care.</p>
+            <div class="form-group">
+                <label>Default Lane</label>
+                <select class="form-control">
+                    <option>Mid</option>
+                    <option>Bot</option>
+                    <option>Top</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Aggression Level</label>
+                <select class="form-control">
+                    <option ng-repeat="i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]">{{i}}</option>
+                </select>
+            </div>
+            <div class="col-md-5 col-md-offset-3">
+                <div class="col-md-3" style="margin-bottom:15px;">
+                    <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+                </div>
+                <div class="col-md-3" style="margin-bottom:15px;">
+                    <button type="button" class="btn btn-danger" style="width:100%;">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

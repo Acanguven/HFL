@@ -1,0 +1,41 @@
+<div class="container" style="background-color:white;">
+    <h1>Build Settings <small style="font-size:18px;">Change your item settings for {{champ}}</small></h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-1 col-xs-3 col-sm-3" >
+            <img src="/img/{{champ}}.png" width="100%"/>
+        </div>
+        <div class="col-md-11 col-xs-9 col-sm-9">
+            <div class="row">
+                <p>You are changing item build of {{champ}}, please be sure about settings before saving. Dont forget that you can only carry 6 items! You cant sell items.</p>
+                <p>Items Settings are set in script settings by default. Changing this settings will change your default settings in script. So please take care.</p>
+                <div class="col-md-5 col-md-offset-3">
+                    <div class="col-md-3" style="margin-bottom:15px;">
+                        <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+                    </div>
+                    <div class="col-md-3" style="margin-bottom:15px;">
+                        <button type="button" class="btn btn-danger" style="width:100%;">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" style="margin-top:15px;">
+            <input type="text" class="form-control" placeholder="Search for item name" ng-model="name">
+            <div class="row" style="margin-top:15px;">
+                <div class="col-md-12">
+                    <div class="col-md-1 col-sm-2 col-xs-4 itemBox" ng-repeat="item in items | filter:name | orderBy:'queue'" ng-click="clickItem(item)">
+                        <div class="row">
+                            <img src="{{item.png}}" width="100%"/>
+                        </div>
+                        <div ng-if="item.selected === true" class="itemSelected">
+                            {{itemRow.indexOf(item.name) + 1}}
+                        </div>
+                        <div class="row" style="text-align:center;max-height:40px;overflow:hidden;">
+                            {{item.name}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

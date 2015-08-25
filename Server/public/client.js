@@ -18,6 +18,26 @@ app.config(function($routeProvider) {
         templateUrl : 'view/smurflist.html',
         controller  : 'smurfs'
     })
+    .when('/Champions/:redirect', {
+        templateUrl : 'view/champions.html',
+        controller  : 'champions'
+    })
+    .when('/Items/:champion', {
+        templateUrl : 'view/items.html',
+        controller  : 'items'
+    })
+    .when('/Behaviours/:champion', {
+        templateUrl : 'view/behaviours.html',
+        controller  : 'behaviours'
+    })
+    .when('/Spells/:champion', {
+        templateUrl : 'view/spells.html',
+        controller  : 'spells'
+    })
+    .when('/Chat/', {
+        templateUrl : 'view/chat.html',
+        controller  : 'chat'
+    })
     .otherwise({ redirectTo: '/Login' })
 });
 
@@ -25,9 +45,9 @@ app.service('service', function($location){
     var _self = this;
     /* Watch feeds */
     this.user = {
-        username: false,
-        key: false,
-        type:2
+        username: 1,//false
+        key: 1,//false
+        type:1//false
     }
     this.acc = {
         hfl: true,
@@ -46,7 +66,7 @@ app.service('service', function($location){
 
 
     /* Ws */
-    this.socket = new WebSocket("ws://localhost:4444");
+    this.socket = new WebSocket("ws://handsfreeleveler.com:4444");
     this.socket.onopen = function (event) {
         console.log("Socket live")
     };
@@ -74,10 +94,105 @@ app.service('service', function($location){
     };
 });
 
+app.controller("chat", function($scope,service,$routeParams){
+    $scope.eventType = "ondead";
+    $scope.repeater = createArr(1,100);
+    $scope.chats = [];
+    if(!$scope.chats[$scope.eventType]){
+        $scope.chats[$scope.eventType] = [];
+    }
+
+
+    $(document).ready(function() {
+        $("div.bhoechie-tab-menu>div.list-group>a").click(function(e) {
+            e.preventDefault();
+            $(this).siblings('a.active').removeClass("active");
+            $(this).addClass("active");
+            var eventT = $(this).attr('event');
+            $scope.$apply(function(){
+                $scope.eventType = eventT
+                if(!$scope.chats[eventT]){
+                    $scope.chats[eventT] = [];
+                }
+            });
+        });
+    });
+
+    $scope.addChat = function(text,chance){
+        $scope.chats[$scope.eventType].push({text:text,chance:chance});
+    }
+
+    $scope.removeChat = function(id){
+        $scope.chats[$scope.eventType].splice(id,1);
+    }
+
+    $scope.getChats = function(){
+        return $scope.chats[$scope.eventType];
+    }
+});
+
+app.controller("spells", function($scope,service,$routeParams){
+    $scope.champ = $routeParams.champion;
+
+    $scope.levelSpell = [];
+
+    $scope.add = function(i){
+        $scope.levelSpell.push({key:i});
+    }
+
+    $scope.remove = function(i){
+        $scope.levelSpell.splice(i,1);
+    }
+});
+
+app.controller("behaviours", function($scope,service,$routeParams){
+    $scope.champ = $routeParams.champion;
+
+});
+
+app.controller("items", function($scope,service,$routeParams,$location,$http){
+    $scope.champ = $routeParams.champion;
+    if(!$scope.champ || $scope.champ.length < 1){
+        $location.path("/Dashboard")
+    }
+    $scope.items = [];
+    $http.get("/items.json").then(function(response){
+        response.data.forEach(function(item){
+            item.queue = 4444;
+            $scope.items.push(item)
+        });
+    });
+    $scope.itemRow = [];
+
+    $scope.clickItem = function(item){
+        if(item.selected === true){
+            item.selected = false;
+            var index = $scope.itemRow.indexOf(item.name);
+            $scope.itemRow.splice(index,1)
+            item.queue = 4444;
+        }else{
+            item.selected = true;
+            $scope.itemRow.push(item.name)
+            item.queue = $scope.itemRow.indexOf(item.name);
+        }
+    }
+});
+
+app.controller("champions", function($scope,service,$location,$routeParams,$http){
+    $scope.champions = [];
+    $http.get("/champs.json").then(function(response){
+        response.data.forEach(function(champ){
+            $scope.champions.push({name:champ, img:"/img/"+champ+".png"})
+        });
+    });
+    $scope.redirect = function(name){
+        $location.path("/"+$routeParams.redirect+"/"+name)
+    }
+});
 
 app.controller("main" , function($scope,service,$location){
 
-    $scope.loggedIn = false;
+    $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
     $scope.$watch(function(){
         return JSON.stringify(service.user)
     }, function(e){
@@ -113,6 +228,7 @@ app.controller("dashboard", function($scope, service){
 });
 
 app.controller("login", function($scope,service){
+
     $scope.login = function(username,key){
         if(username&&key){
             service.rSend({type:"login",username:username,key:key});
@@ -129,3 +245,11 @@ function validJsonParse(str){
     }
     return jsn;
 };
+
+function createArr(s,e){
+    var arr = [];
+    for(s; s <= e; s++){
+        arr.push(s);
+    }
+    return arr;
+}

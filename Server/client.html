@@ -53,6 +53,114 @@
             .tab-pane{
                 background-color: white;
             }
+            .champBox{
+              margin-bottom:15px;border:1px solid #ccc;cursor:pointer;
+            }
+            .champBox:hover{
+              background-color: powderblue;
+            }
+            .itemBox{
+              margin-bottom:15px;border:1px solid #ccc;cursor:pointer;height: 135px;
+            }
+            .itemBox:hover{
+              background-color: powderblue;
+            }
+            .itemNext{
+              float: left;
+              position: relative;
+              left: -9px;
+              height: 100%;
+            }
+            .itemlistBox:after{
+              content: ">>";
+              float: right;
+              width: 10%;
+              position: relative;
+              top: 20px;
+            }
+            .itemSelected{
+              position: absolute;
+              top: 3px;
+              left: 3px;
+              border: 1px solid red;
+              border-radius: 50%;
+              width: 30px;
+              height: 30px;
+              background-color: white;
+              padding-top: 4px;
+              text-align: center;
+            }
+
+
+            /*  bhoechie tab */
+            div.bhoechie-tab-container{
+              z-index: 10;
+              background-color: #ffffff;
+              padding: 0 !important;
+              border-radius: 4px;
+              -moz-border-radius: 4px;
+              border:1px solid #ddd;
+              margin-top: 20px;
+              -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+              box-shadow: 0 6px 12px rgba(0,0,0,.175);
+              -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+              background-clip: padding-box;
+              opacity: 0.97;
+              filter: alpha(opacity=97);
+              margin-bottom: 15px;
+            }
+            div.bhoechie-tab-menu{
+              padding-right: 0;
+              padding-left: 0;
+              padding-bottom: 0;
+            }
+            div.bhoechie-tab-menu div.list-group{
+              margin-bottom: 0;
+            }
+            div.bhoechie-tab-menu div.list-group>a{
+              margin-bottom: 0;
+            }
+            div.bhoechie-tab-menu div.list-group>a .glyphicon,
+            div.bhoechie-tab-menu div.list-group>a .fa {
+              color: #5A55A3;
+            }
+            div.bhoechie-tab-menu div.list-group>a:first-child{
+              border-top-right-radius: 0;
+              -moz-border-top-right-radius: 0;
+            }
+            div.bhoechie-tab-menu div.list-group>a:last-child{
+              border-bottom-right-radius: 0;
+              -moz-border-bottom-right-radius: 0;
+            }
+            div.bhoechie-tab-menu div.list-group>a.active,
+            div.bhoechie-tab-menu div.list-group>a.active .glyphicon,
+            div.bhoechie-tab-menu div.list-group>a.active .fa{
+              background-color: #5A55A3;
+              background-image: #5A55A3;
+              color: #ffffff;
+            }
+            div.bhoechie-tab-menu div.list-group>a.active:after{
+              content: '';
+              position: absolute;
+              left: 100%;
+              top: 50%;
+              margin-top: -13px;
+              border-left: 0;
+              border-bottom: 13px solid transparent;
+              border-top: 13px solid transparent;
+              border-left: 10px solid #5A55A3;
+            }
+
+            div.bhoechie-tab-content{
+              background-color: #ffffff;
+              /* border: 1px solid #eeeeee; */
+              padding-left: 20px;
+              padding-top: 10px;
+            }
+
+            div.bhoechie-tab div.bhoechie-tab-content:not(.active){
+              display: none;
+            }
     	</style>
     	<script src="/client.js"></script>
     </head>
@@ -77,17 +185,19 @@
                 <li ng-class="form === 2 ? 'active' : '' " ng-click="formC(2)"><a href="#/Dashboard">Dashboard</a></li>
                 <li ng-class="form === 3 ? 'active' : '' " ng-click="formC(3)"><a href="#/SmurfList">Smurf List</a></li>
                 <li ng-class="form === 4 ? 'active' : '' " ng-click="formC(4)"><a href="#/LiveController">Live Controller</a></li>
-                <li ng-class="dropdown" ng-class="form === 6 || form === 7 || form === 8 ? 'active' : '' ">
+                <li ng-class="dropdown" ng-class="form === 6 || form === 7 || form === 8 || form === 10 ? 'active' : '' ">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AI Settings<span class="caret"></span></a>
                     <ul  class="dropdown-menu">
-                        <li ng-class="form === 6 ? 'active' : '' " ng-click="formC(6)"><a href="#">Behaviours</a></li>
-                        <li ng-class="form === 7 ? 'active' : '' " ng-click="formC(7)"><a href="#">Items</a></li>
-                        <li ng-class="form === 8 ? 'active' : '' " ng-click="formC(8)"><a href="#">Spells</a></li>
+                        <li ng-class="form === 6 ? 'active' : '' " ng-click="formC(6)"><a href="#/Champions/Behaviours">Behaviours</a></li>
+                        <li ng-class="form === 7 ? 'active' : '' " ng-click="formC(7)"><a href="#/Champions/Items">Items</a></li>
+                        <li ng-class="form === 8 ? 'active' : '' " ng-click="formC(8)"><a href="#/Champions/Spells">Spells</a></li>
+                        <li ng-class="form === 10 ? 'active' : '' " ng-click="formC(10)"><a href="#/Chat">Chat</a></li>
                     </ul>
                 </li>
-                <li ng-class="form === 5 ? 'active' : '' " ng-click="formC(5)"><a href="#">Settings</a></li>
+                <li ng-class="form === 11 ? 'active' : '' " ng-click="formC(11)"><a href="#/Stats">Stats</a></li>
+                <li ng-class="form === 5 ? 'active' : '' " ng-click="formC(5)"><a href="#/Settings">Settings</a></li>
                 <li><a href="#" target="_blank">Forum</a></li>
-                <li ng-class="form === 9 ? 'active' : '' " ng-click="formC(9)" style="float:right;"><a href="#">Account</a></li>
+                <li ng-class="form === 9 ? 'active' : '' " ng-click="formC(9)" style="float:right;"><a href="#/Account">Account</a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->

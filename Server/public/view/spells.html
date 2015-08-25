@@ -1,0 +1,35 @@
+<div class="container" style="background-color:white;">
+    <h1>Behaviour Settings <small style="font-size:18px;">Change how {{champ}} will react</small></h1>
+    <hr>
+   	<div class="row">
+        <div class="col-md-1 col-xs-3 col-sm-3" >
+            <img src="/img/{{champ}}.png" width="100%"/>
+        </div>
+        <div class="col-md-11 col-xs-9 col-sm-9" style="margin-bottom:12px;">
+            <p>Spell settings are set in script settings by default. Changing this settings will change your default settings in script. So please take care.</p>
+            <div class="form-group" >
+                <label>Pick skill to levelup</label>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default" ng-click="add('Q')">Q</button>
+                    <button type="button" class="btn btn-default" ng-click="add('W')">W</button>
+                    <button type="button" class="btn btn-default" ng-click="add('E')">E</button>
+                    <button type="button" class="btn btn-default" ng-click="add('R')">R</button>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default" ng-repeat="spell in levelSpell" ng-click="remove(spell)">{{$index+1}}. {{spell.key}}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 col-md-offset-3">
+                <div class="col-md-3" style="margin-bottom:15px;">
+                    <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+                </div>
+                <div class="col-md-3" style="margin-bottom:15px;">
+                    <button type="button" class="btn btn-danger" style="width:100%;">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

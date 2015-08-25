@@ -1,0 +1,106 @@
+<div class="container" style="background-color:white;">
+    <h1>Chat Settings <small style="font-size:18px;">Change how your account will tlak with other guys</small></h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-12 col-xs-12 col-sm-12">
+            <p>These settings are <b>not</b> set in script by default. You must change your chat settings to make your bot talk efficiently.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bhoechie-tab-container">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu">
+              <div class="list-group">
+                <a href="#" class="list-group-item active text-center" event="ondead">
+                  On Dead
+                </a>
+                <a href="#" class="list-group-item text-center" event="onkill">
+                  On Kill
+                </a>
+                <a href="#" class="list-group-item text-center" event="onassist">
+                  On Assist
+                </a>
+                <a href="#" class="list-group-item text-center" event="atd">
+                  Ally Tower Destroyed
+                </a>
+                <a href="#" class="list-group-item text-center" event="etd">
+                  Enemy Tower Destroyed
+                </a>
+                <a href="#" class="list-group-item text-center" event="ac3">
+                  Ally champion kills 3 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="ac4">
+                  Ally champion kills 4 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="ac5">
+                  Ally champion kills 5 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="ec3">
+                  Enemy champion kills 3 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="ec4">
+                  Enemy champion kills 4 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="ec5">
+                  Enemy champion kills 5 in a row
+                </a>
+                <a href="#" class="list-group-item text-center" event="gl">
+                  Game lost
+                </a>
+                <a href="#" class="list-group-item text-center" event="gw">
+                  Game won
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 bhoechie-tab">
+                <div class="bhoechie-tab-content active">
+                    <div class="form-group">
+                        <h3>Chat settings</h3>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row" style="margin-bottom:15px;">
+                                    <div class="col-md-8">
+                                        <label>Usage Chance</label>
+                                        <select class="form-control" ng-model="chnc">
+                                            <option ng-repeat="i in repeater">{{i}}</option>
+                                        </select>
+                                    </div>
+                                    <label>Saves all events</label>
+                                    <div class="col-md-4" style="margin-bottom:15px;">
+                                        <button type="button" class="btn btn-success" style="width:100%;">Save All</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8" style="margin-bottom:15px;">
+                                <input type="text" class="form-control" placeholder="blabla..." ng-model="cmsg">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-info" style="width:100%;" ng-click="addChat(cmsg,chnc)">Add Chat</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td>Message</td>
+                                    <td>Chance</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat = "msg in getChats()" ng-click="removeChat($index)">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{msg.text}}</td>
+                                    <td>{{msg.chance}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

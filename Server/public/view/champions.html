@@ -1,0 +1,17 @@
+<div class="container" style="background-color:white;">
+    <h1>Champions <small style="font-size:18px;">Select champion to change settings</small></h1>
+    <hr>
+   	<div class="col-md-12">
+	    <div class="row" style="margin-bottom:15px;">
+	    	<input type="text" class="form-control" placeholder="Search for champion name" ng-model="name">
+	    </div>
+    	<div class="col-md-1 col-sm-2 col-xs-4 champBox" ng-repeat="champ in champions | filter: name" ng-click="redirect(champ.name)">
+    		<div class="row">
+    			<img src="{{champ.img}}" width="100%"/>
+    		</div>
+    		<div class="row" style="text-align:center;">
+    		{{champ.name}}
+    		</div>
+    	</div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="container" style="background-color:white;">
+    <h1>HFL settings <small style="font-size:18px;">Everything about your system</small></h1>
+    <hr>
+    <div class="col-md-12">
+    	<h3 ng-if="user.type === 1">Account type: Limited Package</h3>
+    	<h3 ng-if="user.type === 0">Account type: Trial Full Package</h3>
+    	<h3 ng-if="user.type === 4">Account type: Trial Ended</h3>
+    	<h3 ng-if="user.type === 2">Account type: Full Package</h3>
+    	<br><br>
+	    <h3 ng-if='user.key === "false"'>Your hwid is not registered</h3>
+	    <h3 ng-if='user.key !== "false"'>Your hwid is registered</h3>
+	    <br><br>
+    </div>
+    <div class="col-md-12" ng-if="user.type === 1">
+    	<p>You can upgrade your package anytime</p>
+    	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="PFNJALWD5N76Q">
+			<table>
+			<tr><td><input type="hidden" name="on0" value="BoL Username"></td></tr><tr><td><input type="hidden" value="{{user.username}}" name="os0" maxlength="200"></td></tr>
+			</table>
+			<input type="image" src="https://www.paypalobjects.com/tr_TR/TR/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - Online ödeme yapmanın daha güvenli ve kolay yolu!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/tr_TR/i/scr/pixel.gif" width="1" height="1">
+		</form>
+    </div>
+    <hr>
+    <div class="col-md-12" ng-if="user.type === 4 || user.type === 0">
+    	<label>Thank you for trying Hands Free Leveler</label>
+    	<p>I hope you like trying HFL. You can buy two types of packages.<br><br>Limited Package: Lifetime access, single payment. Single smurf in same time.<br>Full Package: Lifetime access, single payment. Unlimited smurf in same time.</p>
+    	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="KF5SDDKVY9T2N">
+			<table>
+			<tr><td><input type="hidden" name="on0" value="Select your package type">Select your package type</td></tr><tr><td><select name="os0">
+				<option value="Package 1 (Single Smurf)">Package 1 (Single Smurf) $15,00 USD</option>
+				<option value="Package 2 (Multi Smurf)">Package 2 (Multi Smurf) $25,00 USD</option>
+			</select> </td></tr>
+			<tr><td><input type="hidden" name="on1" value="Paste your generated code here"></td></tr><tr><td><input type="hidden" value="{{user.key}}" name="os1" maxlength="200"></td></tr>
+			<tr><td><input type="hidden" name="on2" value="Bol Username (not forum usern)"></td></tr><tr><td><input type="hidden" value="{{user.username}}" name="os2" maxlength="200"></td></tr>
+			</table>
+			<input type="hidden" name="currency_code" value="USD">
+			<input type="image" src="https://www.paypalobjects.com/tr_TR/TR/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - Online ödeme yapmanın daha güvenli ve kolay yolu!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/tr_TR/i/scr/pixel.gif" width="1" height="1">
+		</form>
+    </div>
+</div>

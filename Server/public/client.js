@@ -34,9 +34,16 @@ app.config(function($routeProvider) {
         templateUrl : 'view/spells.html',
         controller  : 'spells'
     })
-    .when('/Chat/', {
+    .when('/Chat', {
         templateUrl : 'view/chat.html',
         controller  : 'chat'
+    })
+    .when('/Settings', {
+        templateUrl : 'view/settings.html',
+        controller  : 'settings'
+    }).when('/Account', {
+        templateUrl : 'view/account.html',
+        controller  : 'account'
     })
     .otherwise({ redirectTo: '/Login' })
 });
@@ -45,9 +52,10 @@ app.service('service', function($location){
     var _self = this;
     /* Watch feeds */
     this.user = {
-        username: 1,//false
-        key: 1,//false
-        type:1//false
+        username: false,//false
+        key: false,//false
+        type:false,//false
+        token:false
     }
     this.acc = {
         hfl: true,
@@ -66,7 +74,7 @@ app.service('service', function($location){
 
 
     /* Ws */
-    this.socket = new WebSocket("ws://handsfreeleveler.com:4444");
+    this.socket = new WebSocket("ws://localhost:4444");
     this.socket.onopen = function (event) {
         console.log("Socket live")
     };
@@ -92,6 +100,24 @@ app.service('service', function($location){
             this.socket.send(jst);
         }
     };
+});
+
+app.controller("account", function($scope,service){
+    $scope.user = service.user;
+});
+
+app.controller("settings", function($scope, service){
+    $scope.fullUser = service.user.type !== 1;
+    $scope.maxSmurf = 1;
+    $scope.buyBoost = "false";
+    $scope.region = "EUW";
+    $scope.limitSmurf = service.user.type !== 1 ? createArr(1,100) : [1];
+    $scope.$watch("maxSmurf", function(){
+        if($scope.maxSmurf > 1 && service.user.type === 1){
+            alert("Please 25$ is not that much high. Please respect developers work!");
+            $scope.maxSmurf = 1;
+        }
+    });
 });
 
 app.controller("chat", function($scope,service,$routeParams){
@@ -227,13 +253,36 @@ app.controller("dashboard", function($scope, service){
     },true)
 });
 
-app.controller("login", function($scope,service){
-
-    $scope.login = function(username,key){
-        if(username&&key){
-            service.rSend({type:"login",username:username,key:key});
-        }
+app.controller("login", function($scope,service,$http,$location){
+    $scope.login = function(username,pass){
+        $http.post("/api/login", {username:username,password:pass}).then(function(response){
+            if(response.data.type == "user"){
+                service.user.username = response.data.username;
+                service.user.key = response.data.key;
+                service.user.type = response.data.usertype;
+                service.user.token = response.data.token;
+                $location.path("/Account");
+            }else{
+                alert("Check your login details");
+            }
+        });
     };
+
+    $scope.register = function(username,p1,p2){
+        if(p1 == p2){
+            $http.post("/api/register", {username:username,password:p1}).then(function(response){
+                if(response.data.type == "user"){
+                    service.user.username = response.data.username;
+                    service.user.key = response.data.key;
+                    service.user.type = response.data.usertype;
+                    service.user.token = response.data.token;
+                    $location.path("/Account");
+                }else{
+                    alert("Error registering your account, check your inputs")
+                }
+            });
+        }
+    }
 });
 
 function validJsonParse(str){

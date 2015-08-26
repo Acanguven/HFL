@@ -1,0 +1,43 @@
+<div class="container" style="background-color:white;">
+    <h1>HFL settings <small style="font-size:18px;">Everything about your system</small></h1>
+    <hr>
+   	<div class="row">
+	   	<div class="col-md-12">
+	   		<div class="form-group">
+                <label>Max number of smurfs running</label>
+                <select class="form-control" ng-model="maxSmurf">
+                    <option ng-repeat="i in limitSmurf" value="{{i}}">{{i}} {{!fullUser ? 'Limited Package':''}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Buy xp boost</label>
+                <select class="form-control" ng-model="buyBoost">
+                	<option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Region</label>
+                <select class="form-control" ng-model="region">
+                	<option value="EUW">EUW</option>
+                	<option value="TR">TR</option>
+                	<option value="EUNE">EUNE</option>
+                	<option value="NA">NA</option>
+                	<option value="KR">KR</option>
+                	<option value="BR">BR</option>
+                	<option value="OCE">OCE</option>
+                	<option value="RU">RU</option>
+                	<option value="LAS">LAS</option>
+                	<option value="LAN">LAN</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Full path to your League Of Legends folder <small>where lol.launcher.exe is stored</small></label>
+                <input type="text" class="form-control" placeholder="C:\Riot Games\League of Legends\" ng-model="filePath">
+            </div>
+            <div class="form-group">
+            <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+            </div>
+	   	</div>
+    </div>
+</div>

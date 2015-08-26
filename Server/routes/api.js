@@ -37,7 +37,7 @@ router.post('/register', function(req, res, next) {
 
 router.post("/login", function(req,res,next){
 	if(req.body.username && req.body.password){
-		Hwid.findOne({username:req.body.user}, function(err,item){
+		Hwid.findOne({username:req.body.username}, function(err,item){
 			if(item){
 				var token = jwt.sign(item, TOKEN_KEY);
 				res.json({type:"user",username:item.username,settings:item.settings,key:item.key,usertype:item.type,token:token})
@@ -50,12 +50,97 @@ router.post("/login", function(req,res,next){
 	}
 });
 
+router.post("/getSettings", function(req,res,next){
+    if(req.body.token){ 
+        jwt.verify(req.body.token, TOKEN_KEY, function(err, decoded) {
+            if(!err){
+                if(decoded){
+                    res.end(JSON.stringify(decoded.settings));
+                }
+            }
+        });   
+    }
+});
+
+router.post("/saveSettings", function(req,res,next){
+    if(req.body.token && req.body.settings){ 
+        jwt.verify(req.body.token, TOKEN_KEY, function(err, decoded) {
+            if(!err){
+                if(decoded){
+                    decoded.settings = req.body.settings;
+                    if (decoded.type === 1 || decoded.type === 4){
+                        decoded.settings.ms = 1;
+                    }
+                    Hwid.findOne({_id:decoded._id}, function(e,item){
+                        if(!e && item){
+                            item.settings = decoded.settings;
+                            item.save(function(er,saved){
+                                res.end("done") 
+                            });
+                        }
+                    })
+                }
+            }
+        });   
+    }
+});
+
+
 
 /* Client Routes */
 
-router.get("/clientHwid/:username/:hwid", function(req,res,next){
-    console.log(req)
-    res.end("done")
+router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
+    Hwid.findOne({username:req.params.username}, function(err,item){
+        if(err){
+            res.end("Be sure that you registered from website. Go to handsfreeleveler.com");
+        }else{
+            if(item){
+                if(item.password == req.params.password){
+                    if(item.key == "false"){
+                        item.key = req.params.hwid;
+                        item.save(function(){
+                            res.end("Your computer is now registered to your account");
+                        });
+                    }else{
+                        if(item.key == req.params.hwid){
+                            res.end("Authenticated user");
+                        }else{
+                            res.end("You cant use your account on a different computer");
+                        }
+                    }
+                }else{
+                    res.end("Password rejected")
+                }
+            }else{
+                res.end("Be sure that you registered from website. Go to handsfreeleveler.com");
+            }
+        }
+    })
+});
+
+router.get("/requestSettings/:username/:password", function(req,res,next){
+    Hwid.findOne({username:req.params.username,password:req.params.password}, function(err,item){
+        if(!err){
+            if(item){
+                res.json(item.settings);
+            }
+        } 
+    });
+});
+
+router.post("/updatePaths", function(req,res,next){
+    if(req.body.username && req.body.password){
+        Hwid.findOne({username:req.body.username, password:req.body.password}, function(err,item){
+            if(!err && item){
+                item.settings.gameFolder = req.body.gameFolder,
+                item.settings.bolFolder = req.body.bolFolder
+                item.markModified('settings');
+                item.save(function(err,saved){
+                    res.end("Path settings updated");
+                });
+            }
+        })
+    }
 });
 
 
@@ -92,11 +177,20 @@ wss.on('connection', function connection(ws) {
                 case "client":
                     if(data.username && data.key){
                         clients[data.key] = ws;
+                        ws.key = data.key;
                         clients[data.key].username = data.username;
                     }
                 break;
+                
+                case "cmd":
+                    clients[ws.key].send(message);
+                break;
             }
         }
+    });
+    
+    ws.on('close', function close() {
+        delete clients[ws.key];
     });
 });
 

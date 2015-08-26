@@ -6,7 +6,7 @@
 	   		<div class="form-group">
                 <label>Max number of smurfs running</label>
                 <select class="form-control" ng-model="maxSmurf">
-                    <option ng-repeat="i in limitSmurf" value="{{i}}">{{i}} {{!fullUser ? 'Limited Package':''}}</option>
+                    <option ng-repeat="i in limitSmurf" value="{{i}}" ng-selected="i == maxSmurf">{{i}} {{!fullUser ? 'Limited Package':''}}</option>
                 </select>
             </div>
             <div class="form-group">
@@ -32,11 +32,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Full path to your League Of Legends folder <small>where lol.launcher.exe is stored</small></label>
-                <input type="text" class="form-control" placeholder="C:\Riot Games\League of Legends\" ng-model="filePath">
-            </div>
-            <div class="form-group">
-            <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+                <button type="button" class="btn btn-success" style="width:100%;" ng-click="saveSettings()">Save</button>
             </div>
 	   	</div>
     </div>

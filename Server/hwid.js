@@ -7,7 +7,19 @@ var hwid = new Schema({
     password: { type: String, required: true},
     key: { type: String, default:"false"},
     type: { type: Number,default:0},
-    settings:{type:Object,default:{}}
+    settings:{type:Object,default:
+        {        
+            smurfs:[],
+            items:{},
+            spells:{},
+            ai:{},
+            bb:false,
+            rg:"EUW",
+            ms:1,
+            bolFolder:"",
+            gameFolder:""
+        }
+    }
 });
 
 

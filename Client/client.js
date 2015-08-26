@@ -2,6 +2,7 @@
 var prompt = require('prompt');
 var childProcess = require('child_process');
 var request = require("request");
+var WebSocket = require('ws');
 
 /* CONSTS */
 var HWID_EXE = "\""+process.cwd()+"\\_n1.exe\"";
@@ -13,6 +14,7 @@ var user = {
 	hwid : "",
 	username : ""
 }
+var hfl;
 
 
 /* FUNCTIONS */
@@ -38,7 +40,7 @@ var checkAuth = function(cb){
 	        console.log(body); // Show the HTML for the Modulus homepage.
 	    }
 	});
-	//cb(false,"yey")
+	cb(true,"")
 }
 
 var checkUpdate = function(cb){
@@ -64,7 +66,7 @@ checkUpdate(function(live_version){
 			user.username = data;
 			checkAuth(function(res,msg){
 				if(res){
-					console.log("start Process")
+					hfl = new HFL(user);
 				}else{
 					console.log(msg);
 					process.stdin.setRawMode(true);
@@ -75,3 +77,11 @@ checkUpdate(function(live_version){
 		});
 	}
 })
+
+function HFL(user){
+	this.user = user;
+	this.ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
+	this.ws.on('open', function open() {
+		console.log("Connected to remote server")
+	});
+}

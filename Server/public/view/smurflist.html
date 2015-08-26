@@ -6,26 +6,29 @@
         <div class="col-md-4">
             <div class="form-group">
               <label for="usr">Username</label>
-              <input type="text" class="form-control" id="usr">
+              <input type="text" class="form-control" id="usr" ng-model="username">
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
               <label for="usr">Password</label>
-              <input type="text" class="form-control" id="usr">
+              <input type="text" class="form-control" id="usr" ng-model="password">
             </div>
         </div>
         <div class="col-md-3">
             <div class="form-group">
               <label for="usr">Desired Level</label>
-              <input type="text" class="form-control" id="usr">
+              <input type="text" class="form-control" id="usr" ng-model="level">
             </div>
         </div>
         <div class="col-md-2">
             <div class="form-group">
                 <label for="usr">&nbsp;</label>
-                <button type="button" class="btn btn-info form-control">Add Smurf</button>
+                <button type="button" class="btn btn-info form-control" ng-click="smurfs.push({username:username,password:password,maxLevel:level,currentLevel:1})">Add Smurf</button>
             </div>
+        </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-success" style="width:100%;" ng-click="saveSettings()">Save</button>
         </div>
     </div>
     <hr>
@@ -42,19 +45,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>test</td>
-                    <td>pass</td>
-                    <td>2</td>
-                    <td>31</td>
-                    <td><button type="button" class="btn btn-danger">Delete</button></td>
-                  </tr>
-                  <tr>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>12</td>
-                    <td>31</td>
-                    <td><button type="button" class="btn btn-danger">Delete</button></td>
+                  <tr ng-repeat="smurf in smurfs">
+                    <td>{{smurf.username}}</td>
+                    <td>{{smurf.password}}</td>
+                    <td>{{smurf.currentLevel}}</td>
+                    <td>{{smurf.maxLevel}}</td>
+                    <td><button type="button" class="btn btn-danger" ng-click="smurfs.splice($index,1)">Delete</button></td>
                   </tr>
                 </tbody>
             </table>

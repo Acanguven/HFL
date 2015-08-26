@@ -57,24 +57,36 @@ app.service('service', function($location){
         type:false,//false
         token:false
     }
+    this.settings = {
+        smurfs:[],
+        items:{},
+        spells:{},
+        ai:{},
+        bb:false,
+        rg:false,
+        ms:1        
+    }
     this.acc = {
         hfl: true,
         bol: true,
         rs : 3,
-        ut: 154,
-        ng: 12,
-        wg: 12,
+        ut: 0,
+        ng: 0,
+        wg: 0,
+        //Update api down
         smurfs:[],
-        settings:{},
         items:{},
         spells:{},
-        ai:{}
+        ai:{},
+        bb:false,
+        rg:false,
+        ms:1
     }
     this.liveStatus = [];
 
 
     /* Ws */
-    this.socket = new WebSocket("ws://localhost:4444");
+    this.socket = new WebSocket("ws://handsfreeleveler.com:4444");
     this.socket.onopen = function (event) {
         console.log("Socket live")
     };
@@ -85,7 +97,7 @@ app.service('service', function($location){
                 case "access":
                     _self.user.username = data.username;
                     _self.user.key = data.key;
-                    $location.path("/Dashboard")
+                    alert("Client is running, you can control remotely")
                 break;
 
                 case "err":
@@ -102,22 +114,40 @@ app.service('service', function($location){
     };
 });
 
-app.controller("account", function($scope,service){
+app.controller("account", function($scope,service,$http){
     $scope.user = service.user;
+    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
+        service.settings = response.data;
+        $scope.user = service.user;
+    });
 });
 
-app.controller("settings", function($scope, service){
+app.controller("settings", function($scope, service,$http){
+    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
+        service.settings = response.data;
+    });
     $scope.fullUser = service.user.type !== 1;
-    $scope.maxSmurf = 1;
-    $scope.buyBoost = "false";
-    $scope.region = "EUW";
+    
+    $scope.buyBoost = String(service.settings.bb);
+    $scope.region = service.settings.rg;
     $scope.limitSmurf = service.user.type !== 1 ? createArr(1,100) : [1];
+    $scope.maxSmurf = service.settings.ms;
     $scope.$watch("maxSmurf", function(){
         if($scope.maxSmurf > 1 && service.user.type === 1){
             alert("Please 25$ is not that much high. Please respect developers work!");
             $scope.maxSmurf = 1;
         }
     });
+    
+    $scope.saveSettings = function(){
+        service.settings.ms = $scope.maxSmurf;
+        service.settings.bb = $scope.buyBoost;
+        service.settings.rg = $scope.region;
+        
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved")
+        });
+    }
 });
 
 app.controller("chat", function($scope,service,$routeParams){
@@ -240,9 +270,20 @@ app.controller("live", function($scope){
 
 })
 
-app.controller("smurfs", function($scope){
-
-})
+app.controller("smurfs", function($scope,$http,service){
+    $scope.smurfs = service.settings.smurfs;
+    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
+        service.settings = response.data;
+        $scope.smurfs = service.settings.smurfs;
+    });
+    
+    $scope.saveSettings = function(){
+        service.settings.smurfs = $scope.smurfs;
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+    }
+});
 
 app.controller("dashboard", function($scope, service){
     $scope.pc = service.acc;
@@ -261,7 +302,11 @@ app.controller("login", function($scope,service,$http,$location){
                 service.user.key = response.data.key;
                 service.user.type = response.data.usertype;
                 service.user.token = response.data.token;
-                $location.path("/Account");
+                service.rSend({type:"login",username:service.user.username, key:service.user.key});
+                $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
+                    service.settings = response.data;
+                    $location.path("/Account");
+                });
             }else{
                 alert("Check your login details");
             }
@@ -276,7 +321,11 @@ app.controller("login", function($scope,service,$http,$location){
                     service.user.key = response.data.key;
                     service.user.type = response.data.usertype;
                     service.user.token = response.data.token;
-                    $location.path("/Account");
+                    service.rSend({type:"login",username:service.user.username, key:service.user.key});
+                    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
+                        service.settings = response.data;
+                        $location.path("/Account");
+                    });
                 }else{
                     alert("Error registering your account, check your inputs")
                 }

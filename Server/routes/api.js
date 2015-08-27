@@ -182,8 +182,20 @@ wss.on('connection', function connection(ws) {
                     }
                 break;
                 
+                case "remoteUpdate":
+                    if(data.username && data.key){
+                        ws.send(JSON.stringify({type:"update",status:clients[data.key].status}));
+                    }
+                break;
+                
+                case "clientUpdate":
+                    if(data.username && data.key){
+                        clients[data.key].status = data.status;
+                    }
+                break;
+                
                 case "cmd":
-                    clients[ws.key].send(message);
+                    clients[data.key].send(message);
                 break;
             }
         }

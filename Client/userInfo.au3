@@ -5,8 +5,8 @@
 ; CUI stub5
 #include <WinAPIFiles.au3>
 
-Local $sUsername = InputBox("Login","Be sure that you already registed to handsfreeleveler.com" & @CRLF & @CRLF &"Enter your Username", "", "*")
-Local $sPasswd = InputBox("Login", "Enter your password", "*")
+Local $sUsername = InputBox("Login","Be sure that you already registed to handsfreeleveler.com" & @CRLF & @CRLF &"Enter your Username", "")
+Local $sPasswd = InputBox("Login", "Enter your password", "", "*")
 
 ConsoleWrite(_ANSI2UNICODE($sUsername & "|#|" & $sPasswd))
 

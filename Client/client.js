@@ -1,18 +1,22 @@
 /* REQUIRE */
-var prompt = require('prompt');
 var childProcess = require('child_process');
 var request = require("request");
 var WebSocket = require('ws');
 var fs = require('fs');
 
 /* CONSTS */
+
+//Cores
 var HWID_EXE = "\""+process.cwd()+"\\_n1.exe\"";
 var QUEUE = "\""+process.cwd()+"\\_n2.exe\"";
+// Path exes
 var BOL_EXE = "\""+process.cwd()+"\\_n3.exe\"";
 var GAME_EXE = "\""+process.cwd()+"\\_n4.exe\"";
+// CMD exes
 var BOL_STARTER = "\""+process.cwd()+"\\_n5.exe\"";
 var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
 var PC_CONTROLLER = "\""+process.cwd()+"\\_n7.exe\"";
+var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
 
 var VERSION = "1.0";
 
@@ -28,9 +32,12 @@ var hfl;
 
 /* FUNCTIONS */
 var grabUsername = function(cb){
-	prompt.get(['username','password'], function (err, result) {
-	    if (err) { return onErr(err); }
-	    cb(result);
+	var userInfo = childProcess.exec(USER_INFO);
+	userInfo.stdout.on('data', function(data) {
+	    cb({
+	    	username:data.split("|#|")[0],
+	    	password:data.split("|#|")[1]
+	    })
 	});
 }
 
@@ -98,8 +105,6 @@ var checkUpdate = function(cb){
 }
 
 /* INIT */
-prompt.start();
-
 checkUpdate(function(live_version){
 	if (parseFloat(live_version) > parseFloat(VERSION)){
 		console.log("New version found, please go to website and download " + live_version);
@@ -114,10 +119,10 @@ checkUpdate(function(live_version){
 		grabUsername(function(data){
 			user.username = data.username;
 			user.password = data.password;
+			console.log(data);
 			checkAuth(function(res){
 				if(res){
 					requestSettings(function(settings){
-						console.log("Settings loaded")
 						hfl = new HFL(user,settings);
 					});
 				}else{
@@ -136,6 +141,7 @@ function HFL(user, settings){
 	ref = this;
 	this.filesValid = 0;
 	this.started = false;
+	this.starTime = Date.now()
 	var queue = false;
 
 	var ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
@@ -144,13 +150,16 @@ function HFL(user, settings){
 		console.log("Connected to remote server, good luck "+ user.username);
 		ref.setFiles();
 		ws.send(JSON.stringify({type:"client", username: user.username,key:user.hwid}));
+		setInterval(function(){
+			ref.updateStatus();
+		},500)
 	});
 
 	ws.on('message', function(data, flags) {
-		var cmd = JSON.parse(data);
-		if(cmd){
-			switch(cmd.type){
-				case "starthfl":
+		var data = JSON.parse(data);
+		if(data.type=="cmd"){
+			switch(data.cmd){
+				case "start queue":
 					if(!ref.started){
 						ref.start();
 					}
@@ -167,27 +176,46 @@ function HFL(user, settings){
 		//this.started
 	}
 
+	this.updateStatus = function(){
+		var status = {
+/*
+        hfl: true,
+        bol: true,
+        rs : 3,
+        ut: 0,
+        ng: 0,
+        wg: 0,
+*/
+			hfl:checkHfl(),
+			bol:checkBol(),
+			rs:this.settings.smurfs.length,
+			ut:Date.now() - this.starTime
+
+		}
+		ws.send(JSON.stringify({type:"clientUpdate",status:status,key:user.hwid,username:user.username}));
+	}
+
 	this.setFiles = function(){
 		this.filesValid = 0;
 
 		var bolfinder = childProcess.exec(BOL_EXE + " \"" + this.settings.bolFolder + "\"");
 		bolfinder.stdout.on('data', function(data) {
-			console.log(data);
 		    ref.settings.bolFolder = data;
 		    ref.filesValid++;
-		    udpateFolderSettings(ref.settings.bolFolder,ref.settings.gameFolder);
+		    udpateFolderSettings(ref.settings.gameFolder,ref.settings.bolFolder);
 		});
 
 		var gamefinder = childProcess.exec(GAME_EXE  + " \"" + this.settings.gameFolder + "\"");
 		gamefinder.stdout.on('data', function(data) {
 		    ref.settings.gameFolder = data;
 		    ref.filesValid++;
-		    udpateFolderSettings(ref.settings.bolFolder,ref.settings.gameFolder);
+		    udpateFolderSettings(ref.settings.gameFolder,ref.settings.bolFolder);
 		});
 	}
 
 	this.start = function(){
 		if(this.filesValid == 2){
+			this.starTime = Date.now()
 			fs.writeFileSync("./config/accounts.txt","");
 			this.settings.smurfs.forEach(function(item){
 				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|ARAM|"+item.maxLevel + "\n");
@@ -196,7 +224,6 @@ function HFL(user, settings){
 			replaceSettings = replaceSettings.replace(/MaxBots=(.*)/g,"MaxBots="+this.settings.ms);
 			replaceSettings = replaceSettings.replace(/Region=(.*)/g,"Region="+this.settings.rg);
 			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.bb);
-			console.log(this.settings);
 			var gamePathModified = this.settings.gameFolder.split("lol.launcher.admin.exe")[0];
 			replaceSettings = replaceSettings.replace(/LauncherPath=(.*)/g,"LauncherPath="+gamePathModified);
 			fs.writeFileSync("./config/settings.ini", replaceSettings);
@@ -206,7 +233,6 @@ function HFL(user, settings){
 			ref.queue = childProcess.exec(QUEUE);
 
 			ref.queue.stdout.on("data", function(data){
-				console.log(data);
 				if(data.indexOf("Error") > -1){
 					ref.queue.kill();
 				}

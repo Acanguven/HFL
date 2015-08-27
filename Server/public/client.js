@@ -1,5 +1,7 @@
 var app = angular.module("remote", ["ngRoute"]);
 
+
+var _int1 = false;
 app.config(function($routeProvider) {
     $routeProvider
     .when('/Dashboard', {
@@ -48,7 +50,7 @@ app.config(function($routeProvider) {
     .otherwise({ redirectTo: '/Login' })
 });
 
-app.service('service', function($location){
+app.service('service', function($location,$interval){
     var _self = this;
     /* Watch feeds */
     this.user = {
@@ -64,7 +66,7 @@ app.service('service', function($location){
         ai:{},
         bb:false,
         rg:false,
-        ms:1        
+        ms:1
     }
     this.acc = {
         hfl: true,
@@ -97,7 +99,16 @@ app.service('service', function($location){
                 case "access":
                     _self.user.username = data.username;
                     _self.user.key = data.key;
-                    alert("Client is running, you can control remotely")
+                    alert("Client is running, you can control remotely");
+
+                    _int1 = setInterval(function(){
+                        console.log({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
+                        _self.rSend({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
+                    },1000);
+                break;
+
+                case "update":
+                    console.log(data);
                 break;
 
                 case "err":
@@ -127,7 +138,7 @@ app.controller("settings", function($scope, service,$http){
         service.settings = response.data;
     });
     $scope.fullUser = service.user.type !== 1;
-    
+
     $scope.buyBoost = String(service.settings.bb);
     $scope.region = service.settings.rg;
     $scope.limitSmurf = service.user.type !== 1 ? createArr(1,100) : [1];
@@ -138,12 +149,12 @@ app.controller("settings", function($scope, service,$http){
             $scope.maxSmurf = 1;
         }
     });
-    
+
     $scope.saveSettings = function(){
         service.settings.ms = $scope.maxSmurf;
         service.settings.bb = $scope.buyBoost;
         service.settings.rg = $scope.region;
-        
+
         $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
             alert("Settings Saved")
         });
@@ -276,7 +287,7 @@ app.controller("smurfs", function($scope,$http,service){
         service.settings = response.data;
         $scope.smurfs = service.settings.smurfs;
     });
-    
+
     $scope.saveSettings = function(){
         service.settings.smurfs = $scope.smurfs;
         $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
@@ -292,6 +303,16 @@ app.controller("dashboard", function($scope, service){
     }, function(e){
         $scope.pc = service.acc;
     },true)
+
+    $scope.sendCmd = function(id){
+        if(id === 1){
+            service.rSend({type:"cmd",cmd:"start bol",key:service.user.key});
+        }
+
+        if(id === 2){
+            service.rSend({type:"cmd",cmd:"start queue",key:service.user.key});
+        }
+    }
 });
 
 app.controller("login", function($scope,service,$http,$location){

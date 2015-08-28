@@ -85,12 +85,16 @@ app.service('service', function($location,$interval){
         ms:1
     }
     this.liveStatus = [];
+    this.remote = 0;
 
 
     /* Ws */
     this.socket = new WebSocket("ws://handsfreeleveler.com:4444");
     this.socket.onopen = function (event) {
         console.log("Socket live")
+        _int1 = setInterval(function(){
+            _self.rSend({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
+        },1000);
     };
     this.socket.onmessage = function (msg) {
         var data = validJsonParse(msg.data);
@@ -99,16 +103,26 @@ app.service('service', function($location,$interval){
                 case "access":
                     _self.user.username = data.username;
                     _self.user.key = data.key;
-                    alert("Client is running, you can control remotely");
-
-                    _int1 = setInterval(function(){
-                        console.log({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
-                        _self.rSend({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
-                    },1000);
                 break;
 
                 case "update":
-                    console.log(data);
+                    if(_self.remote === false){
+                        alert("Your client is live now");
+                        _self.remote = true;
+                    }
+                    _self.acc.hfl = data.status.hfl;
+                    _self.acc.bol = data.status.bol;
+                    _self.acc.rs = data.status.rs;
+                    _self.acc.ut = ~~(data.status.ut/60000);
+                    _self.acc.ng = data.status.ng;
+                    _self.acc.wg = data.status.wg;
+                break;
+                
+                case "powerOFF":
+                    if(_self.remote === true){
+                        alert("Lost connection to your client, please start it from your computer");
+                    }
+                    _self.remote = false;
                 break;
 
                 case "err":
@@ -257,8 +271,11 @@ app.controller("champions", function($scope,service,$location,$routeParams,$http
     }
 });
 
-app.controller("main" , function($scope,service,$location){
-
+app.controller("main" , function($scope,service,$location,$interval){
+    $interval(function(){
+        $scope.remote = service.remote;
+    },100);
+    
     $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
     $scope.$watch(function(){
         return JSON.stringify(service.user)
@@ -281,11 +298,11 @@ app.controller("live", function($scope){
 
 })
 
-app.controller("smurfs", function($scope,$http,service){
+app.controller("smurfs", function($scope,$http,service,$interval){
     $scope.smurfs = service.settings.smurfs;
+
     $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
         service.settings = response.data;
-        $scope.smurfs = service.settings.smurfs;
     });
 
     $scope.saveSettings = function(){
@@ -296,21 +313,32 @@ app.controller("smurfs", function($scope,$http,service){
     }
 });
 
-app.controller("dashboard", function($scope, service){
-    $scope.pc = service.acc;
-    $scope.$watch(function(){
-        return JSON.stringify(service.acc)
-    }, function(e){
+app.controller("dashboard", function($scope, service,$interval){
+    $interval(function(){
         $scope.pc = service.acc;
-    },true)
+    },500)
 
     $scope.sendCmd = function(id){
         if(id === 1){
-            service.rSend({type:"cmd",cmd:"start bol",key:service.user.key});
+            if ($scope.pc.bol){
+                service.rSend({type:"cmd",cmd:"close bol",key:service.user.key});
+            }else{
+                service.rSend({type:"cmd",cmd:"start bol",key:service.user.key});
+            }
         }
 
         if(id === 2){
-            service.rSend({type:"cmd",cmd:"start queue",key:service.user.key});
+            if($scope.pc.hfl){
+                service.rSend({type:"cmd",cmd:"stop queue",key:service.user.key});
+            }else{
+                service.rSend({type:"cmd",cmd:"start queue",key:service.user.key});
+            }
+        }
+        
+        if(id == 3){
+            if(prompt("Are you sure y/n") == "y"){
+                service.rSend({type:"cmd",cmd:"stop pc",key:service.user.key});
+            }
         }
     }
 });

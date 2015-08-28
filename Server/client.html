@@ -185,7 +185,7 @@
                 <li ng-class="form === 2 ? 'active' : '' " ng-click="formC(2)"><a href="#/Dashboard">Dashboard</a></li>
                 <li ng-class="form === 3 ? 'active' : '' " ng-click="formC(3)"><a href="#/SmurfList">Smurf List</a></li>
                 <li ng-class="form === 4 ? 'active' : '' " ng-click="formC(4)"><a href="#/LiveController">Live Controller</a></li>
-                <li ng-class="dropdown" ng-class="form === 6 || form === 7 || form === 8 || form === 10 ? 'active' : '' ">
+                <li class="dropdown" ng-class="form === 6 || form === 7 || form === 8 || form === 10 ? 'active' : '' ">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AI Settings<span class="caret"></span></a>
                     <ul  class="dropdown-menu">
                         <li ng-class="form === 6 ? 'active' : '' " ng-click="formC(6)"><a href="#/Champions/Behaviours">Behaviours</a></li>
@@ -198,6 +198,10 @@
                 <li><a href="#" target="_blank">Forum</a></li>
                 <li ng-class="form === 9 ? 'active' : '' " ng-click="formC(9)"><a href="#/Account">Account</a></li>
               </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <h3 style="color:red;" ng-if="!remote">Client not connected</h3>
+                    <h3 style="color:green;" ng-if="remote">Client connected</h3>
+                </ul>
             </div><!-- /.navbar-collapse -->
           </div><!-- /.container-fluid -->
         </nav>

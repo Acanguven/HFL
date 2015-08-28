@@ -184,7 +184,11 @@ wss.on('connection', function connection(ws) {
                 
                 case "remoteUpdate":
                     if(data.username && data.key){
-                        ws.send(JSON.stringify({type:"update",status:clients[data.key].status}));
+                        if(clients[data.key]){
+                            ws.send(JSON.stringify({type:"update",status:clients[data.key].status}));
+                        }else{
+                            ws.send(JSON.stringify({type:"powerOFF"}));
+                        }
                     }
                 break;
                 

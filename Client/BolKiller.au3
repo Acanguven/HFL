@@ -1,0 +1,1 @@
+ProcessClose ( "BoL Studio.exe" )

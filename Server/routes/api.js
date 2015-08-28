@@ -10,7 +10,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
   console.log("connection to db open")
   //Database Sıfırlama Kodu, HER ŞEY SİLİNECEKTİR DİKKATLİ KULLAN
-  db.db.dropDatabase(); //Db refresher
+  //db.db.dropDatabase(); //Db refresher
 });
 var Hwid = require("../hwid.js");
 

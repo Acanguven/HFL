@@ -144,7 +144,7 @@ namespace RitoBot
                 }
                 else
                 {
-                    this.updateStatus("You are leaver busted :( ", Accountname);
+                    this.updateStatus("leaverbusted", Accountname);
                     connection.Disconnect();
                 }
         }
@@ -162,7 +162,7 @@ namespace RitoBot
                         {
                             QueueFlag = true;
                             firstTimeInLobby = false;
-                            updateStatus("In Champion Select", Accountname);
+                            updateStatus("champselect", Accountname);
                             object obj = await connection.SetClientReceivedGameMessage(game.Id, "CHAMP_SELECT_CLIENT");
                             if (queueType != QueueTypes.ARAM)
                             {
@@ -236,9 +236,8 @@ namespace RitoBot
                                     await connection.SelectSpells(Spell1, Spell2);
 
                                     var randAvailableChampsArray = availableChampsArray.Shuffle();
-																		int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
-																		Console.Out.Write("Selected hero 1:" + randomAdc);
-																		await connection.SelectChampion(randomAdc);
+									int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
+									await connection.SelectChampion(randomAdc);
 
 
                                     await connection.ChampionSelectCompleted();
@@ -277,11 +276,10 @@ namespace RitoBot
 
                                     await connection.SelectSpells(Spell1, Spell2);
 
-																		var randAvailableChampsArray = availableChampsArray.Shuffle();
-																		int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
+								    var randAvailableChampsArray = availableChampsArray.Shuffle();
+								    int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
 
-																		Console.Out.Write("Selected hero 2:" + randomAdc);
-																		await connection.SelectChampion(randomAdc);
+								    await connection.SelectChampion(randomAdc);
 
                                     await connection.ChampionSelectCompleted();
                                 }
@@ -292,29 +290,29 @@ namespace RitoBot
                             break;
                     case "POST_CHAMP_SELECT":
                         firstTimeInLobby = false;
-                        this.updateStatus("(Post Champ Select)", Accountname);
+                        this.updateStatus("postchamp", Accountname);
                         break;
                     case "PRE_CHAMP_SELECT":
-                        this.updateStatus("(Pre Champ Select)", Accountname);
+                        this.updateStatus("prechamp", Accountname);
                         break;
                     case "GAME_START_CLIENT":
-                        this.updateStatus("Game client ran", Accountname);
+                        this.updateStatus("ingame", Accountname);
                         break;
                     case "GameClientConnectedToServer":
-                        this.updateStatus("Client connected to the server", Accountname);
+                        this.updateStatus("connected", Accountname);
                         break;
                     case "IN_QUEUE":
-                        this.updateStatus("In Queue", Accountname);
+                        this.updateStatus("inq", Accountname);
                         QueueFlag = true;
                         break;
                     case "TERMINATED":
-                        this.updateStatus("Re-entering queue", Accountname);
+                        this.updateStatus("requeue", Accountname);
                         this.firstTimeInQueuePop = true;
                         break;
                     case "JOINING_CHAMP_SELECT":
                         if (this.firstTimeInQueuePop && game.StatusOfParticipants.Contains("1"))
                         {
-                            this.updateStatus("Accepted Queue", Accountname);
+                            this.updateStatus("accepted", Accountname);
                             this.firstTimeInQueuePop = false;
                             this.firstTimeInLobby = true;
                             object obj = await this.connection.AcceptPoppedGame(true);
@@ -323,7 +321,7 @@ namespace RitoBot
                         else
                             break;
                     case "LEAVER_BUSTED":
-                        this.updateStatus("Leave busted", Accountname);
+                        this.updateStatus("leaverbusted", Accountname);
                         break;
                 }
             }
@@ -337,7 +335,7 @@ namespace RitoBot
                 startInfo.FileName = "League of Legends.exe";
                 startInfo.Arguments = "\"8394\" \"LoLLauncher.exe\" \"\" \"" + credentials.ServerIp + " " +
                 credentials.ServerPort + " " + credentials.EncryptionKey + " " + credentials.SummonerId + "\"";
-                updateStatus("Launching League of Legends", Accountname);
+                updateStatus("startgame", Accountname);
                 new Thread((ThreadStart)(() =>
                 {
                     exeProcess = Process.Start(startInfo);
@@ -417,7 +415,7 @@ namespace RitoBot
 						LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
 						if (m.PlayerJoinFailures == null)
 						{
-							this.updateStatus("In Queue: " + queueType.ToString(), Accountname);
+							this.updateStatus("q," + queueType.ToString(), Accountname);
 						}
 
 						else
@@ -459,23 +457,7 @@ namespace RitoBot
        
         private void updateStatus(string status, string accname)
         {
-            if (Program.LoadGUI) Program.MainWindow.Print(string.Concat(new object[4]
-              {     
-                (object) "[",
-                (object) accname,
-                (object) "]: ",
-                (object) status
-              }));
-            Console.Out.WriteLine(string.Concat(new object[7]
-              {
-                (object) "[",
-                (object) DateTime.Now,
-                (object) "] ",        
-                (object) "[",
-                (object) accname,
-                (object) "]: ",
-                (object) status
-              }));
+            Console.Out.Write(status + "|#|" + accname);
         }        
         
         private async void RegisterNotifications()

@@ -4,5 +4,6 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 ; CUI stub5
 #include <WinAPIFiles.au3>
+#RequireAdmin
 
-Run($cmdLine[1])
+Run($cmdLine[1],$cmdLine[2])

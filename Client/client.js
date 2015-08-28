@@ -135,6 +135,7 @@ function HFL(user, settings){
 	this.bolWorks = false;
 	this.starTime = Date.now();
 	this.lastCommandsRecieved = [];
+	this.smurfStatus = [];
 	var queue = false;
 
 	var	ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
@@ -154,13 +155,7 @@ function HFL(user, settings){
 	ws.on('message', function(data, flags) {
 		var data = JSON.parse(data);
 		if(data.type=="cmd"){
-			switch(data.cmd){
-				case "start queue":
-					if(!ref.started){
-						ref.start();
-					}
-				break;
-			}
+			ref.commandManager(data.cmd);
 			ref.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:data.cmd});
 			if(ref.lastCommandsRecieved.length > 5){
 				ref.lastCommandsRecieved.splice(5,99)
@@ -179,6 +174,23 @@ function HFL(user, settings){
 	  	refreshConsole();
 	  	engineStatus.message(clc.red("Connection with remote system crashed unexpectedly..."));
   	});
+
+  	this.commandManager = function(cmd){
+  		switch(cmd){
+			case "start queue":
+				if(!this.started){
+					this.start();
+				}
+			break;
+			case "close bol":
+				childProcess.exec(BOL_KILLER);
+			break;
+			case "start bol":
+				fs.writeFileSync("debug.log",BOL_STARTER  + " \"" + this.settings.bolFolder + "\"" + "\""+ this.settings.bolFolder.split("BoL Studio.exe")[0] + "\"");
+				childProcess.exec(BOL_STARTER  + " \"" + this.settings.bolFolder + "\"" + " \""+ this.settings.bolFolder.split("BoL Studio.exe")[0] + "\"");
+			break;
+		}
+  	}
 
 
 	this.checkBol = function(){
@@ -228,11 +240,12 @@ function HFL(user, settings){
 			this.starTime = Date.now()
 			fs.writeFileSync("./config/accounts.txt","");
 			this.settings.smurfs.forEach(function(item){
-				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|ARAM|"+item.maxLevel + "\n");
+				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\n");
 			});
 			var replaceSettings = fs.readFileSync("./config/settings.ini", "utf8");
 			replaceSettings = replaceSettings.replace(/MaxBots=(.*)/g,"MaxBots="+this.settings.ms);
 			replaceSettings = replaceSettings.replace(/Region=(.*)/g,"Region="+this.settings.rg);
+			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.gpuD)
 			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.bb);
 			var gamePathModified = this.settings.gameFolder.split("lol.launcher.admin.exe")[0];
 			replaceSettings = replaceSettings.replace(/LauncherPath=(.*)/g,"LauncherPath="+gamePathModified);
@@ -245,6 +258,8 @@ function HFL(user, settings){
 			ref.queue.stdout.on("data", function(data){
 				if(data.indexOf("Error") > -1){
 					ref.queue.kill();
+				}else{
+					ref.queueStatusUpdater(data);
 				}
 			});
 
@@ -255,6 +270,10 @@ function HFL(user, settings){
 				}
 			});
 		}
+	}
+
+	this.queueStatusUpdater = function(data){
+		//Update smurfs status here!
 	}
 
 	this.updateConsole = function(){
@@ -330,10 +349,10 @@ function HFL(user, settings){
 
 		//Table
 	    var table = new Table({
-		    head: ['#', 'Username', 'Password', 'Max Level', 'currentLevel']
+		    head: ['#', 'Username', 'Password', 'Max Level', 'currentLevel', 'Queue Status']
 		});
 		for(var x = 0; x < this.settings.smurfs.length; x++){
-			var arr = [this.settings.smurfs[x].username,this.settings.smurfs[x].password,this.settings.smurfs[x].maxLevel,this.settings.smurfs[x].currentLevel]
+			var arr = [this.settings.smurfs[x].username,this.settings.smurfs[x].password,this.settings.smurfs[x].maxLevel,this.settings.smurfs[x].currentLevel,this.smurfStatus[this.settings.smurfs[x].username] ? this.smurfStatus[this.settings.smurfs[x].username] : clc.yellow('Idle')]
 			arr.unshift(x+1);
 			table.push(arr)
 		}

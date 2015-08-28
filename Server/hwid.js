@@ -17,7 +17,8 @@ var hwid = new Schema({
             rg:"EUW",
             ms:1,
             bolFolder:"",
-            gameFolder:""
+            gameFolder:"",
+            gpuD:false
         }
     }
 });

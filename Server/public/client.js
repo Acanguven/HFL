@@ -82,7 +82,8 @@ app.service('service', function($location,$interval){
         ai:{},
         bb:false,
         rg:false,
-        ms:1
+        ms:1,
+        gpuD:false
     }
     this.liveStatus = [];
     this.remote = 0;
@@ -108,8 +109,8 @@ app.service('service', function($location,$interval){
                 case "update":
                     if(_self.remote === false){
                         alert("Your client is live now");
-                        _self.remote = true;
                     }
+                    _self.remote = true;
                     _self.acc.hfl = data.status.hfl;
                     _self.acc.bol = data.status.bol;
                     _self.acc.rs = data.status.rs;
@@ -155,6 +156,7 @@ app.controller("settings", function($scope, service,$http){
 
     $scope.buyBoost = String(service.settings.bb);
     $scope.region = service.settings.rg;
+    $scope.gpuDisable = String(service.settings.gpuD);
     $scope.limitSmurf = service.user.type !== 1 ? createArr(1,100) : [1];
     $scope.maxSmurf = service.settings.ms;
     $scope.$watch("maxSmurf", function(){
@@ -168,6 +170,7 @@ app.controller("settings", function($scope, service,$http){
         service.settings.ms = $scope.maxSmurf;
         service.settings.bb = $scope.buyBoost;
         service.settings.rg = $scope.region;
+        service.settings.gpuD = $scope.gpuDisable;
 
         $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
             alert("Settings Saved")
@@ -272,8 +275,10 @@ app.controller("champions", function($scope,service,$location,$routeParams,$http
 });
 
 app.controller("main" , function($scope,service,$location,$interval){
+
     $interval(function(){
         $scope.remote = service.remote;
+        console.log(service.remote)
     },100);
     
     $scope.loggedIn = (service.user.username && service.user.key) ? true : false;

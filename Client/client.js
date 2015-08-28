@@ -31,6 +31,7 @@ var BOL_STARTER = "\""+process.cwd()+"\\_n5.exe\"";
 var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
 var PC_CONTROLLER = "\""+process.cwd()+"\\_n7.exe\"";
 var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
+var BOL_KILLER = "\""+process.cwd()+"\\_n9.exe\"";
 
 var VERSION = "1.0";
 
@@ -123,7 +124,7 @@ var checkUpdate = function(cb){
 }
 
 
-
+var updater;
 var ref;
 function HFL(user, settings){
 	this.user = user;
@@ -131,12 +132,10 @@ function HFL(user, settings){
 	ref = this;
 	this.filesValid = 0;
 	this.started = false;
+	this.bolWorks = false;
 	this.starTime = Date.now();
 	this.lastCommandsRecieved = [];
 	var queue = false;
-	this.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:"Start Queue"});
-	this.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:"Start Bol"});
-	this.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:"Send Chat"});
 
 	var	ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
 	engineStatus.message(clc.cyan("Trying to connect remote system..."));
@@ -145,9 +144,11 @@ function HFL(user, settings){
 		engineStatus.message(clc.green("Waiting commands from remote controller..."));
 		ref.setFiles();
 		ws.send(JSON.stringify({type:"client", username: user.username,key:user.hwid}));
-		setInterval(function(){
+
+		updater = setInterval(function(){
+			ref.updateSettings();
 			ref.updateStatus();
-		},500)
+		},1000)
 	});
 
 	ws.on('message', function(data, flags) {
@@ -160,9 +161,9 @@ function HFL(user, settings){
 					}
 				break;
 			}
-			this.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:data.cmd});
-			if(this.lastCommandsRecieved.length > 5){
-				delete this.lastCommandsRecieved[6];
+			ref.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:data.cmd});
+			if(ref.lastCommandsRecieved.length > 5){
+				ref.lastCommandsRecieved.splice(5,99)
 			}
 		}
 	});
@@ -178,27 +179,28 @@ function HFL(user, settings){
 	  	refreshConsole();
 	  	engineStatus.message(clc.red("Connection with remote system crashed unexpectedly..."));
   	});
-	
+
 
 	this.checkBol = function(){
-		return true;
+		var bolChecker = childProcess.exec(BOL_CHECKER);
+		bolChecker.stdout.on("data", function(data){
+			if(data == "true"){
+				ref.bolWorks = true;
+			}else{
+				ref.bolWorks = false;
+			}
+		});
 	}
 
 	this.updateStatus = function(){
+		this.checkBol();
 		var status = {
-/*
-        hfl: true,
-        bol: true,
-        rs : 3,
-        ut: 0,
-        ng: 0,
-        wg: 0,
-*/
 			hfl:this.started,
-			bol:checkBol(),
+			bol:this.bolWorks,
 			rs:this.settings.smurfs.length,
-			ut:Date.now() - this.starTime
-
+			ut:Date.now() - this.starTime,
+			ng:0,
+			wg:0
 		}
 		ws.send(JSON.stringify({type:"clientUpdate",status:status,key:user.hwid,username:user.username}));
 	}
@@ -222,7 +224,7 @@ function HFL(user, settings){
 	}
 
 	this.start = function(){
-		if(this.filesValid == 2){
+		if(this.filesValid == 2 && this.started == false){
 			this.starTime = Date.now()
 			fs.writeFileSync("./config/accounts.txt","");
 			this.settings.smurfs.forEach(function(item){
@@ -267,7 +269,7 @@ function HFL(user, settings){
 		    head: ['Username', 'Account Type', 'Start Time']
 		});
 		table.push(
-		    [ "user.username", "Trial Account", new Date().toLocaleString()]
+		    [ user.username, "Trial Account", new Date().toLocaleString()]
 		);
 		return table.toString()+"\n";
 	}
@@ -301,7 +303,7 @@ function HFL(user, settings){
 		    { 'RAM Usage': ramGraph },
 		   	{ 'CPU Usage': cpuGraph}
 		);
-	 
+
 		return table.toString()+"\n";
 	}
 
@@ -314,7 +316,7 @@ function HFL(user, settings){
 	    var cpu = cpus[i];
 	    for(type in cpu.times) {
 	      totalTick += cpu.times[type];
-	   }     
+	   }
 	    totalIdle += cpu.times.idle;
 	  }
 	  return {idle: totalIdle / cpus.length,  total: totalTick / cpus.length};
@@ -325,7 +327,7 @@ function HFL(user, settings){
 
 
 	this.smurfStats = function() {
-		
+
 		//Table
 	    var table = new Table({
 		    head: ['#', 'Username', 'Password', 'Max Level', 'currentLevel']
@@ -335,8 +337,8 @@ function HFL(user, settings){
 			arr.unshift(x+1);
 			table.push(arr)
 		}
-	 
-		return table.toString()+"\n";	
+
+		return table.toString()+"\n";
 	}
 
 	this.lastCommands = function() {
@@ -350,8 +352,14 @@ function HFL(user, settings){
 			arr.unshift(x+1);
 			table.push(arr)
 		}
-	 
-		return table.toString()+"\n";	
+
+		return table.toString()+"\n";
+	}
+
+	this.updateSettings = function(){
+		requestSettings(function(data){
+			ref.settings = data;
+		});
 	}
 
 }
@@ -361,7 +369,7 @@ function HFL(user, settings){
 var refreshConsole = function(){
 	//console.log( "\u001b[2J\u001b[0;0H");
 	//process.stdout.write("\u001b[2J\u001b[0;0H");
-	
+
 	process.stdout.write('\033c');
 	process.title = "Hands Free Leveler | " + VERSION;
 }

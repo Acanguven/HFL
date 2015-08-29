@@ -1,7 +1,7 @@
 <div class="container" ng-if="form === 4" style="background-color:white;">
     <h1>Live Controller <small style="font-size:18px;">Live details of running smurfs</small></h1>
     <hr>
-    <div class="row">
+    <div class="row" ng-if="remoted === true">
         <div class="col-md-2">
             <ul class="list-group">
               <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
@@ -71,5 +71,10 @@ Ashe(enemy): OMG!!
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row" ng-if="remoted !== true">
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <h3>Your client is not running</h3>
+      </div>
     </div>
 </div>

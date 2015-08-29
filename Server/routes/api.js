@@ -46,7 +46,7 @@ router.post("/login", function(req,res,next){
 			}
 		});
 	}else{
-		res.json({type:"err",err:err.message})
+		res.json({type:"err"});
 	}
 });
 

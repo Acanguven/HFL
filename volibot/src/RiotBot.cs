@@ -335,7 +335,7 @@ namespace RitoBot
                 startInfo.FileName = "League of Legends.exe";
                 startInfo.Arguments = "\"8394\" \"LoLLauncher.exe\" \"\" \"" + credentials.ServerIp + " " +
                 credentials.ServerPort + " " + credentials.EncryptionKey + " " + credentials.SummonerId + "\"";
-                updateStatus("startgame", Accountname);
+                updateStatus("startinglol", Accountname);
                 new Thread((ThreadStart)(() =>
                 {
                     exeProcess = Process.Start(startInfo);
@@ -347,15 +347,18 @@ namespace RitoBot
             }
             else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))
             {
+                
                 if (message is EndOfGameStats)
                 {
                     EndOfGameStats msg = message as EndOfGameStats;
-										this.joinQueue();
+					this.joinQueue();
                 }
                 else
                 {
+                    
                     if (message.ToString().Contains("EndOfGameStats"))
                     {
+                        updateStatus("gameended", Accountname);
                         EndOfGameStats eog = new EndOfGameStats();
                         connection_OnMessageReceived(sender, eog);
                         exeProcess.Exited -= exeProcess_Exited;
@@ -379,6 +382,7 @@ namespace RitoBot
 
 				public async void joinQueue()
 				{
+                    
 					LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
 					if (queueType == QueueTypes.INTRO_BOT)
 					{
@@ -405,41 +409,43 @@ namespace RitoBot
 					{
 						queueType = actualQueueType;
 					}
-
 					matchParams.QueueIds = new Int32[1] { (int)queueType };
-					while (!Program.QueueValid)
+
+					/*while (!Program.QueueValid)
 					{
-						//Console.Out.WriteLine("Waiting" + Accountname);
+						Console.Out.WriteLine("Waiting " + Accountname);
+					}*/
+
+					Program.QueueValid = false;
+					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
+					if (m.PlayerJoinFailures == null)
+					{
+						this.updateStatus("queue|#|" + queueType.ToString(), Accountname);
+                            
 					}
-						Program.QueueValid = false;
-						LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
-						if (m.PlayerJoinFailures == null)
-						{
-							this.updateStatus("q," + queueType.ToString(), Accountname);
-						}
 
-						else
+					else
+					{
+                            
+						try
 						{
-
-							try
-							{
-								updateStatus(
-										"Couldn't enter Q - " + m.PlayerJoinFailures.Summoner.Name + " : " +
-										m.PlayerJoinFailures.ReasonFailed, Accountname);
-								Program.QueueValid = true;
-							}
-							catch (Exception)
-							{
-								mMParams = matchParams;
-								AntiBuster(mMParams);
-							}
+							updateStatus(
+									"Couldn't enter Q - " + m.PlayerJoinFailures.Summoner.Name + " : " +
+									m.PlayerJoinFailures.ReasonFailed, Accountname);
+							Program.QueueValid = true;
 						}
+						catch (Exception)
+						{
+							mMParams = matchParams;
+							AntiBuster(mMParams);
+						}
+					}
 					
 				}
 
         void exeProcess_Exited(object sender, EventArgs e)
         {
-           updateStatus("Restart League of Legends.", Accountname);
+           updateStatus("restartlol", Accountname);
            Thread.Sleep(1000);
            if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
            {
@@ -457,7 +463,7 @@ namespace RitoBot
        
         private void updateStatus(string status, string accname)
         {
-            Console.Out.Write(status + "|#|" + accname);
+            Console.Out.WriteAsync(status + "|#|" + accname);
         }        
         
         private async void RegisterNotifications()
@@ -478,7 +484,7 @@ namespace RitoBot
         {
             new Thread((ThreadStart)(async () =>
             { 
-                updateStatus("Connecting...", Accountname);
+                updateStatus("connecting", Accountname);
                 this.RegisterNotifications();
                 this.loginPacket = await this.connection.GetLoginDataPacketForUser(); 
                 if (loginPacket.AllSummonerData == null)
@@ -498,7 +504,7 @@ namespace RitoBot
                 if (sumLevel > AccMaxLevel || sumLevel == AccMaxLevel)
                 {
                     connection.Disconnect();
-                    updateStatus("Summoner: " + sumName + " is already max level.", Accountname);
+                    updateStatus("sumdone", Accountname);
                     updateStatus("Log into new account.", Accountname);
                     Program.lognNewAccount();
                     return;
@@ -553,18 +559,18 @@ namespace RitoBot
                 int randomIcon = availableIcons[index];
                 Console.Out.WriteLine(" | Choose from List: " + randomIcon);
                 await connection.UpdateProfileIconId(randomIcon);*/
-                updateStatus("Logged in as " + loginPacket.AllSummonerData.Summoner.Name + " @ level " + loginPacket.AllSummonerData.SummonerLevel.Level, Accountname);
-								availableChampsArray = await connection.GetAvailableChampions();
+                updateStatus("loggedinlevel|#|" + loginPacket.AllSummonerData.SummonerLevel.Level, Accountname);
+				availableChampsArray = await connection.GetAvailableChampions();
 
-								var randAvailableChampsArray = availableChampsArray.Shuffle();
+				var randAvailableChampsArray = availableChampsArray.Shuffle();
 
                 LoLLauncher.RiotObjects.Team.Dto.PlayerDTO player = await connection.CreatePlayer();
                 if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
                 {
                     this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
-                }
-                else
+                }else {
                     this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
+                }
             })).Start();
         }
         
@@ -595,7 +601,7 @@ namespace RitoBot
                 int Spell2 = Convert.ToInt32(randomSpell2);
                 return;
             }
-            this.updateStatus("error received:\n" + error.Message, Accountname);
+            this.updateStatus(error.Message, Accountname);
         }
         
         private void connection_OnDisconnect(object sender, EventArgs e)
@@ -611,7 +617,7 @@ namespace RitoBot
  
         public void levelUp()
         {
-            updateStatus("Level Up:" + sumLevel, Accountname);
+            updateStatus("levelup|#|" + sumLevel, Accountname);
             rpBalance = loginPacket.RpBalance;
             if (sumLevel >= AccMaxLevel)
             {

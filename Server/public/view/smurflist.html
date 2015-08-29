@@ -40,7 +40,8 @@
                     <th>Username</th>
                     <th>Password</th>
                     <th>Current Level</th>
-                    <th>Desired Level</th>
+                    <th>Max Level</th>
+                    <th>Live Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -50,6 +51,7 @@
                     <td>{{smurf.password}}</td>
                     <td>{{smurf.currentLevel}}</td>
                     <td>{{smurf.maxLevel}}</td>
+                    <td>{{smurf.statusText ? smurf.statusText : "Not Connected"}}</td>
                     <td><button type="button" class="btn btn-danger" ng-click="smurfs.splice($index,1)">Delete</button></td>
                   </tr>
                 </tbody>

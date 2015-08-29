@@ -384,7 +384,7 @@ namespace LoLLauncher
                 }
                 else if (e.Message == "The remote server returned an error: (403) Forbidden.")
                 {
-                    Error("Your username or password is incorrect!", ErrorType.Password);
+                    Error("usernamepassfail", ErrorType.Password);
                     Disconnect();
                 }
                 else

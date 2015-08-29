@@ -75,6 +75,7 @@ app.service('service', function($location,$interval){
         ut: 0,
         ng: 0,
         wg: 0,
+        smurfUpdate:[],
         //Update api down
         smurfs:[],
         items:{},
@@ -92,7 +93,6 @@ app.service('service', function($location,$interval){
     /* Ws */
     this.socket = new WebSocket("ws://handsfreeleveler.com:4444");
     this.socket.onopen = function (event) {
-        console.log("Socket live")
         _int1 = setInterval(function(){
             _self.rSend({type:"remoteUpdate",key:_self.user.key,username:_self.user.username})
         },1000);
@@ -117,6 +117,17 @@ app.service('service', function($location,$interval){
                     _self.acc.ut = ~~(data.status.ut/60000);
                     _self.acc.ng = data.status.ng;
                     _self.acc.wg = data.status.wg;
+                    _self.acc.smurfUpdate = data.status.smurfUpdate;
+                    if(_self.acc.smurfUpdate.length > 0){
+                        for(var x = 0; x < _self.settings.smurfs.length; x++){
+                            for(var z = 0; z < _self.acc.smurfUpdate.length; z++){
+                                if(_self.settings.smurfs[x].username == _self.acc.smurfUpdate[z].username){
+                                    _self.settings.smurfs[x].currentLevel = _self.acc.smurfUpdate[z].level;
+                                    _self.settings.smurfs[x].statusText = _self.acc.smurfUpdate[z].statusText;
+                                }
+                            }
+                        }
+                    }
                 break;
                 
                 case "powerOFF":
@@ -149,11 +160,7 @@ app.controller("account", function($scope,service,$http){
 });
 
 app.controller("settings", function($scope, service,$http){
-    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
-        service.settings = response.data;
-    });
     $scope.fullUser = service.user.type !== 1;
-
     $scope.buyBoost = String(service.settings.bb);
     $scope.region = service.settings.rg;
     $scope.gpuDisable = String(service.settings.gpuD);
@@ -278,7 +285,6 @@ app.controller("main" , function($scope,service,$location,$interval){
 
     $interval(function(){
         $scope.remote = service.remote;
-        console.log(service.remote)
     },100);
     
     $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
@@ -299,16 +305,15 @@ app.controller("main" , function($scope,service,$location,$interval){
     }
 });
 
-app.controller("live", function($scope){
-
-})
+app.controller("live", function($scope,$interval,service){
+    $scope.remoted = service.remote;
+    $interval(function(){
+        $scope.remoted = service.remote;
+    },500)
+});
 
 app.controller("smurfs", function($scope,$http,service,$interval){
     $scope.smurfs = service.settings.smurfs;
-
-    $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
-        service.settings = response.data;
-    });
 
     $scope.saveSettings = function(){
         service.settings.smurfs = $scope.smurfs;
@@ -319,8 +324,11 @@ app.controller("smurfs", function($scope,$http,service,$interval){
 });
 
 app.controller("dashboard", function($scope, service,$interval){
+    $scope.remoted = service.remote;
+    $scope.pc = service.acc;
     $interval(function(){
         $scope.pc = service.acc;
+        $scope.remoted = service.remote;
     },500)
 
     $scope.sendCmd = function(id){

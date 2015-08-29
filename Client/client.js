@@ -32,6 +32,7 @@ var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
 var PC_CONTROLLER = "\""+process.cwd()+"\\_n7.exe\"";
 var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
 var BOL_KILLER = "\""+process.cwd()+"\\_n9.exe\"";
+var HFL_KILLER = "\""+process.cwd()+"\\_n10.exe\"";
 
 var VERSION = "1.0";
 
@@ -136,6 +137,7 @@ function HFL(user, settings){
 	this.starTime = Date.now();
 	this.lastCommandsRecieved = [];
 	this.smurfStatus = [];
+	this.ng = 0;
 	var queue = false;
 
 	var	ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
@@ -180,13 +182,25 @@ function HFL(user, settings){
 			case "start queue":
 				if(!this.started){
 					this.start();
+					this.ng = 0;
+				}
+			break;
+			case "stop queue":
+				if(this.started){
+					this.started = false;
+					ref.queue.kill();
+					childProcess.exec(HFL_KILLER);
+					for(var x in this.smurfStatus){
+						if(this.smurfStatus[x] && this.smurfStatus[x].status){
+							this.smurfStatus[x].status = clc.red("Terminated");
+						}
+					}
 				}
 			break;
 			case "close bol":
 				childProcess.exec(BOL_KILLER);
 			break;
 			case "start bol":
-				fs.writeFileSync("debug.log",BOL_STARTER  + " \"" + this.settings.bolFolder + "\"" + "\""+ this.settings.bolFolder.split("BoL Studio.exe")[0] + "\"");
 				childProcess.exec(BOL_STARTER  + " \"" + this.settings.bolFolder + "\"" + " \""+ this.settings.bolFolder.split("BoL Studio.exe")[0] + "\"");
 			break;
 		}
@@ -206,14 +220,23 @@ function HFL(user, settings){
 
 	this.updateStatus = function(){
 		this.checkBol();
+		var smurfUpdate = [];
+		for(var prop in this.smurfStatus){
+			smurfUpdate.push(this.smurfStatus[prop]);
+		}
+		//smurfUpdate = JSON.stringify(smurfUpdate);
+
 		var status = {
 			hfl:this.started,
 			bol:this.bolWorks,
 			rs:this.settings.smurfs.length,
 			ut:Date.now() - this.starTime,
-			ng:0,
-			wg:0
+			ng:this.ng,
+			wg:0,
+			smurfUpdate:smurfUpdate
 		}
+		
+		
 		ws.send(JSON.stringify({type:"clientUpdate",status:status,key:user.hwid,username:user.username}));
 	}
 
@@ -240,12 +263,12 @@ function HFL(user, settings){
 			this.starTime = Date.now()
 			fs.writeFileSync("./config/accounts.txt","");
 			this.settings.smurfs.forEach(function(item){
-				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\n");
+				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\r\n");
 			});
 			var replaceSettings = fs.readFileSync("./config/settings.ini", "utf8");
 			replaceSettings = replaceSettings.replace(/MaxBots=(.*)/g,"MaxBots="+this.settings.ms);
 			replaceSettings = replaceSettings.replace(/Region=(.*)/g,"Region="+this.settings.rg);
-			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.gpuD)
+			replaceSettings = replaceSettings.replace(/ReplaceConfig=(.*)/g,"ReplaceConfig="+this.settings.gpuD)
 			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.bb);
 			var gamePathModified = this.settings.gameFolder.split("lol.launcher.admin.exe")[0];
 			replaceSettings = replaceSettings.replace(/LauncherPath=(.*)/g,"LauncherPath="+gamePathModified);
@@ -253,32 +276,109 @@ function HFL(user, settings){
 
 			//console.log("Starting auto queue system");
 			this.started = true;
+
 			ref.queue = childProcess.exec(QUEUE);
 
 			ref.queue.stdout.on("data", function(data){
 				if(data.indexOf("Error") > -1){
 					ref.queue.kill();
+					childProcess.exec(HFL_KILLER);
+					this.started = false;
 				}else{
 					ref.queueStatusUpdater(data);
 				}
 			});
 
 			ref.queue.on("exit", function(data){
-				//console.log("Auto queue system failed");
-				if(ref.started){
-					//ref.start();
-				}
+				ref.queueStatusUpdater(data);
 			});
 		}
 	}
 
 	this.queueStatusUpdater = function(data){
 		//Update smurfs status here!
+
+		/*
+			usernamepassfail
+
+		*/
+		var dataArr = data.split("|#|");
+		
+		if(dataArr.length > 0){
+		    var user = dataArr.pop();
+		    var type = dataArr[0];
+		    var msg = dataArr.join(" ")
+    		if(!this.smurfStatus[user] && !~user.indexOf("[")){
+    			this.smurfStatus[user] = {status:clc.red("Waiting"),level:1}
+    		}
+    		this.smurfStatus[user].username = user;
+		    switch(type){
+		    	case "Disconnected":
+		    		this.smurfStatus[user].status = clc.red("Disconnected");
+		    		this.smurfStatus[user].statusText = "Disconnected";
+		    	break;
+		    	case "leaverbusted":
+		    		this.smurfStatus[user].status = clc.red("Leaver Busted");
+		    		this.smurfStatus[user].statusText = "Leaver Busted";
+		    	break;
+		    	case "champselect":
+		    		this.smurfStatus[user].status = clc.yellow("Selecting Champion");
+		    		this.smurfStatus[user].statusText = "Selecting Champion";
+		    	break;
+		    	case "postchamp":
+		    		this.smurfStatus[user].status = clc.yellow("Last Champion Select");
+		    		this.smurfStatus[user].statusText = "Last Champion Select";
+		    	break;
+		    	case "prechamp":
+		    		this.smurfStatus[user].status = clc.green("Champion Selection Done");
+		    		this.smurfStatus[user].statusText = "Champion Selection Done";
+		    	break;
+		    	case "inq":
+		    		this.smurfStatus[user].status = clc.yellow("In Queue");
+		    		this.smurfStatus[user].statusText = "In Queue";
+		    	break;
+		    	case "requeue":
+		    		this.smurfStatus[user].status = clc.yellow("Joined Queue Again");
+		    		this.smurfStatus[user].statusText = "Joined Queue Again";
+		    	break;
+		    	case "accepted":
+		    		this.smurfStatus[user].status = clc.green("Game Accepted");
+		    		this.smurfStatus[user].statusText = "Game Accepted";
+		    	break;
+		    	case "startinglol":
+		    		this.smurfStatus[user].status = clc.yellow("Starting game");
+		    		this.smurfStatus[user].statusText = "Starting game";
+		    	break;
+		    	case "queue":
+		    		this.smurfStatus[user].status = clc.yellow("In "+dataArr[1]+ " Queue");
+		    		this.smurfStatus[user].statusText = "In "+dataArr[1]+ " Queue";
+		    	break;
+		    	case "restartlol":
+		    		this.smurfStatus[user].status = clc.red("Restarting Game");
+		    		this.smurfStatus[user].statusText = "Restarting Game";
+		    	break;
+		    	case "connecting":
+		    		this.smurfStatus[user].status = clc.yellow("Connecting");
+		    		this.smurfStatus[user].statusText = "Connecting";
+		    	break;
+		    	case "sumdone":
+		    		this.smurfStatus[user].status= clc.cyan("Smurfing Done");
+		    		this.smurfStatus[user].statusText = "Smurfing Done";
+		    	break;
+		    	case "loggedinlevel":
+		    	case "levelup":
+		    		this.smurfStatus[user].level = dataArr[1];
+		    	break;
+		    	case "gameended":
+		    		this.ng++;
+		    	break;
+		    }			
+		}
 	}
 
 	this.updateConsole = function(){
 		refreshConsole();
-		console.log(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
+		process.stdout.write(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
 	}
 
 
@@ -349,10 +449,11 @@ function HFL(user, settings){
 
 		//Table
 	    var table = new Table({
-		    head: ['#', 'Username', 'Password', 'Max Level', 'currentLevel', 'Queue Status']
+		    head: ['#', 'Username', 'Password', 'Max\nLevel', 'Current\nLevel', 'Queue Status']
+		    //colWidths: [5, 10,10,5,5,10]
 		});
 		for(var x = 0; x < this.settings.smurfs.length; x++){
-			var arr = [this.settings.smurfs[x].username,this.settings.smurfs[x].password,this.settings.smurfs[x].maxLevel,this.settings.smurfs[x].currentLevel,this.smurfStatus[this.settings.smurfs[x].username] ? this.smurfStatus[this.settings.smurfs[x].username] : clc.yellow('Idle')]
+			var arr = [this.settings.smurfs[x].username,this.settings.smurfs[x].password,this.settings.smurfs[x].maxLevel,this.smurfStatus[this.settings.smurfs[x].username] && this.smurfStatus[this.settings.smurfs[x].username].level ? clc.cyan(this.smurfStatus[this.settings.smurfs[x].username].level) : '1',this.smurfStatus[this.settings.smurfs[x].username] && this.smurfStatus[this.settings.smurfs[x].username].status ? this.smurfStatus[this.settings.smurfs[x].username].status : clc.yellow('Idle')]
 			arr.unshift(x+1);
 			table.push(arr)
 		}
@@ -441,6 +542,6 @@ checkUpdate(function(live_version){
 
 process.on('uncaughtException', function(e){
     //console.log("Ooops an error occured, sending report the The Law so he can fix it soon!");
-    console.log(e)
+    fs.appendFile('errors.txt', JSON.stringify(e));
     //Send report here
 });

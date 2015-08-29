@@ -10,15 +10,16 @@ var hwid = new Schema({
     settings:{type:Object,default:
         {        
             smurfs:[],
-            items:{},
-            spells:{},
-            ai:{},
+            items:{init:true},
+            spells:{init:true},
+            ai:{init:true},
             bb:false,
             rg:"EUW",
             ms:1,
             bolFolder:"",
             gameFolder:"",
-            gpuD:false
+            gpuD:false,
+            chat:{init:true}
         }
     }
 });

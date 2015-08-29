@@ -47,6 +47,10 @@ app.config(function($routeProvider) {
         templateUrl : 'view/account.html',
         controller  : 'account'
     })
+    .when('/Sharing', {
+        templateUrl : 'view/share.html',
+        controller  : 'share'
+    })
     .otherwise({ redirectTo: '/Login' })
 });
 
@@ -65,8 +69,10 @@ app.service('service', function($location,$interval){
         spells:{},
         ai:{},
         bb:false,
+        behaviours:{},
         rg:false,
-        ms:1
+        ms:1,
+        chat:{}
     }
     this.acc = {
         hfl: true,
@@ -151,6 +157,29 @@ app.service('service', function($location,$interval){
     };
 });
 
+app.controller("share", function($scope,service,$http){
+    var shareCode = {};
+    shareCode.chat = service.settings.chat;
+    shareCode.spells = service.settings.spells;
+    shareCode.items = service.settings.items;
+    shareCode.ai = service.settings.ai;
+    $scope.exported = JSON.stringify(shareCode);
+
+    $scope.imported = function(data){
+        importObj = JSON.parse(data);
+        if(importObj){
+            service.settings.chat = importObj.chat;
+            service.settings.spells = importObj.spells;
+            service.settings.items = importObj.items;
+            service.settings.ai = importObj.ai;
+
+            $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+                alert("Settings are imported");
+            });
+        }
+    }
+});
+
 app.controller("account", function($scope,service,$http){
     $scope.user = service.user;
     $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
@@ -185,10 +214,10 @@ app.controller("settings", function($scope, service,$http){
     }
 });
 
-app.controller("chat", function($scope,service,$routeParams){
+app.controller("chat", function($scope,service,$routeParams,$http){
     $scope.eventType = "ondead";
     $scope.repeater = createArr(1,100);
-    $scope.chats = [];
+    $scope.chats = service.settings.chat;
     if(!$scope.chats[$scope.eventType]){
         $scope.chats[$scope.eventType] = [];
     }
@@ -213,6 +242,13 @@ app.controller("chat", function($scope,service,$routeParams){
         $scope.chats[$scope.eventType].push({text:text,chance:chance});
     }
 
+    $scope.save = function(){
+        service.settings.chat = $scope.chats;
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+    }
+
     $scope.removeChat = function(id){
         $scope.chats[$scope.eventType].splice(id,1);
     }
@@ -222,13 +258,39 @@ app.controller("chat", function($scope,service,$routeParams){
     }
 });
 
-app.controller("spells", function($scope,service,$routeParams){
+app.controller("spells", function($scope,service,$routeParams,$http){
     $scope.champ = $routeParams.champion;
 
     $scope.levelSpell = [];
+    if(service.settings.spells[$scope.champ]){
+        for(var x = 0; x < service.settings.spells[$scope.champ].length; x++){
+           $scope.levelSpell.push({key:service.settings.spells[$scope.champ][x]});
+        }
+    }
+
 
     $scope.add = function(i){
-        $scope.levelSpell.push({key:i});
+        if($scope.levelSpell.length < 18){
+            $scope.levelSpell.push({key:i});
+        }
+    }
+
+    $scope.save = function(){
+        if(!service.settings.spells[$scope.champ]){
+            service.settings.spells[$scope.champ] = [];
+        }
+        for(var x = 0; x < $scope.levelSpell.length; x++){
+            service.settings.spells[$scope.champ].push($scope.levelSpell[x].key);
+        }
+
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+    }
+
+    $scope.clear = function(){
+        delete service.settings.spells[$scope.champ];
+        $scope.levelSpell = [];
     }
 
     $scope.remove = function(i){
@@ -236,9 +298,31 @@ app.controller("spells", function($scope,service,$routeParams){
     }
 });
 
-app.controller("behaviours", function($scope,service,$routeParams){
+app.controller("behaviours", function($scope,service,$routeParams,$http){
     $scope.champ = $routeParams.champion;
+    $scope.aggr = service.settings.ai[$scope.champ] && service.settings.ai[$scope.champ].aggr ? service.settings.ai[$scope.champ].aggr : 0;
+    $scope.lane = service.settings.ai[$scope.champ] && service.settings.ai[$scope.champ].lane ? service.settings.ai[$scope.champ].lane : "Bot";
 
+    $scope.save = function(aggr,lane){
+        if(!service.settings.ai[$scope.champ]){
+            service.settings.ai[$scope.champ] = {};
+        }
+        service.settings.ai[$scope.champ].aggr = aggr;
+        service.settings.ai[$scope.champ].lane = lane;
+        
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+
+    }
+
+    $scope.clear = function(){
+        delete service.settings.ai[$scope.champ];
+        alert("Deleted champion settings, now system will use default settings. You don't need to press save again.")
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+    }
 });
 
 app.controller("items", function($scope,service,$routeParams,$location,$http){
@@ -246,14 +330,18 @@ app.controller("items", function($scope,service,$routeParams,$location,$http){
     if(!$scope.champ || $scope.champ.length < 1){
         $location.path("/Dashboard")
     }
+    $scope.itemRow = service.settings.items[$scope.champ] ? service.settings.items[$scope.champ] : [];
     $scope.items = [];
     $http.get("/items.json").then(function(response){
         response.data.forEach(function(item){
             item.queue = 4444;
+            if(~$scope.itemRow.indexOf(item.name)){
+                item.queue =  $scope.itemRow.indexOf(item.name);
+                item.selected = true;
+            }
             $scope.items.push(item)
         });
     });
-    $scope.itemRow = [];
 
     $scope.clickItem = function(item){
         if(item.selected === true){
@@ -266,6 +354,30 @@ app.controller("items", function($scope,service,$routeParams,$location,$http){
             $scope.itemRow.push(item.name)
             item.queue = $scope.itemRow.indexOf(item.name);
         }
+
+    }
+
+    $scope.save = function(){
+        if(!service.settings.items[$scope.champ]){
+            service.settings.items[$scope.champ] = [];
+        }
+        service.settings.items[$scope.champ] = $scope.itemRow;
+        
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
+    }
+
+    $scope.clear = function(){
+        delete service.settings.items[$scope.champ];
+        $scope.itemRow = [];
+        for(var x = 0; x < $scope.items.length; x++){
+            $scope.items[x].selected = false;
+        }
+        alert("Deleted champion settings, now system will use default settings. You don't need to press save again.")
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+        });
     }
 });
 
@@ -287,6 +399,15 @@ app.controller("main" , function($scope,service,$location,$interval){
         $scope.remote = service.remote;
     },100);
     
+    $(function() {
+        $('.nav a').on('click', function(){ 
+            if($('.navbar-toggle').css('display') !='none'){
+                $(".navbar-toggle").trigger( "click" );
+            }
+        });
+    });
+
+    
     $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
     $scope.$watch(function(){
         return JSON.stringify(service.user)
@@ -294,11 +415,10 @@ app.controller("main" , function($scope,service,$location,$interval){
         $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
         if(!$scope.loggedIn){
             $location.path("/Login");
-            $scope.form = 1;
-        }else{
-            $scope.form = 2;
         }
     },true)
+
+    $scope.form = 9;
 
     $scope.formC = function(id){
         $scope.form = id;
@@ -367,6 +487,7 @@ app.controller("login", function($scope,service,$http,$location){
                 service.rSend({type:"login",username:service.user.username, key:service.user.key});
                 $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
                     service.settings = response.data;
+                    console.log(response.data)
                     $location.path("/Account");
                 });
             }else{
@@ -386,6 +507,7 @@ app.controller("login", function($scope,service,$http,$location){
                     service.rSend({type:"login",username:service.user.username, key:service.user.key});
                     $http.post("/api/getSettings/", {token:service.user.token}).then(function(response){
                         service.settings = response.data;
+                        console.log(response.data)
                         $location.path("/Account");
                     });
                 }else{

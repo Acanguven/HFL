@@ -9,25 +9,25 @@
             <p>Behaivour Settings are set in script settings by default. Changing this settings will change your default settings in script. So please take care.</p>
             <div class="form-group">
                 <label>Default Lane</label>
-                <select class="form-control">
-                    <option>Mid</option>
-                    <option>Bot</option>
-                    <option>Top</option>
+                <select class="form-control" ng-model="lane">
+                    <option value="Mid">Mid</option>
+                    <option value="Bot">Bot</option>
+                    <option value="Top">Top</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Aggression Level</label>
-                <select class="form-control">
-                    <option ng-repeat="i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]">{{i}}</option>
+                <select class="form-control" ng-model="aggr">
+                    <option ng-repeat="i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]" value="{{i}}" ng-selected="{{$index == aggr}}">{{i}}</option>
                 </select>
                 <small>0 is default number. 20 is feeder</small>
             </div>
             <div class="col-md-5 col-md-offset-3">
                 <div class="col-md-3" style="margin-bottom:15px;">
-                    <button type="button" class="btn btn-success" style="width:100%;">Save</button>
+                    <button type="button" class="btn btn-success" style="width:100%;" ng-click="save(aggr,lane)">Save</button>
                 </div>
                 <div class="col-md-3" style="margin-bottom:15px;">
-                    <button type="button" class="btn btn-danger" style="width:100%;">Clear</button>
+                    <button type="button" class="btn btn-danger" style="width:100%;" ng-click="clear()">Clear</button>
                 </div>
             </div>
         </div>

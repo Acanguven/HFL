@@ -97,9 +97,15 @@ router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
             if(item){
                 if(item.password == req.params.password){
                     if(item.key == "false"){
-                        item.key = req.params.hwid;
-                        item.save(function(){
-                            res.end("Your computer is now registered to your account");
+                        Hwid.findOne({key:req.params.hwid}, function(er3,reitem){
+                            if(reitem){
+                                res.end("Your computer is already registered to an account");
+                            }else{
+                                item.key = req.params.hwid;
+                                item.save(function(){
+                                    res.end("Your computer is now registered to your account");
+                                });
+                            }
                         });
                     }else{
                         if(item.key == req.params.hwid){

@@ -166,7 +166,7 @@
     </head>
 
     <body ng-controller="main">
-        <nav class="navbar navbar-default" ng-if="loggedIn">
+        <nav class="navbar navbar-default" ng-show="loggedIn">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -197,6 +197,7 @@
                 <li ng-class="form === 5 ? 'active' : '' " ng-click="formC(5)"><a href="#/Settings">Settings</a></li>
                 <li><a href="#" target="_blank">Forum</a></li>
                 <li ng-class="form === 9 ? 'active' : '' " ng-click="formC(9)"><a href="#/Account">Account</a></li>
+                <li ng-class="form === 11 ? 'active' : '' " ng-click="formC(11)"><a href="#/Sharing">Sharing System</a></li>
               </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <h3 style="color:red;" ng-if="!remote">Client not connected</h3>

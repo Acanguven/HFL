@@ -1,0 +1,19 @@
+<div class="container" style="background-color:white;">
+    <h1>Share Settings <small style="font-size:18px;">Export your settings to share with other people or import others settings</small></h1>
+    <hr>
+   	<div class="row">
+   		<div class="col-md-12">
+   			<p>It is totally <b style="color:green;">safe</b> to share your settings. Exported settings will only contain Spell, Behaviour, Chat, Items settings. Copy the code to share.</p>
+   			<textarea disabled=disabled class="form-control">{{exported}}</textarea>
+   		</div>
+   	</div>
+   	<hr>
+   	<div class="row" style="margin-bottom:15px;">
+   		<div class="col-md-12">
+   			<p>Just copy paste code to import settings, this will only affect your Spell, Behaviour, Chat, Items settings.</p>
+   			<textarea ng-model="data" style="width:100%;" class="form-control"></textarea>
+   			<br>
+   			<button type="button" class="btn btn-info" ng-click="imported(data)" style="width:100%;">Import Settings</button>
+   		</div>
+   	</div>
+</div>

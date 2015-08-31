@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://zikenziemaster:Metallica44!@ds059712.mongolab.com:59712/hfl');
 var db = mongoose.connection;
+var fs = require("fs");
 var Schema = mongoose.Schema;
 var jwt = require('jsonwebtoken');
 var TOKEN_KEY = "i wanna be the very best 44";
@@ -50,14 +51,33 @@ router.post("/login", function(req,res,next){
 	}
 });
 
-router.get("/getAI/:username/:champion/:map", function(req,res,next){
+router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
+    var responseString = ""
     Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err && item){
-            res.end(createLuaSettings(item.settings,req.params.champion));
+            fs.readFile(__dirname + '/../itemtable.lua', 'utf8', function (err,table) {
+                responseString = table + "\n\n";
+                responseString = responseString + createLuaSettings(item.settings,req.params.champion);
+                if(req.params.map == "summonerRift"){
+                    fs.readFile(__dirname + '/../sr.lua', 'utf8', function (err,data) {
+                        responseString = responseString + "print('Loaded AI Module')";
+                        responseString = responseString + "\n\n\n\n";
+                        responseString = responseString + data;
+                        res.end(responseString);
+                    });
+                }else{
+                    fs.readFile(__dirname + '/../aram.lua', 'utf8', function (err,data) {
+                        responseString = responseString + "print('Loaded AI Module')";
+                        responseString = responseString + "\n\n\n\n";
+                        responseString = responseString + data;
+                        res.end(responseString);
+                    });
+                }
+            });
         }else{
             res.end("")
         }
-    })
+    });
 });
 
 router.post("/getSettings", function(req,res,next){
@@ -288,7 +308,7 @@ function validJsonParse(str){
 }
 
 createLuaSettings = function(settings,name){
-    var res = "";
+    var res = '';
     if(settings.ai[name]){
         res += "_ENV.aiAggr="+settings.ai[name].aggr+"\n"
         res += "_ENV.aiLane=\""+settings.ai[name].lane+"\"\n"
@@ -319,8 +339,9 @@ createLuaSettings = function(settings,name){
     if (settings.items[name]){
         res += "_ENV.aiItems={";     
         for(var x = 0; x < settings.items[name].length; x++){
-            res += "\""+settings.items[name][x].slice(1)+"\","
+            res += "itemTable[\""+settings.items[name][x].slice(1)+"\"],"
         }       
+        res += "0,";
         res += "}\n";
     }
     

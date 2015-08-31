@@ -411,10 +411,10 @@ namespace RitoBot
 					}
 					matchParams.QueueIds = new Int32[1] { (int)queueType };
 
-					/*while (!Program.QueueValid)
-					{
-						Console.Out.WriteLine("Waiting " + Accountname);
-					}*/
+                    Random rnd = new Random();
+                    int deliloy = rnd.Next(1000, 45000);
+                    this.updateStatus("waitqueue|#|" + deliloy, Accountname);
+                    await Task.Delay(deliloy);
 
 					Program.QueueValid = false;
 					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);

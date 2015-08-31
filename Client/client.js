@@ -344,6 +344,10 @@ function HFL(user, settings){
 		    		},10000)
 		    		
 		    	break;
+		    	case "waitqueue":
+		    		this.smurfStatus[user].status = clc.cyan("Waiting:"+(parseInt(dataArr[1])/1000));
+		    		this.smurfStatus[user].statusText = "Waiting:"+(parseInt(dataArr[1])/1000);
+		    	break;
 		    	case "leaverbusted":
 		    		this.smurfStatus[user].status = clc.red("Leaver Busted");
 		    		this.smurfStatus[user].statusText = "Leaver Busted";

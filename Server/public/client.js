@@ -290,7 +290,11 @@ app.controller("spells", function($scope,service,$routeParams,$http){
 
     $scope.clear = function(){
         delete service.settings.spells[$scope.champ];
-        $scope.levelSpell = [];
+        $http.post("/api/saveSettings", {token:service.user.token, settings:service.settings}).then(function(response){
+            alert("Settings Saved");
+            $scope.levelSpell = [];
+        });
+        
     }
 
     $scope.remove = function(i){
@@ -344,17 +348,19 @@ app.controller("items", function($scope,service,$routeParams,$location,$http){
     });
 
     $scope.clickItem = function(item){
-        if(item.selected === true){
-            item.selected = false;
-            var index = $scope.itemRow.indexOf(item.name);
-            $scope.itemRow.splice(index,1)
-            item.queue = 4444;
-        }else{
-            item.selected = true;
-            $scope.itemRow.push(item.name)
-            item.queue = $scope.itemRow.indexOf(item.name);
-        }
+        $scope.itemRow.push(item.name)
+    }
 
+    $scope.removeItem = function(index){
+        $scope.itemRow.splice(index,1)
+    }
+
+    $scope.getItemPng =  function(name){
+        for(var x = 0; x < $scope.items.length; x++){
+            if($scope.items[x].name == name){
+                return $scope.items[x].png
+            }
+        }
     }
 
     $scope.save = function(){
@@ -439,6 +445,7 @@ app.controller("live", function($scope,$interval,service,$http){
     $scope.updateData = function(){
         $http.get("/api/liveStats/"+service.user.username).then(function(response){
             $scope.liveData = response.data;
+            console.log(response.data)
             if($scope.selectedCode === false && $scope.liveData.length>0){
                 $scope.selectedCode = $scope.liveData[0].gameCode;
             }

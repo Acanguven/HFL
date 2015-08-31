@@ -20,15 +20,15 @@
             </div>
         </div>
         <div class="col-md-12" style="margin-top:15px;">
+            <img class="col-md-1" ng-repeat="item in itemRow track by $index"  src="{{getItemPng(item)}}" width="100%" ng-click="removeItem($index)" style="margin-bottom:10px;"/>
+        </div>
+        <div class="col-md-12" style="margin-top:15px;">
             <input type="text" class="form-control" placeholder="Search for item name" ng-model="name">
             <div class="row" style="margin-top:15px;">
                 <div class="col-md-12">
-                    <div class="col-md-1 col-sm-2 col-xs-4 itemBox" ng-repeat="item in items | filter:name | orderBy:'queue'" ng-click="clickItem(item)">
+                    <div class="col-md-1 col-sm-2 col-xs-4 itemBox" ng-repeat="item in items" ng-click="clickItem(item)">
                         <div class="row">
                             <img src="{{item.png}}" width="100%"/>
-                        </div>
-                        <div ng-if="item.selected === true" class="itemSelected">
-                            {{itemRow.indexOf(item.name) + 1}}
                         </div>
                         <div class="row" style="text-align:center;max-height:40px;overflow:hidden;">
                             {{item.name}}

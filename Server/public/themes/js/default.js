@@ -2,7 +2,10 @@
     
     // Scroll page with easing effect
     $('.navbar ul li a').bind('click', function(e) {
-        e.preventDefault();
+        if($(this).attr("href").indexOf("client") < 0){
+            e.preventDefault();
+        }
+
         target = this.hash;
         $.scrollTo(target, 1500, {
         	easing: 'easeOutCubic'
@@ -13,6 +16,7 @@
 
 	    // Scroll page with easing effect
     $('#footerMenu a').bind('click', function(e) {
+
         e.preventDefault();
         target = this.hash;
         $.scrollTo(target, 1500, {

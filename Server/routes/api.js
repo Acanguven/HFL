@@ -62,14 +62,14 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
                     fs.readFile(__dirname + '/../sr.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
-                        responseString = responseString + data;
+                        //responseString = responseString + data;
                         res.end(responseString);
                     });
                 }else{
                     fs.readFile(__dirname + '/../aram.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
-                        responseString = responseString + data;
+                        //responseString = responseString + data;
                         res.end(responseString);
                     });
                 }

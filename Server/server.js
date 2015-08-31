@@ -34,10 +34,6 @@ app.get("/remote", function(req, res) {
 });
 
 app.get("/client", function(req, res) {
-    res.end("Get ready to release...")
-});
-
-app.get("/client2", function(req, res) {
     res.sendFile( __dirname + '/client.html')
 });
 

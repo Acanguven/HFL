@@ -1816,14 +1816,6 @@ function Action:run()
 	end
 
 	actions["TimeToBase"] = function ()
-		if myHero.gold > 4000 then
-			return true
-		end
-
-		if myHero.health*100/myHero.maxHealth < 30 then
-			return true
-		end
-
 		return false
 	end
 
@@ -1886,7 +1878,6 @@ function Action:run()
 					movepoint.x = chasingNode.x
 				end
 				if chasingNode and GetDistance(chasingNode) > 50 and heroCanMove() then
-					CastSpell(SUMMONER_1)
 					moveToCursor()
 				end
 			end
@@ -1933,54 +1924,6 @@ function Action:run()
 	end
 
 	actions["PredictFight"] = function()
-		local dngTow = false
-		for c,tow in pairs(towers) do
-	        if tow and tow.type == "obj_AI_Turret" and tow.team ~= myHero.team and GetDistance(tow) < 950 and tow.health > 0 then
-	        	dngTow = true
-	        end
-	    end
-	    if dngTow then return false end
-		local enemiesDamage, enemiesCount = CalculateTeamDamageInRange(myHero, 500, TEAM_ENEMY);
-		if (enemiesCount >= 1) then
-			local linesW = 280;
-			local linesS = 20;
-			local borderRadius = 2;
-			local linesD = (linesW / 100);
-			local alliesDamage, alliesCount = CalculateTeamDamageInRange(myHero, 500, myHero.team);
-			local enemiesCurrentHealth, enemiesMaxHealth = CalculateTeamHPInRange(myHero, 1000, TEAM_ENEMY);
-			local alliesCurrentHealth, alliesMaxHealth = CalculateTeamHPInRange(myHero, 500, myHero.team);
-			local enemiesHealthW = ((enemiesCount >= 1) and Round((linesD * ((enemiesCurrentHealth / enemiesMaxHealth) * 100))) or 0);
-			local alliesHealthW = ((alliesCount >= 1) and Round((linesD * ((alliesCurrentHealth / alliesMaxHealth) * 100))) or 0);
-			local enemiesDamageP = ((enemiesDamage / alliesCurrentHealth) * 100);
-			local alliesDamageP = ((alliesDamage / enemiesCurrentHealth) * 100);
-			local enemiesDamageW = ((enemiesDamage >= 1) and Round((linesD * enemiesDamageP)) or 0);
-			local alliesDamageW = ((alliesDamage >= 1) and Round((linesD * alliesDamageP)) or 0);
-			local winningChance = Round((alliesDamageP / (enemiesDamageP + alliesDamageP)) * 100);
-			local enemyString = tostring(Round(alliesDamage)) .. ' / ' .. tostring(Round(enemiesCurrentHealth));
-			local allyString = tostring(Round(enemiesDamage)) .. ' / ' .. tostring(Round(alliesCurrentHealth));
-
-			if (enemiesDamageW > 100) then
-				enemiesDamageW = 100;
-			elseif (enemiesDamageW < 0) then
-					enemiesDamageW = 0;
-			end;
-			if (alliesDamageW > 100) then
-				alliesDamageW = 100;
-			elseif (alliesDamageW < 0) then
-					alliesDamageW = 0;
-			end;
-			if (winningChance > 100) then
-				winningChance = 100;
-			elseif (winningChance < 0) then
-					winningChance = 0;
-			end;
-			winningChance = winningChance + aggression
-			if winningChance > 50 then
-				return true
-			else
-				return false
-			end
-		end
 		return false
 	end
 
@@ -2326,6 +2269,9 @@ function updateLastSafeNode()
 			waypoint = movepoint
 		end
 	end
+	if GetInGameTimer() < 70 then
+		waypoint = myHero.pos
+	end
 end
 
 
@@ -2344,7 +2290,7 @@ function nodeDanger()
 
 		--Enemy Champ Calculations
 		for _, enemy in pairs(GetEnemyHeroes()) do
-			if not enemy.dead and GetDistance(node,enemy) < 900 and enemy.visible then
+			if not enemy.dead and GetDistance(node,enemy) < 1200  then
 				node.danger = node.danger + 50
 			end
 		end
@@ -2384,7 +2330,7 @@ function nodeDanger()
 
 		--Ally Champ Calculations
 		for _, enemy in pairs(GetAllyHeroes()) do
-			if not enemy.dead and GetDistance(node,enemy) < 400 then
+			if not enemy.dead and GetDistance(node,enemy) < 350 then
 				node.danger = node.danger - 50
 			end
 		end
@@ -3382,13 +3328,19 @@ function SkillsOnTick()
             for _, skill in pairs(Skills) do
                 if not skill.reset or (skill.reset and GetTickCount() < projAt + 400) then
                     if skill.skillShot then
+                    	print("ERR1")
                         AutoCarry.CastSkillshot(skill, target)
                     elseif skill.reqTarget == false and not skill.atMouse then
+                    	print("ERR2")
                         CastSelf(skill, target)
                     elseif skill.reqTarget == false and skill.atMouse then
+                    	 print("ERR3")
                         CastToTarget(skill,waypoint)
+                       
                     else
+                    	print("ERR4")
                         CastTargettedSpell(skill, target)
+                        
                     end
                 end
             end
@@ -3414,10 +3366,12 @@ AutoCarry.CastSkillshot = function (skill, target)
 	if predPos and GetDistance(predPos) <= skill.range then
 		if VIP_USER  then
 			if not skill.minions or not AutoCarry.GetCollision(skill, myHero, predPos) then
+				print("kwsf")
 				CastSpell(skill.spellKey, predPos.x, predPos.z)
 			end
 		elseif not VIP_USER then
 			if not skill.minions or not AutoCarry.GetCollision(skill, myHero, predPos) then
+				print("sdfg")
 				CastSpell(skill.spellKey, predPos.x, predPos.z)
 			end
 		end
@@ -3448,23 +3402,27 @@ end
 
 function CastTargettedSpell(skill, target)
 	if GetDistance(target) <= skill.range then
+		print("ads")
 		CastSpell(skill.spellKey, target)
 	end
 end
 
 function CastToTarget(skill, target)
 	if GetDistance(target) <= skill.range then
-		CastSpell(skill.spellKey, target)
+		print("asdfdf")
+		CastSpell(skill.spellKey, target.x, target.z)
 	end
 end
 
 
 function CastMouse(skill,target)
+	print("asdfasdf")
 	CastSpell(skill.spellKey, target.x, target.z)
 end
 
 function CastSelf(skill, target)
 	if not skill.forceRange or (skill.forceRange and GetDistance(target) - (skill.forceToHitBox and GetDistance(target, target.minBBox) or 0) <= skill.range) then
+		print("asdfasdfasdf")
 		CastSpell(skill.spellKey)
 	end
 end
@@ -3634,9 +3592,11 @@ function UseItemsOnTick()
 			item.slot = GetInventorySlotItem(item.id)
 			if item.slot ~= nil then
 				if item.reqTarget and GetDistance(AutoCarry.Orbwalker.target) <= item.range and item.menu ~= "BRK" then
+					print("asdf")
 					CastSpell(item.slot, AutoCarry.Orbwalker.target)
 				elseif item.reqTarget and GetDistance(AutoCarry.Orbwalker.target) <= item.range and item.menu == "BRK" then
 					if myHero.health <= myHero.maxHealth*0.65 or GetDistance(AutoCarry.Orbwalker.target) > 400 then
+						print("asdf")
 						CastSpell(item.slot, AutoCarry.Orbwalker.target)
 					end
 				elseif not item.reqTarget then
@@ -4006,12 +3966,19 @@ function getSpellList()
 			{ spellKey = _Q, range = GetSpellData(_Q).range, speed = 1.45, delay = 250, width = 200, configName = "vorpalBlade", displayName = "Q (Vorpal Blade)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
 			}
 		else
-			print("boosted")
 			spellArray = {
 				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
 				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
 				{ spellKey = _E, range = 800, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true },
-				{ spellKey = _R, range = 1500, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _R, range = 500, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _E, range = 800, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _R, range = 650, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false},
+				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false},
+				{ spellKey = _E, range = 600, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false },
+				{ spellKey = _R, range = 500, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false },
 			}
 		end
 return spellArray

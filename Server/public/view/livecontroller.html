@@ -4,49 +4,41 @@
     <div class="row" ng-if="remoted === true">
         <div class="col-md-2">
             <ul class="list-group">
-              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-              <li class="list-group-item" ng-class="pc.smurfs.osman ? 'list-group-item-success' : 'list-group-item-danger'">Osman</li>
-              <li class="list-group-item" ng-class="pc.hflq.fatma ? 'list-group-item-success' : 'list-group-item-danger'">Fatma</li>
-            </ul>
+              <li class="list-group-item" ng-repeat="smurf in liveData" ng-class="smurf.gameCode == selectedCode ? 'list-group-item-success' : 'list-group-item-info'" style="cursor:pointer;" ng-click="select(smurf);">Smurf #{{$index+1}}</li>
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-10" ng-if="selectedCode !== false">
             <div class="col-md-6">
-                <h4>Details of account Osman</h4>
+                <h4>Details of the selected smurf</h4>
                 <ul class="list-group">
                   <li class="list-group-item">
-                    <span class="badge">12</span>
+                    <span class="badge">{{showSmurf().level}}</span>
                     Level
                   </li>
                   <li class="list-group-item">
-                    <span class="badge">Katarina</span>
+                    <span class="badge">{{showSmurf().hero}}</span>
                     Champion
                   </li>
                   <li class="list-group-item">
-                    <span class="badge">13:42</span>
+                    <span class="badge">{{showSmurf().time}}</span>
                     Game Time
                   </li>
                   <li class="list-group-item">
-                    <span class="badge">15</span>
+                    <span class="badge">{{showSmurf().kill}}</span>
                     Kills
                   </li>
                   <li class="list-group-item">
-                    <span class="badge">6</span>
+                    <span class="badge">{{showSmurf().death}}</span>
                     Deaths
                   </li>
                   <li class="list-group-item">
-                    <span class="badge">12</span>
+                    <span class="badge">{{showSmurf().assist}}</span>
                     Assists
                   </li>
                 </ul>
                 <div class="row" style="margin-bottom:15px;">
                     <div class="col-md-12">
-                        <textarea class="form-control" rows="5" disabled style="max-width:100%;">Annie(ally): Nice dude!
-Veigar(enemy): Thanks dude
-Ashe(enemy): OMG!!
+                        <textarea class="form-control" rows="5" disabled style="max-width:100%;" ng-model="showSmurf().chat" ng-trim="false" ng-list="&#10;">
                 </textarea>
                     </div>
                 </div>
@@ -66,8 +58,12 @@ Ashe(enemy): OMG!!
             </div>
             <div class="col-md-6">
                 <div class="row" style="text-align:center;">
-                    <h4>Live Map <small>Left click to move your hero</small></h4>
-                    <img src="/img/sr.jpg" width="100%" style="margin-bottom:20px;"/>
+                    <h4>Live Map <small></small></h4>
+                    <div style="position:relative;">
+                      <img ng-if="showSmurf().map == 'summonerRift'" src="/img/sr.jpg" width="100%" style="margin-bottom:20px;" id="currentmap"/>
+                      <img ng-if="showSmurf().map != 'summonerRift'" src="/img/aram.png" width="100%" style="margin-bottom:20px;" id="currentmap"/>
+                      <span class="heroMarker"></span>
+                    </div>
                 </div>
             </div>
         </div>

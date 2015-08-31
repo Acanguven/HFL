@@ -37,7 +37,7 @@ router.post('/register', function(req, res, next) {
 
 router.post("/login", function(req,res,next){
 	if(req.body.username && req.body.password){
-		Hwid.findOne({username:req.body.username}, function(err,item){
+		Hwid.findOne({username:req.body.username, password:req.body.password}, function(err,item){
 			if(item){
 				var token = jwt.sign(item, TOKEN_KEY);
 				res.json({type:"user",username:item.username,settings:item.settings,key:item.key,usertype:item.type,token:token})
@@ -48,6 +48,16 @@ router.post("/login", function(req,res,next){
 	}else{
 		res.json({type:"err"});
 	}
+});
+
+router.get("/getAI/:username/:champion/:map", function(req,res,next){
+    Hwid.findOne({username:req.params.username}, function(err,item){
+        if(!err && item){
+            res.end(createLuaSettings(item.settings,req.params.champion));
+        }else{
+            res.end("")
+        }
+    })
 });
 
 router.post("/getSettings", function(req,res,next){
@@ -109,7 +119,19 @@ router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
                         });
                     }else{
                         if(item.key == req.params.hwid){
-                            res.end("Authenticated user");
+                            if(item.type == 1 || item.type == 2){
+                                if(item.type == 2){
+                                    res.end("Authenticated user");
+                                }else{
+                                    res.end("Authenticated user ");
+                                }
+                            }else{
+                                if(item.type == 0 && item.expire < Date.now()){
+                                    res.end("Authenticated trial user");
+                                }else{
+                                    res.end("Your trial account is ended");
+                                }
+                            }
                         }else{
                             res.end("You cant use your account on a different computer");
                         }
@@ -150,6 +172,44 @@ router.post("/updatePaths", function(req,res,next){
 });
 
 
+/* Live controller */
+
+var liveGames = [];
+var gamesDumper = setInterval(function(){
+    for(var x in liveGames){
+        if(liveGames[x].expireTime < Date.now()){
+            delete liveGames[x];
+        }
+    }
+},2000);
+
+router.get("/liveStats/:username/", function(req,res,next){
+    var smurfs = [];
+    for(var x in liveGames){
+        if(liveGames[x].user == req.params.username){
+            smurfs.push(liveGames[x]);
+        }
+    }
+    res.json(smurfs);
+});
+
+router.get("/updateChat/:gameCode/:chatText", function(req,res,next){
+    if(liveGames[req.params.gameCode]){
+        liveGames[req.params.gameCode].chat.push(req.params.chatText);
+    }
+});
+
+router.get("/updateLive/:user/:hero/:map/:gameCode/:x/:z/:time/:level/:kill/:death/:assist/:mininon", function(req,res,next){
+    if(!liveGames[req.params.gameCode]){
+        liveGames[req.params.gameCode] = {};
+    }
+    for (var attrname in req.params) { liveGames[req.params.gameCode][attrname] = req.params[attrname]; }
+    liveGames[req.params.gameCode].expireTime = Date.now() + 1000 * 6;
+    if(!liveGames[req.params.gameCode].chat){
+        liveGames[req.params.gameCode].chat = [];
+    }
+});
+
 
 
 /* Websocket Part */
@@ -164,6 +224,7 @@ wss.on('connection', function connection(ws) {
         var data = validJsonParse(message);
         if (data && data.type){
             switch(data.type){
+
                 case "login":
                     if(data.username && data.key){
                         if(clients[data.key]){
@@ -224,6 +285,58 @@ function validJsonParse(str){
         return false;
     }
     return jsn;
+}
+
+createLuaSettings = function(settings,name){
+    var res = "";
+    if(settings.ai[name]){
+        res += "_ENV.aiAggr="+settings.ai[name].aggr+"\n"
+        res += "_ENV.aiLane=\""+settings.ai[name].lane+"\"\n"
+    }
+    if(settings.spells[name]){
+        res += "_ENV.aiSpells={";     
+        for(var x = 0; x < settings.spells[name].length; x++){
+            switch(settings.spells[name][x]){
+                case "Q":
+                    res += "1";
+                break;
+                case "W":
+                    res += "2";
+                break;
+                case "E":
+                    res += "3";
+                break;
+                case "R":
+                    res += "4";
+                break;
+            }
+            res += ","
+        }
+        res += "}\n"
+    }
+    
+    
+    if (settings.items[name]){
+        res += "_ENV.aiItems={";     
+        for(var x = 0; x < settings.items[name].length; x++){
+            res += "\""+settings.items[name][x].slice(1)+"\","
+        }       
+        res += "}\n";
+    }
+    
+    if(settings.chat){
+        res += "_ENV.chats = {}\n";
+        for(prop in settings.chat){
+            if(prop != "init"){
+                res += "_ENV.chats[\""+prop+"\"] = {"
+                for(var x = 0 ; x < settings.chat[prop].length; x++){
+                       res += ("{chance=" + settings.chat[prop][x].chance + "," + "text=\"" + settings.chat[prop][x].text.replace(/\"/g,"")+"\"},")
+                }
+                res += "}\n"
+            }
+        }
+    }
+    return res;
 }
 
 

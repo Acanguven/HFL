@@ -425,11 +425,62 @@ app.controller("main" , function($scope,service,$location,$interval){
     }
 });
 
-app.controller("live", function($scope,$interval,service){
+app.controller("live", function($scope,$interval,service,$http){
     $scope.remoted = service.remote;
+    $scope.liveData = [];
+    $scope.selectedCode = false;
     $interval(function(){
         $scope.remoted = service.remote;
-    },500)
+    },500);
+    $interval(function(){
+        $scope.updateData();
+    },1500);
+
+    $scope.updateData = function(){
+        $http.get("/api/liveStats/"+service.user.username).then(function(response){
+            $scope.liveData = response.data;
+            if($scope.selectedCode === false && $scope.liveData.length>0){
+                $scope.selectedCode = $scope.liveData[0].gameCode;
+            }
+            var exists = false;
+            for(var x = 0; x < $scope.liveData.length; x++){
+                if($scope.selectedCode == $scope.liveData[x].gameCode){
+                    exists = true;
+                }
+            }
+            if(!exists){
+                $scope.selectedCode = false;
+            }
+
+            if($scope.selectedCode !== false){
+                var livex = $scope.showSmurf().x;
+                var livez = $scope.showSmurf().z;
+                var map = $scope.showSmurf().map;
+
+                if(map == "summonerRift"){
+                    var mapX = $("#currentmap").width()*livex/14716;
+                    var mapZ = $("#currentmap").height()*livez/14824;
+                    $(".heroMarker").css({top: $("#currentmap").height()-mapZ, left: mapX});
+                }else{
+
+                }
+
+            }
+        });
+    }
+
+    $scope.select = function(smurf){
+        $scope.selectedCode = smurf.gameCode;
+    }    
+
+    $scope.showSmurf = function(){
+        for(var x = 0; x < $scope.liveData.length; x++){
+            if($scope.selectedCode == $scope.liveData[x].gameCode){
+                $scope.liveData[x].time = ~~$scope.liveData[x].time;
+                return $scope.liveData[x]
+            }
+        }
+    }
 });
 
 app.controller("smurfs", function($scope,$http,service,$interval){

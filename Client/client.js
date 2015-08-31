@@ -68,10 +68,16 @@ var grabHwid = function(cb){
 
 var checkAuth = function(cb){
 	var url = 'http://www.handsfreeleveler.com/api/clientHwid/'+user.username+"/"+user.hwid+"/"+user.password;
-
 	request(url, function (error, response, body) {
 	    if (!error && response.statusCode == 200) {
 	        if(body.indexOf("Authenticated") == 0 || body.indexOf("is now registered") > 0){
+	        	if(body.length > 20 ){
+	        		user.type = 0;
+	        	}else if(/(.*) (.*) /.exec(body)==null){
+	        		user.type = 2;
+	        	}else{
+	        		user.type = 1;
+	        	}
 		        cb(true);
 		    }else{
 		    	cb(false);
@@ -177,6 +183,7 @@ function HFL(user, settings){
 	  	engineStatus.message(clc.red("Connection with remote system crashed unexpectedly..."));
   	});
 
+
   	this.commandManager = function(cmd){
   		switch(cmd){
 			case "start queue":
@@ -277,20 +284,25 @@ function HFL(user, settings){
 			//console.log("Starting auto queue system");
 			this.started = true;
 
-			ref.queue = childProcess.exec(QUEUE);
+			ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
 
 			ref.queue.stdout.on("data", function(data){
-				if(data.indexOf("Error") > -1){
-					ref.queue.kill();
-					childProcess.exec(HFL_KILLER);
-					this.started = false;
-				}else{
-					ref.queueStatusUpdater(data);
+				if(data){
+					data = data.toString("utf-8");
+					if(data.indexOf("Error") > -1){
+						ref.queue.kill();
+						childProcess.exec(HFL_KILLER);
+						ref.started = false;
+					}else{
+						if(data.indexOf("|#|") > 0){
+							ref.queueStatusUpdater(data);
+						}
+					}
 				}
 			});
 
 			ref.queue.on("exit", function(data){
-				ref.queueStatusUpdater(data);
+				ref.started = false;
 			});
 		}
 	}
@@ -316,6 +328,21 @@ function HFL(user, settings){
 		    	case "Disconnected":
 		    		this.smurfStatus[user].status = clc.red("Disconnected");
 		    		this.smurfStatus[user].statusText = "Disconnected";
+
+		    		setTimeout(function(){
+		    			if(ref.started){
+		    				var stillWork = false;
+				    		for(var prop in ref.smurfStatus){
+				    			if (ref.smurfStatus[prop].statusText != "Disconnected"){
+				    				stillWork = true;
+				    			}
+				    		}
+				    		if(!stillWork){
+				    			ref.commandManager("stop queue")
+				    		}
+		    			}
+		    		},10000)
+		    		
 		    	break;
 		    	case "leaverbusted":
 		    		this.smurfStatus[user].status = clc.red("Leaver Busted");
@@ -543,5 +570,6 @@ checkUpdate(function(live_version){
 process.on('uncaughtException', function(e){
     //console.log("Ooops an error occured, sending report the The Law so he can fix it soon!");
     fs.appendFile('errors.txt', JSON.stringify(e));
+    console.log(e)
     //Send report here
 });

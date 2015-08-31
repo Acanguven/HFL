@@ -671,7 +671,7 @@ namespace LoLLauncher
                 results.Clear();
 
                 client = null;
-                sslStream = null;
+                //sslStream = null;
 
                 if (OnDisconnect != null)
                     OnDisconnect(this, EventArgs.Empty);
@@ -708,7 +708,8 @@ namespace LoLLauncher
             {
                 int id = NextInvokeID();
                 pendingInvokes.Add(id);
-
+                //AHANDA BURDA MEMORY LEAK
+                //Console.Out.Write("Added pending invoke");
                 try
                 {
                     RTMPSEncoder encoder = new RTMPSEncoder();
@@ -845,11 +846,12 @@ namespace LoLLauncher
                         if (!currentPackets.ContainsKey(channel))
                         {
                             currentPackets.Add(channel, new Packet());
+                            
                         }
-
+                        //Console.Out.WriteLine("Packet:" + currentPackets.Count);
                         Packet p = currentPackets[channel];
                         p.AddToRaw(basicHeaderStorage.ToArray());
-
+                        
                         if (headerSize == 12)
                         {
                             //Timestamp

@@ -2,7 +2,7 @@
 
     <head>
     	<title>HFL Remote Client</title>
-    	<meta charset="utf-8">
+    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -12,7 +12,19 @@
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     	<style>
-    	    body {
+            .heroMarker{
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                height: 20px;
+                border: 1px solid white;
+                width: 20px;
+                z-index: 99;
+                background-color: green;
+                border-radius: 50%;
+                border-color: white;
+            }
+    	     body {
               background-color: #eee;
             }
 
@@ -176,7 +188,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#/Dashboard" ng-click="formC(2)">HFL <small>Remote Controller</small><small style="color:red;" ng-if="!remote">Client not connected</small><small style="color:green;" ng-if="remote">Client connected</small></a>
+              <a class="navbar-brand" href="#/Dashboard" ng-click="formC(2)" style="padding-top:5px;">HFL <small>Remote Controller</small><br><small style="color:red;" ng-if="!remote">Client not connected</small><small style="color:green;" ng-if="remote">Client connected</small></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->

@@ -21,7 +21,8 @@ var hwid = new Schema({
             gpuD:false,
             chat:{init:true}
         }
-    }
+    },
+    expire:{type:String,default:Date.now()+(1000*60*60*24*2)}
 });
 
 

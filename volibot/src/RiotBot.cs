@@ -463,6 +463,7 @@ namespace RitoBot
        
         private void updateStatus(string status, string accname)
         {
+            //Console.Clear();
             Console.Out.WriteAsync(status + "|#|" + accname);
         }        
         

@@ -3,7 +3,7 @@
 	<label for="inputEmail" class="sr-only">Bol Username</label>
 	<input type="text" id="inputEmail" class="form-control" placeholder="Bol Username" required autofocus ng-model="username" style="margin-bottom:15px;">
 	<label for="inputPassword" class="sr-only">Password</label>
-	<input type="text" id="inputPassword" class="form-control" placeholder="Password" required ng-model="pass" style="margin-bottom:15px;">
+	<input type="password" id="inputPassword" class="form-control" placeholder="Password" required ng-model="pass" style="margin-bottom:15px;">
 	<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="login(username,pass)">Sign in</button>
 </form>
 
@@ -12,7 +12,7 @@
 	<label for="inputEmail" class="sr-only">Bol Username</label>
 	<input type="text" id="inputEmail" class="form-control" placeholder="Bol Username" required autofocus ng-model="rusername" style="margin-bottom:15px;">
 	<label for="inputPassword" class="sr-only">Password</label>
-	<input type="text" id="inputPassword" class="form-control" placeholder="Password - not your bol password" required ng-model="p1" style="margin-bottom:15px;">
-	<input type="text" id="inputPassword" class="form-control" placeholder="Password Retype - not your bol password" required ng-model="p2" style="margin-bottom:15px;">
+	<input type="password" id="inputPassword" class="form-control" placeholder="Password - not your bol password" required ng-model="p1" style="margin-bottom:15px;">
+	<input type="password" id="inputPassword" class="form-control" placeholder="Password Retype - not your bol password" required ng-model="p2" style="margin-bottom:15px;">
 	<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="register(rusername,p1,p2)">Register</button>
 </form>

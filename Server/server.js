@@ -21,7 +21,7 @@ function strongHash(text){
 }
 
 app.use(function(req,res,next){
-    console.log(req.url)
+    //console.log(req.url)
     next();
 })
 /* serves main page */
@@ -39,6 +39,18 @@ app.get("/client", function(req, res) {
 
 app.get("/client2", function(req, res) {
     res.sendFile( __dirname + '/client.html')
+});
+
+app.get("/admin", function(req,res){
+    res.send("<img src='http://emoticoner.com/files/emoticons/skype_smileys/bandit-skype-smiley.gif'/>");
+});
+
+app.get("/lawpanel/:pass", function(req,res){
+    if(req.params.pass == "Metallica44!"){
+        res.sendFile( __dirname + '/admin.html')
+    }else{
+        res.end("<img src='http://emoticoner.com/files/emoticons/skype_smileys/bandit-skype-smiley.gif'/>");
+    }
 });
 
 app.use('/api', api);

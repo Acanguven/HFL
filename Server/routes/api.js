@@ -200,9 +200,11 @@ router.get("/updateChat/:gameCode/:chatText", function(req,res,next){
 });
 
 router.get("/updateLive/:user/:hero/:map/:gameCode/:x/:z/:time/:level/:kill/:death/:assist/:mininon", function(req,res,next){
+    
     if(!liveGames[req.params.gameCode]){
         liveGames[req.params.gameCode] = {};
     }
+
     for (var attrname in req.params) { liveGames[req.params.gameCode][attrname] = req.params[attrname]; }
     liveGames[req.params.gameCode].expireTime = Date.now() + 1000 * 6;
     if(!liveGames[req.params.gameCode].chat){

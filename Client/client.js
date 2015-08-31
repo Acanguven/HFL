@@ -284,8 +284,8 @@ function HFL(user, settings){
 			//console.log("Starting auto queue system");
 			this.started = true;
 
-			ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
-
+			//ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
+			ref.queue = childProcess.exec(QUEUE)
 			ref.queue.stdout.on("data", function(data){
 				if(data){
 					data = data.toString("utf-8");

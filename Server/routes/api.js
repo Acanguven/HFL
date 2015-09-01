@@ -79,7 +79,7 @@ router.get("/acc/:username", function(req,res,next){
             if(item.type === 1 || item.type === 2){
                 res.end("valid");
             }else{
-                if(item.expireTime - Date.now() > 0){
+                if(item.expire - Date.now() > 0){
                     res.end("valid");
                 }else{
                     res.end("sorry");

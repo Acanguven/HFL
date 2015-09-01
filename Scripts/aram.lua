@@ -31,8 +31,6 @@ else
 	ScriptReceive, ScriptStatus = SocketScript:receive('*a')
 	if string.match(ScriptReceive, "valid") then
 		loadALL()
-	else
-		loadALL()
 	end
 end
 

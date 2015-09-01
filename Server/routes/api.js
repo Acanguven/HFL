@@ -81,7 +81,11 @@ router.get("/acc/:username", function(req,res,next){
             if(item.type === 1 || item.type === 2){
                 res.end("valid");
             }else{
-                res.end("sorry");
+                if(item.expireTime - Date.now() > 0){
+                    res.end("valid");
+                }else{
+                    res.end("sorry");
+                }
             }
         }else{
             res.end("sorry");
@@ -127,11 +131,11 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
     var responseString = ""
     Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err && item){
-            fs.readFile(__dirname + '../../../ScriptsEncoded/sr.lua', 'utf8', function (err,table) {
+            fs.readFile(__dirname + '/../itemtable.lua', 'utf8', function (err,table) {
                 responseString = table + "\n\n";
                 responseString = responseString + createLuaSettings(item.settings,req.params.champion);
                 if(req.params.map == "summonerRift"){
-                    fs.readFile(__dirname + '/../sr.lua', 'utf8', function (err,data) {
+                    fs.readFile(__dirname + '../../../ScriptsEncoded/sr.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
                         responseString = responseString + data;

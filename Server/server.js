@@ -8,12 +8,14 @@ var sha1 = require('sha1');
 var sha256 = require("sha256");
 var transporter = nodemailer.createTransport();
 var api = require('./routes/api');
+var jade = require("jade");
 
 app.use(logger({path: __dirname +"/logs/logger.txt"}));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+app.set('view engine', 'jade')
 
 
 function strongHash(text){
@@ -41,13 +43,6 @@ app.get("/admin", function(req,res){
     res.send("<img src='http://emoticoner.com/files/emoticons/skype_smileys/bandit-skype-smiley.gif'/>");
 });
 
-app.get("/lawpanel/:pass", function(req,res){
-    if(req.params.pass == "Metallica44!"){
-        res.sendFile( __dirname + '/admin.html')
-    }else{
-        res.end("<img src='http://emoticoner.com/files/emoticons/skype_smileys/bandit-skype-smiley.gif'/>");
-    }
-});
 
 app.use('/api', api);
 

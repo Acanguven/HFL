@@ -15,6 +15,52 @@ db.once('open', function (callback) {
 });
 var Hwid = require("../hwid.js");
 
+
+
+
+/* Admin Router */
+
+router.get("/admin/make/:password/:type/:id" , function(req,res,next){
+    if(req.params.password == "774477"){
+        Hwid.findOne({_id:req.params.id}, function(err,item){
+            if(!err && item){
+                if(req.params.type === "1"){
+                    item.type = 1;
+                }
+                if(req.params.type === "2"){
+                    item.type = 2;
+                }
+                if(req.params.type === "0"){
+                    item.type = 0;
+                }
+
+                if(req.params.type === "3"){
+                    item.remove(function(){
+                        res.end("done");
+                    });
+                }else{
+                    //item.markModified('type');
+                    item.save(function(){
+                        res.end("done");
+                    });
+                }
+            }
+        });
+    }
+});
+
+router.get("/lawpanel/:pass", function(req,res){
+    if(req.params.pass == "Metallica44!"){
+        Hwid.find({}, function(err,list){
+            res.render("../admin.jade", {users:list});
+        });
+    }else{
+        res.end("<img src='http://emoticoner.com/files/emoticons/skype_smileys/bandit-skype-smiley.gif'/>");
+    }
+});
+
+
+
 /* Api routes. */
 
 router.post('/register', function(req, res, next) {

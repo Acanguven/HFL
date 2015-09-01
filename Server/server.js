@@ -10,7 +10,7 @@ var transporter = nodemailer.createTransport();
 var api = require('./routes/api');
 var jade = require("jade");
 
-app.use(logger({path: __dirname +"/logs/logger.txt"}));
+//app.use(logger({path: __dirname +"/logs/logger.txt"}));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -23,7 +23,7 @@ function strongHash(text){
 }
 
 app.use(function(req,res,next){
-    console.log(req.url)
+    //console.log(req.url)
     next();
 })
 /* serves main page */

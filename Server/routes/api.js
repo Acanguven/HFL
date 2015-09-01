@@ -127,7 +127,7 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
     var responseString = ""
     Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err && item){
-            fs.readFile(__dirname + '../../../ScriptsEncoded/sr.lua' 'utf8', function (err,table) {
+            fs.readFile(__dirname + '../../../ScriptsEncoded/sr.lua', 'utf8', function (err,table) {
                 responseString = table + "\n\n";
                 responseString = responseString + createLuaSettings(item.settings,req.params.champion);
                 if(req.params.map == "summonerRift"){

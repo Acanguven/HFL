@@ -63,14 +63,12 @@ router.get("/lawpanel/:pass", function(req,res){
 /* Download */
 router.get("/Download", function(req,res,next){
     var file = __dirname + '../../../HFL RELEASE/HFL.rar';
-    res.end("Wait last test")
-    //res.download(file);
+    res.download(file);
 });
 
 router.get("/DownloadScript", function(req,res,next){
     var file = __dirname + '../../../ScriptsEncoded/Hands Free Leveler.lua';
-    res.end("Wait last test")
-    //res.download(file);
+    res.download(file);
 });
 
 /* Api routes. */

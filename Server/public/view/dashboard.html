@@ -2,7 +2,7 @@
         <h1>Dashboard <small style="font-size:18px;">Where you manage your computer and bot</small></h1>
         <hr>
         <div class="row" ng-if="remoted === true">
-            <div class="col-xs-4 col-sm-4">
+            <div class="col-xs-4 col-sm-4" style="margin-bottom:15px;">
                 <ul class="list-group">
                   <li class="list-group-item" ng-class="pc.bol ? 'list-group-item-success' : 'list-group-item-danger'">BOL</li>
                   <li class="list-group-item" ng-class="pc.hfl ? 'list-group-item-success' : 'list-group-item-danger'">HFL</li>
@@ -49,6 +49,26 @@
                 </ul>
             </div>
         </div>
+        <hr>
+        <div class="row" ng-if="remoted === true">
+          <div class="col-md-12">
+            <h4>Hibernating</h4>
+            <small>Hibernating allows you to close your computer and start it and use HFL in a set of hours and minutes.</small><br>
+            <small ng-if="minutes > 0 || hours > 0">Your computer will wake after {{hours}} hours and {{minutes}} minutes.</small>
+          </div>
+          <div class="col-md-4">
+            <label>Hours</label>
+            <input type="number" id="hours" min="0" value="0" max="23"  class="form-control" style="width:100%;" ng-model="hours">
+          </div>
+          <div class="col-md-4">
+            <label>Minutes</label>
+            <input type="number" id="minutes" min="0" value="0" max="59" class="form-control" style="width:100%;" ng-model="minutes">
+          </div>
+          <div class="col-md-4">
+            <button type="button" class="btn btn-default" style="height:42px;margin-top:15px;" ng-click="sendCmd(5,hours,minutes)">Hibernate</button>
+          </div>
+        </div>
+        <br><br>
         <div class="row" ng-if="remoted !== true">
           <div class="col-xs-12 col-sm-12 col-md-12">
             <h3>Your client is not running</h3>

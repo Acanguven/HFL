@@ -511,7 +511,7 @@ app.controller("dashboard", function($scope, service,$interval){
         $scope.remoted = service.remote;
     },500)
 
-    $scope.sendCmd = function(id){
+    $scope.sendCmd = function(id,hours,minutes){
         if(id === 1){
             if ($scope.pc.bol){
                 service.rSend({type:"cmd",cmd:"close bol",key:service.user.key});
@@ -531,6 +531,12 @@ app.controller("dashboard", function($scope, service,$interval){
         if(id == 3){
             if(prompt("Are you sure y/n") == "y"){
                 service.rSend({type:"cmd",cmd:"stop pc",key:service.user.key});
+            }
+        }
+
+        if(id == 5){
+            if(prompt("Are you sure y/n") == "y"){
+                service.rSend({type:"cmd",cmd:"hiber start",key:service.user.key,hours:hours,minutes:minutes});
             }
         }
     }

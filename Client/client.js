@@ -1,5 +1,31 @@
-/* REQUIRE */
+/* CONSTS */
+
+//Cores
+var HWID_EXE = "\""+process.cwd()+"\\_n1.exe\"";
+var QUEUE = "\""+process.cwd()+"\\_n2.exe\"";
+// Path exes
+var BOL_EXE = "\""+process.cwd()+"\\_n3.exe\"";
+var GAME_EXE = "\""+process.cwd()+"\\_n4.exe\"";
+// CMD exes
+var BOL_STARTER = "\""+process.cwd()+"\\_n5.exe\"";
+var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
+var PC_STOPPER = "\""+process.cwd()+"\\_n7.exe\"";
+var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
+var BOL_KILLER = "\""+process.cwd()+"\\_n9.exe\"";
+var HFL_KILLER = "\""+process.cwd()+"\\_n10.exe\"";
+var SYSTEM_LOADER = "\""+process.cwd()+"\\_n11.exe\"";
+var HIBER_START = "\""+process.cwd()+"\\_n11.exe\"";
+
+
+
+// Unpack initilizator
 var childProcess = require('child_process');
+var unpacker = childProcess.execSync(SYSTEM_LOADER);
+
+
+
+
+/* REQUIRE */
 var request = require("request");
 var WebSocket = require('ws');
 var fs = require('fs');
@@ -16,23 +42,8 @@ var Table = require('cli-table');
 var Spinner = clui.Spinner;
 var introText = fs.readFileSync("intro.txt", "utf-8");
 
-//
 
-/* CONSTS */
 
-//Cores
-var HWID_EXE = "\""+process.cwd()+"\\_n1.exe\"";
-var QUEUE = "\""+process.cwd()+"\\_n2.exe\"";
-// Path exes
-var BOL_EXE = "\""+process.cwd()+"\\_n3.exe\"";
-var GAME_EXE = "\""+process.cwd()+"\\_n4.exe\"";
-// CMD exes
-var BOL_STARTER = "\""+process.cwd()+"\\_n5.exe\"";
-var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
-var PC_CONTROLLER = "\""+process.cwd()+"\\_n7.exe\"";
-var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
-var BOL_KILLER = "\""+process.cwd()+"\\_n9.exe\"";
-var HFL_KILLER = "\""+process.cwd()+"\\_n10.exe\"";
 
 var VERSION = "1.0";
 
@@ -126,8 +137,12 @@ var deleteFolderRecursive = function(path) {
 };
 
 var checkUpdate = function(cb){
-	cb("1.0")
-	// Update here
+	request({
+	  	uri: "http://www.handsfreeleveler.com/client_version.txt",
+	  	method: "GET",
+	}, function(error, response, body){
+		cb(body)
+	});
 }
 
 
@@ -168,6 +183,9 @@ function HFL(user, settings){
 			ref.lastCommandsRecieved.unshift({time:new Date().toLocaleString(),cmd:data.cmd});
 			if(ref.lastCommandsRecieved.length > 5){
 				ref.lastCommandsRecieved.splice(5,99)
+			}
+			if (data.cmd == "hiber start"){
+				childProcess.exec(HIBER_START + " " + data.hours + " "+ data.minutes);
 			}
 		}
 	});
@@ -210,6 +228,9 @@ function HFL(user, settings){
 			break;
 			case "start bol":
 				childProcess.exec(BOL_STARTER  + " \"" + this.settings.bolFolder + "\"" + " \""+ this.settings.bolFolder.split("BoL Studio.exe")[0] + "\"");
+			break;
+			case "stop pc":
+				childProcess.exec(PC_STOPPER);
 			break;
 		}
   	}
@@ -269,18 +290,18 @@ function HFL(user, settings){
 	this.start = function(){
 		if(this.filesValid == 2 && this.started == false){
 			this.starTime = Date.now()
-			fs.writeFileSync("./config/accounts.txt","");
+			fs.writeFileSync("./accounts.txt","");
 			this.settings.smurfs.forEach(function(item){
-				fs.appendFileSync("./config/accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\r\n");
+				fs.appendFileSync("./accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\r\n");
 			});
-			var replaceSettings = fs.readFileSync("./config/settings.ini", "utf8");
+			var replaceSettings = fs.readFileSync("./settings.ini", "utf8");
 			replaceSettings = replaceSettings.replace(/MaxBots=(.*)/g,"MaxBots="+this.settings.ms);
 			replaceSettings = replaceSettings.replace(/Region=(.*)/g,"Region="+this.settings.rg);
 			replaceSettings = replaceSettings.replace(/ReplaceConfig=(.*)/g,"ReplaceConfig="+this.settings.gpuD)
 			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.bb);
 			var gamePathModified = this.settings.gameFolder.split("lol.launcher.admin.exe")[0];
 			replaceSettings = replaceSettings.replace(/LauncherPath=(.*)/g,"LauncherPath="+gamePathModified);
-			fs.writeFileSync("./config/settings.ini", replaceSettings);
+			fs.writeFileSync("./settings.ini", replaceSettings);
 
 			//console.log("Starting auto queue system");
 			this.started = true;
@@ -571,11 +592,10 @@ checkUpdate(function(live_version){
 						},1000);
 					});
 				}
+				});
 			});
-		});
-	}
-})
-
+		}
+	});
 
 /* Process Handlers */
 

@@ -1,13 +1,16 @@
 function loadALL()
 	AddTickCallback(function()
+		--SSL LINE
 		OnTick()
 	end)
-
+--SSL LINE
 	AddDrawCallback(function()
+		--SSL LINE
 		OnDraw()
 	end)
 
 	AddProcessSpellCallback(function(e,t)
+		--SSL LINE
 		OnProcessSpell(e,t)
 	end)
 
@@ -20,20 +23,18 @@ function loadALL()
 	end)
 end
 
-if IsTrial() then
+local LuaSocket = require("socket")
+local user = GetUser()
+SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+local Link = "/api/acc/".. user .."/"
+SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+--SSL LINE
+if string.match(ScriptReceive, "valid") then
+--SSL LINE
 	loadALL()
-else
-	local LuaSocket = require("socket")
-	local user = GetUser()
-	SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
-	local Link = "/api/acc/".. user .."/"
-	SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-	ScriptReceive, ScriptStatus = SocketScript:receive('*a')
-	if string.match(ScriptReceive, "valid") then
-		loadALL()
-	end
 end
-
+--SSL LINE
 --]]
 debug = false
 if _ENV.aiAggr then
@@ -41,11 +42,11 @@ if _ENV.aiAggr then
 else
 	aggression = 1
 end
-
+--SSL LINE
 atTop = false
 atBot = false
 atMid = false
-
+--SSL LINE
 
 if _ENV.aiLane then
 	if _ENV.aiLane == "Bot" then
@@ -78,7 +79,7 @@ else
 	aramLane = ReverseTable(newLane)
 end
 
-
+--SSL LINE
 towers = {}
 _G.AutoCarry = _G
 
@@ -93,7 +94,7 @@ AutoCarry.EnemyTable = nil
 AutoCarry.shotFired = false
 AutoCarry.OverrideCustomChampionSupport = false
 AutoCarry.CurrentlyShooting = false
-
+--SSL LINE
 
 regions = {
 
@@ -352,7 +353,7 @@ walls = {
 
 
 -- Code ------------------------------------------------------------------------
-
+--SSL LINE
 
 
 function fileExists(name)
@@ -361,7 +362,7 @@ function fileExists(name)
 
 end
 
-
+--SSL LINE
 
 function los(x0, y0, x1, y1, callback)
 
@@ -443,7 +444,7 @@ function los(x0, y0, x1, y1, callback)
 
 end
 
-
+--SSL LINE
 
 function line(x0, y0, x1, y1, callback)
 
@@ -474,7 +475,7 @@ function line(x0, y0, x1, y1, callback)
 	return points, result
 
 end
-
+--SSL LINE
 
 
 class 'SpatialHashMap' -- {
@@ -580,7 +581,7 @@ class 'SpatialHashMap' -- {
 	end
 
 
-
+--SSL LINE
 	function SpatialHashMap:writeCache()
 
 		local res = "_G.h={"
@@ -642,7 +643,7 @@ class 'SpatialHashMap' -- {
 		local file, error = assert(io.open(SCRIPT_PATH .. "Common/MapPosition_" .. self.cacheId .. ".lua", "w+")) if error then return error end file:write(res) file:close()
 
 	end
-
+--SSL LINE
 
 
 	function SpatialHashMap:add(spatialObject)
@@ -714,7 +715,7 @@ class 'SpatialHashMap' -- {
 			end
 
 		else
-
+--SSL LINE
 			for i, lineSegment in ipairs(spatialObject:getLineSegments()) do
 
 				for x = math.floor(leftX / self.intervalSize), math.floor(rightX / self.intervalSize), 1 do
@@ -755,7 +756,7 @@ class 'SpatialHashMap' -- {
 
 	end
 
-
+--SSL LINE
 
 	function SpatialHashMap:remove(spatialObject)
 
@@ -778,7 +779,7 @@ class 'SpatialHashMap' -- {
 			topY = math.max(topY, point.y)
 
 		end
-
+--SSL LINE
 
 
 		foundHashCodes = {}
@@ -814,7 +815,7 @@ class 'SpatialHashMap' -- {
 	end
 
 
-
+--SSL LINE
 	function SpatialHashMap:calculateHashCode(point)
 
 		return tostring(math.floor(point.x / self.intervalSize)) .. "-" .. tostring(math.floor(point.y / self.intervalSize))
@@ -822,7 +823,7 @@ class 'SpatialHashMap' -- {
 	end
 
 
-
+--SSL LINE
 	function SpatialHashMap:getSpatialObjects(referencePoint, range)
 
 		if referencePoint == nil then
@@ -897,7 +898,7 @@ class 'SpatialHashMap' -- {
 
 -- }
 
-
+--SSL LINE
 
 class 'MapPosition' -- {
 
@@ -907,7 +908,7 @@ class 'MapPosition' -- {
 
 	end
 
-
+--SSL LINE
 
 	-- Wall Functions ---------------------------------------------------------
 
@@ -959,7 +960,7 @@ class 'MapPosition' -- {
 
 	end
 
-
+--SSL LINE
 
 	-- River Positions --------------------------------------------------------
 
@@ -972,14 +973,14 @@ class 'MapPosition' -- {
 	end
 
 
-
+--SSL LINE
 	function MapPosition:inTopRiver(unit)
 
 		return regions["topOuterRiver"]:contains(Point(unit.x, unit.z))
 
 	end
 
-
+--SSL LINE
 
 	function MapPosition:inTopInnerRiver(unit)
 
@@ -987,7 +988,7 @@ class 'MapPosition' -- {
 
 	end
 
-
+--SSL LINE
 
 	function MapPosition:inTopOuterRiver(unit)
 
@@ -1417,7 +1418,7 @@ function Action:run()
 	    chasingNode = false
 	    return false
 	end
-
+--SSL LINE
 	actions["HeroAtBase"] = function()
 		if myHero.team == 100 then
 			return mp:inLeftBase(myHero)
@@ -1425,7 +1426,7 @@ function Action:run()
 			return mp:inRightBase(myHero)
 		end
 	end
-
+--SSL LINE
 	actions["baseOutValid"] = function ()
 		local ret = true
 		if GetDistance(_allySpawn) < 600 then
@@ -1449,7 +1450,7 @@ function Action:run()
 		else
 			ret =  true
 		end
-
+--SSL LINE
 		if GetDistance(_allySpawn) < 600 then
 			if ret then
 				if myHero.health*100/myHero.maxHealth > 80 then
@@ -1461,7 +1462,7 @@ function Action:run()
 		end
 		return ret
 	end
-
+--SSL LINE
 	actions["PickLane"] = function()
 		local topAlly = 0
 		local midAlly = 0
@@ -1617,7 +1618,7 @@ function Action:run()
 		end
 	    return true
 	end
-
+--SSL LINE
 
 	actions["EnemiesAtBase"] = function()
 		if myHero.team == 100 then
@@ -1640,7 +1641,7 @@ function Action:run()
 		    return false
 		end
 	end
-
+--SSL LINE
 
 	actions["BuyItems"] = function ()
 		if GetDistance(_allySpawn) < 600 or myHero.dead then
@@ -1674,7 +1675,7 @@ function Action:run()
 			return true
 		end
 	end
-
+--SSL LINE
 	actions["HeroAtFull"] = function ()
 		if myHero.health*100/myHero.maxHealth > 80 then
 			return false
@@ -1682,15 +1683,15 @@ function Action:run()
 			return false
 		end
 	end
-
+--SSL LINE
 	actions["minionOnLane"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["GoLastTower"] = function()
 		return true
 	end
-
+--SSL LINE
 
 	actions["safeMinionNearby"] = function()
 		secureMinion = false
@@ -1734,11 +1735,11 @@ function Action:run()
 	      		end
 	      	end
         end
-
+--SSL LINE
         if not lastMinion then
         	return false
         end
-
+--SSL LINE
         for _, minion in pairs(allyMinionsCore.objects) do
         	if not minion.dead then
 	    		if GetDistance(lastMinion,minion) < 350  then
@@ -1750,7 +1751,7 @@ function Action:run()
 	    		end
 	    	end
     	end
-
+--SSL LINE
     	if not secureMinion then
 			if not lastMinion then
 				return false
@@ -1766,12 +1767,12 @@ function Action:run()
 			end
 		end
 	end
-
+--SSL LINE
 	actions["TowerNotFocusing"] = function()
 		--moev this
 		return true
 	end
-
+--SSL LINE
 	actions["PushLane"] = function()
 		comboIN = false
 		chasingNode = false
@@ -1797,7 +1798,7 @@ function Action:run()
 		end
 		return true
 	end
-
+--SSL LINE
 	actions["safeFarm"] = function ()
 		comboIN = false
 		chasingNode = false
@@ -1825,23 +1826,23 @@ function Action:run()
 		end
 		return true
 	end
-
+--SSL LINE
 	actions["MoveToSafeMinion"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["TimeToBase"] = function ()
 		return false
 	end
-
+--SSL LINE
 	actions["enemyNotInAttackRange"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["getCloseToEnemy"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["comboEnemy"] = function ()
 		comboIN = true
 		chasingNode = false
@@ -1949,7 +1950,7 @@ function Action:run()
 	return result
 end
 
-
+--SSL LINE
 --[[
 	Global Variables
 --]]
@@ -1969,7 +1970,7 @@ checkBuy = false
 buyIndex = 1
 lastGold = myHero.gold
 allyMinionsCore = minionManager(MINION_ALLY, 99999999, player, MINION_SORT_HEALTH_ASC)
-
+--SSL LINE
 --sac
 local previousWindUp = 0
 local recalling = false
@@ -1978,7 +1979,7 @@ local turrets
 local bombInit = 0
 local bombDelay = 15
 local heroType = nil
-
+--SSL LINE
 --Sidas Helpers
 ------------ > Don't touch anything below here < --------------
 
@@ -2011,7 +2012,7 @@ local hudDisabled = false
 local ChampInfo = {}
 local useVIPCol = false
 local lastAttacked = nil
-
+--SSL LINE
 function mountBehaviorTree()
 	--[[
 		Create Sequences and selectors
@@ -2045,7 +2046,7 @@ function mountBehaviorTree()
 	se10 = Selector:new()
 	se11 = Selector:new()
 
-
+--SSL LINE
 
 	initNotDone = Action:new{action = "initNotDone"}
 	learnHero = Action:new{action = "learnHero"}
@@ -2071,7 +2072,7 @@ function mountBehaviorTree()
 	amISafeBack = Action:new{action = "amISafeBack"}
 	baseCall = Action:new{action = "baseCall"}
 	baseOutValid = Action:new{action = "baseOutValid"}
-
+--SSL LINE
 	--[[
 		Connect qequences and selectors
 	]]
@@ -2082,22 +2083,22 @@ function mountBehaviorTree()
 
 	se1:addChild(sq1)
 	sq1:addChild(initNotDone)
-
+--SSL LINE
 	se1:addChild(se2)
 	se2:addChild(sq2)
 	se2:addChild(se8)
-
+--SSL LINE
 	sq2:addChild(isEnemyNearby)
 	sq2:addChild(se3)
-
+--SSL LINE
 	se3:addChild(sq3)
 	se3:addChild(safeFarm)
-
+--SSL LINE
 	sq3:addChild(PredictFight)
 	sq3:addChild(sq4)
-
+--SSL LINE
 	sq4:addChild(se6)
-
+--SSL LINE
 	se6:addChild(enemyNotInAttackRange)
 	se6:addChild(getCloseToEnemy)
 
@@ -2128,9 +2129,9 @@ function mountBehaviorTree()
 
 	sq14:addChild(amISafeBack)
 	sq14:addChild(baseCall)
+--SSL LINE
 
-
-
+--SSL LINE
 	se9:addChild(sq11)
 	se9:addChild(GoLastTower)
 
@@ -2143,14 +2144,14 @@ function mountBehaviorTree()
 	--sq12:addChild(safeMinionNearby)
 	sq12:addChild(PushLane)
 end
-
+--SSL LINE
 root = nil
 mp = MapPosition()
 atTop = false
 atBot = true
 atMid = false
-
-
+--SSL LINE
+--SSL LINE
 function OnLoad()
 	if _ENV.aiItems then
 		shopList = _ENV.aiItems
@@ -2168,7 +2169,7 @@ function OnLoad()
 
 	mountBehaviorTree()
 	--sida
-
+--SSL LINE
 	if getChampTable()[myHero.charName] then
 		ChampInfo = getChampTable()[myHero.charName]
 	end
@@ -2188,10 +2189,10 @@ function OnLoad()
 	if CustomOnLoad then CustomOnLoad() end
 	--sida
 end
-
+--SSL LINE
 pathStarted = false
-
-
+--SSL LINE
+--SSL LINE
 local nodePath = {}
 function nodeGenerator()
 	if IsKeyPressed(32) then
@@ -2218,7 +2219,7 @@ function nodeGenerator()
 
 	end
 end
-
+--SSL LINE
 safeNode = false
 movepoint = {x=myHero.x,y=myHero.y,z=myHero.z}
 function updateLastSafeNode()
@@ -2289,7 +2290,7 @@ function updateLastSafeNode()
 	end
 end
 
-
+--SSL LINE
 function nodeDanger()
 	for _, node in pairs(aramLane) do
 		node.danger = 0
@@ -2359,19 +2360,21 @@ function nodeDanger()
 		end
 	end
 end
-
+--SSL LINE
 function OnTick()
+	--SSL LINE
 	allyMinionsCore:update()
 	-- Path nodes
 	nodeDanger()
 	updateLastSafeNode()
-
+	--SSL LINE
 	root:run()
 
 	-- Create Node path
 	--nodeGenerator()
 	--
 	--sac
+	--SSL LINE
 	OrbwalkingOnTick()
 	LastHitOnTick()
 	SkillsOnTick()
@@ -2380,7 +2383,7 @@ function OnTick()
 	AutoCarry.CurrentlyShooting = (GetTickCount() + GetLatency()/2 < lastAttack + previousWindUp + 20 + 30)
 	UseItemsOnTick()
 end
-
+--SSL LINE
 function OnDraw()
 	if debug then
 		DrawText(lastNode, 24, 200, 200, ARGB(255, 255, 255, 255))
@@ -2427,7 +2430,7 @@ function OnDraw()
 		end
 	end
 end
-
+--SSL LINE
 function OnProcessSpell(object, spell)
 	LastHitOnProcessSpell(object, spell)
 	OrbwalkingOnProcessSpell(object, spell)
@@ -2445,15 +2448,15 @@ end
 function OnDeleteObj(object)
 	LastHitOnDeleteObj(object)
 end
-
+--SSL LINE
 function OnCreateObj(object)
 	LastHitOnCreateObj(object)
 end
-
+--SSL LINE
 function OnApplyParticle(Unit, Particle)
 	if PluginOnApplyParticle then PluginOnApplyParticle(Unit, Particle) end
 end
-
+--SSL LINE
 --[[ Callbacks ]]--
 
 local tf = false

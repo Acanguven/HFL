@@ -20,20 +20,14 @@ function loadALL()
 	end)
 end
 
-if IsTrial() then
+local LuaSocket = require("socket")
+local user = GetUser()
+SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+local Link = "/api/acc/".. user .."/"
+SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+if string.match(ScriptReceive, "valid") then
 	loadALL()
-else
-	local LuaSocket = require("socket")
-	local user = GetUser()
-	SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
-	local Link = "/api/acc/".. user .."/"
-	SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-	ScriptReceive, ScriptStatus = SocketScript:receive('*a')
-	if string.match(ScriptReceive, "valid") then
-		loadALL()
-	else
-		loadALL()
-	end
 end
 
 --]]

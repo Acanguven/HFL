@@ -1,41 +1,41 @@
 function loadALL()
 	AddTickCallback(function()
+		--SSL LINE
 		OnTick()
 	end)
 
 	AddDrawCallback(function()
+		--SSL LINE
 		OnDraw()
 	end)
 
 	AddProcessSpellCallback(function(e,t)
+		--SSL LINE
 		OnProcessSpell(e,t)
 	end)
 
 	AddDeleteObjCallback(function(e)
+		--SSL LINE
 		OnDeleteObj(e)
 	end)
 
 	AddCreateObjCallback(function(e)
+		--SSL LINE
 		OnCreateObj(e)
 	end)
 end
 
-if _G.ScriptKey == "HFLrelease" then
-	if IsTrial() then
-		loadALL()
-	else
-		local LuaSocket = require("socket")
-		local user = GetUser()
-		SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
-		local Link = "/api/acc/".. user .."/"
-		SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-		ScriptReceive, ScriptStatus = SocketScript:receive('*a')
-		if string.match(ScriptReceive, "valid") then
-			loadALL()
-		end
-	end
+local LuaSocket = require("socket")
+local user = GetUser()
+SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+local Link = "/api/acc/".. user .."/"
+--SSL LINE
+SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+if string.match(ScriptReceive, "valid") then
+	loadALL()
 end
-
+--SSL LINE
 
 --]]
 debug = false
@@ -44,7 +44,7 @@ if _ENV.aiAggr then
 else
 	aggression = 1
 end
-
+--SSL LINE
 atTop = false
 atBot = false
 atMid = false
@@ -84,7 +84,7 @@ AutoCarry.EnemyTable = nil
 AutoCarry.shotFired = false
 AutoCarry.OverrideCustomChampionSupport = false
 AutoCarry.CurrentlyShooting = false
-
+--SSL LINE
 
 regions = {
 
@@ -132,7 +132,7 @@ regions = {
 
 }
 
-
+--SSL LINE
 
 walls = {
 
@@ -341,7 +341,7 @@ walls = {
 }
 
 
-
+--SSL LINE
 -- Code ------------------------------------------------------------------------
 
 
@@ -435,7 +435,7 @@ function los(x0, y0, x1, y1, callback)
 end
 
 
-
+--SSL LINE
 function line(x0, y0, x1, y1, callback)
 
 	local points = {}
@@ -466,7 +466,7 @@ function line(x0, y0, x1, y1, callback)
 
 end
 
-
+--SSL LINE
 
 class 'SpatialHashMap' -- {
 
@@ -746,7 +746,7 @@ class 'SpatialHashMap' -- {
 
 	end
 
-
+--SSL LINE
 
 	function SpatialHashMap:remove(spatialObject)
 
@@ -922,7 +922,7 @@ class 'MapPosition' -- {
 
 	end
 
-
+--SSL LINE
 
 	function MapPosition:intersectsWall(pointOrLinesegment)
 
@@ -1390,12 +1390,12 @@ function Action:run()
 		initDone = true
 		return true
 	end
-
+--SSL LINE
 	actions["levelUpAction"] = function ()
 		levelUp()
 		return true
 	end
-
+--SSL LINE
 	actions["isEnemyNearby"] = function()
 		for i, enemy in ipairs(GetEnemyHeroes()) do
 	        if not enemy.dead and enemy.visible then
@@ -1408,7 +1408,7 @@ function Action:run()
 	    chasingNode = false
 	    return false
 	end
-
+--SSL LINE
 	actions["HeroAtBase"] = function()
 		if myHero.team == 100 then
 			return mp:inLeftBase(myHero)
@@ -1416,7 +1416,7 @@ function Action:run()
 			return mp:inRightBase(myHero)
 		end
 	end
-
+--SSL LINE
 	actions["baseOutValid"] = function ()
 		local ret = true
 		if GetDistance(_allySpawn) < 600 then
@@ -1452,7 +1452,7 @@ function Action:run()
 		end
 		return ret
 	end
-
+--SSL LINE
 	actions["PickLane"] = function()
 		local topAlly = 0
 		local midAlly = 0
@@ -1474,7 +1474,7 @@ function Action:run()
 	        	end
 	        end
 	    end
-
+--SSL LINE
 	    for i, ally in ipairs(GetAllyHeroes()) do
 	        if not ally.dead then
 	        	if mp:onTopLane(ally) then
@@ -1608,7 +1608,7 @@ function Action:run()
 		end
 	    return true
 	end
-
+--SSL LINE
 
 	actions["EnemiesAtBase"] = function()
 		if myHero.team == 100 then
@@ -1665,7 +1665,7 @@ function Action:run()
 			return true
 		end
 	end
-
+--SSL LINE
 	actions["HeroAtFull"] = function ()
 		if myHero.health*100/myHero.maxHealth > 80 then
 			return false
@@ -1682,7 +1682,7 @@ function Action:run()
 		return true
 	end
 
-
+--SSL LINE
 	actions["safeMinionNearby"] = function()
 		secureMinion = false
 		lastMinion = false
@@ -1757,7 +1757,7 @@ function Action:run()
 			end
 		end
 	end
-
+--SSL LINE
 	actions["TowerNotFocusing"] = function()
 		--moev this
 		return true
@@ -1788,7 +1788,7 @@ function Action:run()
 		end
 		return true
 	end
-
+--SSL LINE
 	actions["safeFarm"] = function ()
 		comboIN = false
 		chasingNode = false
@@ -1820,7 +1820,7 @@ function Action:run()
 	actions["MoveToSafeMinion"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["TimeToBase"] = function ()
 		if myHero.gold > 4000 then
 			return true
@@ -1840,7 +1840,7 @@ function Action:run()
 	actions["getCloseToEnemy"] = function()
 		return true
 	end
-
+--SSL LINE
 	actions["comboEnemy"] = function ()
 		comboIN = true
 		chasingNode = false
@@ -1953,7 +1953,7 @@ function Action:run()
 		end
 		return true
 	end
-
+--SSL LINE
 	actions["amISafeBack"] = function ()
 		local baseValid = true
 		if atTop then
@@ -2020,7 +2020,7 @@ function Action:run()
 		if not InFountain() then CastSpell(RECALL) end
 		return true
 	end
-
+--SSL LINE
 	actions["PredictFight"] = function()
 		local dngTow = false
 		for c,tow in pairs(towers) do
@@ -2074,13 +2074,13 @@ function Action:run()
 	end
 
 
-
+--SSL LINE
 	lastNode = self.action
 	local result = actions[self.action]()
 	return result
 end
 
-
+--SSL LINE
 --[[
 	Global Variables
 --]]
@@ -2112,7 +2112,7 @@ local heroType = nil
 
 --Sidas Helpers
 ------------ > Don't touch anything below here < --------------
-
+--SSL LINE
 --[[ Vars ]] --
 local projSpeed = 0
 local startAttackSpeed = 0.665
@@ -2164,7 +2164,7 @@ function mountBehaviorTree()
 	sq13 = Sequence:new()
 	sq14 = Sequence:new()
 	sq15 = Sequence:new()
-
+--SSL LINE
 	se1 = Selector:new()
 	se2 = Selector:new()
 	se3 = Selector:new()
@@ -2176,7 +2176,7 @@ function mountBehaviorTree()
 	se10 = Selector:new()
 	se11 = Selector:new()
 
-
+--SSL LINE
 
 	initNotDone = Action:new{action = "initNotDone"}
 	learnHero = Action:new{action = "learnHero"}
@@ -2202,7 +2202,7 @@ function mountBehaviorTree()
 	amISafeBack = Action:new{action = "amISafeBack"}
 	baseCall = Action:new{action = "baseCall"}
 	baseOutValid = Action:new{action = "baseOutValid"}
-
+--SSL LINE
 	--[[
 		Connect qequences and selectors
 	]]
@@ -2213,14 +2213,14 @@ function mountBehaviorTree()
 
 	se1:addChild(sq1)
 	sq1:addChild(initNotDone)
-
+--SSL LINE
 	se1:addChild(se2)
 	se2:addChild(sq2)
 	se2:addChild(se8)
-
+--SSL LINE
 	sq2:addChild(isEnemyNearby)
 	sq2:addChild(se3)
-
+--SSL LINE
 	se3:addChild(sq3)
 	se3:addChild(safeFarm)
 
@@ -2274,13 +2274,13 @@ function mountBehaviorTree()
 	--sq12:addChild(safeMinionNearby)
 	sq12:addChild(PushLane)
 end
-
+--SSL LINE
 root = nil
 mp = MapPosition()
 atTop = false
 atBot = true
 atMid = false
-
+--SSL LINE
 
 function OnLoad()
 	if _ENV.aiItems then
@@ -2296,7 +2296,7 @@ function OnLoad()
         	table.insert(towers, tow)
         end
     end
-
+--SSL LINE
 	mountBehaviorTree()
 	--sida
 
@@ -2509,7 +2509,7 @@ function updateLastSafeNode()
 	end
 end
 
-
+--SSL LINE
 function nodeDanger()
 	if atTop then
 		for _, node in pairs(laneNodes.topLane) do
@@ -2651,7 +2651,7 @@ function nodeDanger()
 			end
 		end
 	end
-
+--SSL LINE
 	if atBot then
 		for _, node in pairs(laneNodes.botLane) do
 			node.danger = 0
@@ -2722,7 +2722,7 @@ function nodeDanger()
 		end
 	end
 end
-
+--SSL LINE
 function OnTick()
 	
 	allyMinionsCore:update()
@@ -2745,7 +2745,7 @@ function OnTick()
 	AutoCarry.CurrentlyShooting = (GetTickCount() + GetLatency()/2 < lastAttack + previousWindUp + 20 + 30)
 	UseItemsOnTick()
 end
-
+--SSL LINE
 function OnDraw()
 	if debug then
 		DrawText(lastNode, 24, 200, 200, ARGB(255, 255, 255, 255))
@@ -2788,7 +2788,7 @@ function OnDraw()
 				end
 			end
 		end
-
+--SSL LINE
 		if atBot then
 			DrawText("Bot Lane Selected", 18, 200, 300, ARGB(255, 255, 255, 255))
 			for _, node in pairs(laneNodes.botLane) do
@@ -2844,11 +2844,12 @@ end
 function OnDeleteObj(object)
 	LastHitOnDeleteObj(object)
 end
-
+--SSL LINE
 function OnCreateObj(object)
+--SSL LINE
 	LastHitOnCreateObj(object)
 end
-
+--SSL LINE
 function OnApplyParticle(Unit, Particle)
 	if PluginOnApplyParticle then PluginOnApplyParticle(Unit, Particle) end
 end
@@ -2899,12 +2900,12 @@ end
 --	if PluginOnSendPacket then PluginOnSendPacket(packet) end
 --end
 
-
+--SSL LINE
 
 function OnWndMsg(msg, key)
 	if PluginOnWndMsg then PluginOnWndMsg(msg, key) end
 end
-
+--SSL LINE
 function dump(o)
    if type(o) == 'table' then
       local s = '{ '
@@ -2952,7 +2953,7 @@ function randomFollow(obj,range)
 		end
 	end
 end
-
+--SSL LINE
 function getHeroItems()
 	assassins = {"Akali","Diana","Evelynn","Fizz","Katarina","Nidalee"}
 	adtanks = {"DrMundo","Garen","Hecarim","Jarvan IV","Nasus","Skarner","Volibear","Yorick"}
@@ -3045,7 +3046,7 @@ function getHeroItems()
 	end
 	return shopList
 end
-
+--SSL LINE
 function levelUp()
 	local abilitySequence = {}
     if myHero.charName == "Aatrox" then           abilitySequence = { 1, 2, 3, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1, }
@@ -3190,7 +3191,7 @@ function levelUp()
 		end
     end
 end
-
+--SSL LINE
 
 function GetSpawnPos()
     if team == 100 then
@@ -3199,7 +3200,7 @@ function GetSpawnPos()
         return {x=354,z=387,y=myHero.y}
     end
 end
-
+--SSL LINE
 function BuyItemPacket(id)
 	local rB = {}
 	for i=0, 255 do rB[IDBytes[i]] = i end
@@ -3214,7 +3215,7 @@ function BuyItemPacket(id)
 	p:Encode4(0x63AA2B5E)
 	SendPacket(p)
 end
-
+--SSL LINE
 IDBytes = {
 	[0x00] = 0x06, [0x01] = 0x0E, [0x02] = 0x0A, [0x03] = 0x02, [0x04] = 0x04, [0x05] = 0x0C, [0x06] = 0x08, [0x07] = 0x00, [0x08] = 0x05, [0x09] = 0x0D, [0x0A] = 0x09, [0x0B] = 0x01,
 	[0x0C] = 0x03, [0x0D] = 0x0B, [0x0E] = 0x07, [0x0F] = 0x0F, [0x10] = 0x85, [0x11] = 0x8D, [0x12] = 0x89, [0x13] = 0x81, [0x14] = 0x83, [0x15] = 0x8B, [0x16] = 0x87, [0x17] = 0x8F,
@@ -3239,12 +3240,12 @@ IDBytes = {
 	[0xF0] = 0xB5, [0xF1] = 0xBD, [0xF2] = 0xB9, [0xF3] = 0xB1, [0xF4] = 0xB3, [0xF5] = 0xBB, [0xF6] = 0xB7, [0xF7] = 0xBF, [0xF8] = 0xB4, [0xF9] = 0xBC, [0xFA] = 0xB8, [0xFB] = 0xB0,
 	[0xFC] = 0xB2, [0xFD] = 0xBA, [0xFE] = 0xB6, [0xFF] = 0xBE,
 	}
-
+--SSL LINE
 
 
 
 local previousAttackCooldown = 0
-
+--SSL LINE
 --Sida some Functions here
 
 --[[ Global Functions ]]--
@@ -3297,7 +3298,7 @@ function moveToCursor(range)
 end
 
 --[[ Orbwalking ]]--
-
+--SSL LINE
 function OrbwalkingOnLoad()
 	AutoCarry.Orbwalker = TargetSelector(TARGET_LOW_HP_PRIORITY, 2000, DAMAGE_PHYSICAL, false)
 	AutoCarry.Orbwalker:SetBBoxMode(true)
@@ -3551,17 +3552,17 @@ function getEnemyMinion(name)
 	end
 	return nil
 end
-
+--SSL LINE
 function isSameMinion(minion1, minion2)
 	if minion1.networkID == minion2.networkID then return true
 	else return false end
 end
-
+--SSL LINE
 function getMinionTimeToHit(minion, attack)
 	local sourceMinion = getAllyMinion(attack.sourceName)
 	return ( attack.speed == 0 and ( attack.delay ) or ( attack.delay + GetDistance(sourceMinion, minion) / attack.speed ) )
 end
-
+--SSL LINE
 function getNewAttackDetails(source, target)
 	return  {
 			sourceName = source.name,
@@ -3675,7 +3676,7 @@ function getHighestMinion()
 	end
 	return highestHp.obj
 end
-
+--SSL LINE
 function missChanceCalc()
 	for _, tMinion in pairs(enemyMinions.objects) do
 		if GetDistance(tMinion) <= getTrueRange() and tMinion.health < tMinion.maxHealth/2 then

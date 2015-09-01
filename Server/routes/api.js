@@ -108,14 +108,14 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
                     fs.readFile(__dirname + '/../sr.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
-                        //responseString = responseString + data;
+                        responseString = responseString + data;
                         res.end(responseString);
                     });
                 }else{
                     fs.readFile(__dirname + '/../aram.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
-                        //responseString = responseString + data;
+                        responseString = responseString + data;
                         res.end(responseString);
                     });
                 }
@@ -192,7 +192,7 @@ router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
                                     res.end("Authenticated user ");
                                 }
                             }else{
-                                if(item.type == 0 && item.expire < Date.now()){
+                                if(item.type == 0 && item.expire > Date.now()){
                                     res.end("Authenticated trial user");
                                 }else{
                                     res.end("Your trial account is ended");

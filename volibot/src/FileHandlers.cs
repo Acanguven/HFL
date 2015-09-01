@@ -1,12 +1,4 @@
-﻿/*
- * FileHandler.cs is part of the opensource VoliBot AutoQueuer project.
- * Credits to: shalzuth, Maufeat, imsosharp
- * Find assemblies for this AutoQueuer on LeagueSharp's official forum at:
- * You are allowed to copy, edit and distribute this project,
- * as long as you don't touch this notice and you release your project with source.
- */
-
-using System;
+﻿using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;

@@ -142,6 +142,7 @@ function HFL(user, settings){
 	this.bolWorks = false;
 	this.starTime = Date.now();
 	this.lastCommandsRecieved = [];
+	this.reRun = false;
 	this.smurfStatus = [];
 	this.ng = 0;
 	var queue = false;
@@ -294,6 +295,9 @@ function HFL(user, settings){
 						childProcess.exec(HFL_KILLER);
 						ref.started = false;
 					}else{
+						if(data == "hflupdated"){
+							ref.reRun = true;
+						}
 						if(data.indexOf("|#|") > 0){
 							ref.queueStatusUpdater(data);
 						}
@@ -303,6 +307,10 @@ function HFL(user, settings){
 
 			ref.queue.on("exit", function(data){
 				ref.started = false;
+				if(ref.reRun){
+					ref.reRun = false;
+					ref.start();
+				}
 			});
 		}
 	}

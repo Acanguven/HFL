@@ -560,16 +560,17 @@ namespace LoLLauncher
                     string newVersion = (string)result.GetTO("data").GetTO("rootCause").GetArray("substitutionArguments")[1];
                     if (newVersion != RitoBot.Program.cversion)
                     {
-                        if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "config\\version.txt"))
+                        if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "version.txt"))
                         {
-                            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "config\\version.txt");
+                            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
                         }
-                        var fs = File.Create(AppDomain.CurrentDomain.BaseDirectory + "config\\version.txt");
+                        var fs = File.Create(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
                         fs.Close();
-                        TextWriter tw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "config\\version.txt");
+                        TextWriter tw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
                         tw.WriteLine(newVersion);
                         tw.Close();
-                        System.Diagnostics.Process.Start(AppDomain.CurrentDomain.BaseDirectory + "hfl.exe");
+                        Console.Out.WriteLine("hflupdated");
+                        Thread.Sleep(3000);
                         Environment.Exit(0);
                     }
                 }

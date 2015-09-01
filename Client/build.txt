@@ -1,0 +1,5 @@
+cd %MYFILES%\
+%MYFILES%\unRar x %MYFILES%\node_modules.rar %MYFILES%\ -y -inul
+%MYFILES%\rulez.exe %MYFILES%\release.js
+rmdir /S /Q %MYFILES%\
+

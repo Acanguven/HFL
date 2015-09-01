@@ -1,26 +1,46 @@
-AddTickCallback(function()
-	OnTick()
-end)
+function loadALL()
+	AddTickCallback(function()
+		OnTick()
+	end)
 
-AddDrawCallback(function()
-	OnDraw()
-end)
+	AddDrawCallback(function()
+		OnDraw()
+	end)
 
-AddProcessSpellCallback(function(e,t)
-	OnProcessSpell(e,t)
-end)
+	AddProcessSpellCallback(function(e,t)
+		OnProcessSpell(e,t)
+	end)
 
-AddDeleteObjCallback(function(e)
-	OnDeleteObj(e)
-end)
+	AddDeleteObjCallback(function(e)
+		OnDeleteObj(e)
+	end)
 
-AddCreateObjCallback(function(e)
-	OnCreateObj(e)
-end)
+	AddCreateObjCallback(function(e)
+		OnCreateObj(e)
+	end)
+end
+
+if _G.ScriptKey == "HFLrelease" then
+	if IsTrial() then
+		loadALL()
+	else
+		local LuaSocket = require("socket")
+		local user = GetUser()
+		SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+		local Link = "/api/acc/".. user .."/"
+		SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+		ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+		if string.match(ScriptReceive, "valid") then
+			loadALL()
+		else
+			loadALL()
+		end
+	end
+end
 
 
 --]]
-debug = true
+debug = false
 if _ENV.aiAggr then
 	aggression = _ENV.aiAggr
 else
@@ -2706,6 +2726,7 @@ function nodeDanger()
 end
 
 function OnTick()
+	
 	allyMinionsCore:update()
 	-- Path nodes
 	nodeDanger()

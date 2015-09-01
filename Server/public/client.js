@@ -415,6 +415,15 @@ app.controller("main" , function($scope,service,$location,$interval){
         });
     });
 
+
+    $scope.download = function(){
+        window.open("/api/download","__blank");
+    }
+
+    $scope.downloadScript = function(){
+        window.open("/api/DownloadScript","__blank");
+    }
+
     
     $scope.loggedIn = (service.user.username && service.user.key) ? true : false;
     $scope.$watch(function(){
@@ -540,6 +549,7 @@ app.controller("dashboard", function($scope, service,$interval){
             }
         }
     }
+
 });
 
 app.controller("login", function($scope,service,$http,$location){

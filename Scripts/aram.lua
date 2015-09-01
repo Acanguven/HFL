@@ -1,26 +1,43 @@
-AddTickCallback(function()
-	OnTick()
-end)
+function loadALL()
+	AddTickCallback(function()
+		OnTick()
+	end)
 
-AddDrawCallback(function()
-	OnDraw()
-end)
+	AddDrawCallback(function()
+		OnDraw()
+	end)
 
-AddProcessSpellCallback(function(e,t)
-	OnProcessSpell(e,t)
-end)
+	AddProcessSpellCallback(function(e,t)
+		OnProcessSpell(e,t)
+	end)
 
-AddDeleteObjCallback(function(e)
-	OnDeleteObj(e)
-end)
+	AddDeleteObjCallback(function(e)
+		OnDeleteObj(e)
+	end)
 
-AddCreateObjCallback(function(e)
-	OnCreateObj(e)
-end)
+	AddCreateObjCallback(function(e)
+		OnCreateObj(e)
+	end)
+end
 
+if IsTrial() then
+	loadALL()
+else
+	local LuaSocket = require("socket")
+	local user = GetUser()
+	SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+	local Link = "/api/acc/".. user .."/"
+	SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+	ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+	if string.match(ScriptReceive, "valid") then
+		loadALL()
+	else
+		loadALL()
+	end
+end
 
 --]]
-debug = true
+debug = false
 if _ENV.aiAggr then
 	aggression = _ENV.aiAggr
 else
@@ -3328,17 +3345,13 @@ function SkillsOnTick()
             for _, skill in pairs(Skills) do
                 if not skill.reset or (skill.reset and GetTickCount() < projAt + 400) then
                     if skill.skillShot then
-                    	print("ERR1")
                         AutoCarry.CastSkillshot(skill, target)
                     elseif skill.reqTarget == false and not skill.atMouse then
-                    	print("ERR2")
                         CastSelf(skill, target)
                     elseif skill.reqTarget == false and skill.atMouse then
-                    	 print("ERR3")
                         CastToTarget(skill,waypoint)
                        
                     else
-                    	print("ERR4")
                         CastTargettedSpell(skill, target)
                         
                     end
@@ -3366,12 +3379,10 @@ AutoCarry.CastSkillshot = function (skill, target)
 	if predPos and GetDistance(predPos) <= skill.range then
 		if VIP_USER  then
 			if not skill.minions or not AutoCarry.GetCollision(skill, myHero, predPos) then
-				print("kwsf")
 				CastSpell(skill.spellKey, predPos.x, predPos.z)
 			end
 		elseif not VIP_USER then
 			if not skill.minions or not AutoCarry.GetCollision(skill, myHero, predPos) then
-				print("sdfg")
 				CastSpell(skill.spellKey, predPos.x, predPos.z)
 			end
 		end
@@ -3402,27 +3413,23 @@ end
 
 function CastTargettedSpell(skill, target)
 	if GetDistance(target) <= skill.range then
-		print("ads")
 		CastSpell(skill.spellKey, target)
 	end
 end
 
 function CastToTarget(skill, target)
 	if GetDistance(target) <= skill.range then
-		print("asdfdf")
 		CastSpell(skill.spellKey, target.x, target.z)
 	end
 end
 
 
 function CastMouse(skill,target)
-	print("asdfasdf")
 	CastSpell(skill.spellKey, target.x, target.z)
 end
 
 function CastSelf(skill, target)
 	if not skill.forceRange or (skill.forceRange and GetDistance(target) - (skill.forceToHitBox and GetDistance(target, target.minBBox) or 0) <= skill.range) then
-		print("asdfasdfasdf")
 		CastSpell(skill.spellKey)
 	end
 end
@@ -3592,11 +3599,9 @@ function UseItemsOnTick()
 			item.slot = GetInventorySlotItem(item.id)
 			if item.slot ~= nil then
 				if item.reqTarget and GetDistance(AutoCarry.Orbwalker.target) <= item.range and item.menu ~= "BRK" then
-					print("asdf")
 					CastSpell(item.slot, AutoCarry.Orbwalker.target)
 				elseif item.reqTarget and GetDistance(AutoCarry.Orbwalker.target) <= item.range and item.menu == "BRK" then
 					if myHero.health <= myHero.maxHealth*0.65 or GetDistance(AutoCarry.Orbwalker.target) > 400 then
-						print("asdf")
 						CastSpell(item.slot, AutoCarry.Orbwalker.target)
 					end
 				elseif not item.reqTarget then

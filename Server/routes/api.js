@@ -60,8 +60,34 @@ router.get("/lawpanel/:pass", function(req,res){
 });
 
 
+/* Download */
+router.get("/Download", function(req,res,next){
+    var file = __dirname + '../../../HFL RELEASE/HFL.rar';
+    res.end("Wait last test")
+    //res.download(file);
+});
+
+router.get("/DownloadScript", function(req,res,next){
+    var file = __dirname + '../../../ScriptsEncoded/Hands Free Leveler.lua';
+    res.end("Wait last test")
+    //res.download(file);
+});
 
 /* Api routes. */
+
+router.get("/acc/:username", function(req,res,next){
+    Hwid.findOne({username:req.params.username}, function(err,item){
+        if(!err && item){
+            if(item.type === 1 || item.type === 2){
+                res.end("valid");
+            }else{
+                res.end("sorry");
+            }
+        }else{
+            res.end("sorry");
+        }
+    })
+});
 
 router.post('/register', function(req, res, next) {
 	if(req.body.username && req.body.password){
@@ -101,7 +127,7 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
     var responseString = ""
     Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err && item){
-            fs.readFile(__dirname + '/../itemtable.lua', 'utf8', function (err,table) {
+            fs.readFile(__dirname + '../../../ScriptsEncoded/sr.lua' 'utf8', function (err,table) {
                 responseString = table + "\n\n";
                 responseString = responseString + createLuaSettings(item.settings,req.params.champion);
                 if(req.params.map == "summonerRift"){
@@ -112,7 +138,7 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
                         res.end(responseString);
                     });
                 }else{
-                    fs.readFile(__dirname + '/../aram.lua', 'utf8', function (err,data) {
+                    fs.readFile(__dirname + '../../../ScriptsEncoded/aram.lua', 'utf8', function (err,data) {
                         responseString = responseString + "print('Loaded AI Module')";
                         responseString = responseString + "\n\n\n\n";
                         responseString = responseString + data;

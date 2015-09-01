@@ -22,7 +22,7 @@ var hwid = new Schema({
             chat:{init:true}
         }
     },
-    expire:{type:String,default:Date.now()+(1000*60*60*24*2)}
+    expire:{type:String,default:Date.now()+(1000*60*60*24)}
 });
 
 

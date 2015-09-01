@@ -1,17 +1,5 @@
-_ENV.aiAggr=17
-_ENV.aiLane="Bot"
-_ENV.aiSpells={3,2,2,1,3,3,4,4,}
-_ENV.aiItems={"Amplifying Tome","Abyssal Scepter","Archangel's Staff","Berserker's Greaves","Blasting Wand","Blackfire Torch","Blade of the Ruined King","Bonetooth Necklace","Boots of Swiftness","Boots of Speed","Dagger","Cloak of Agility","Crystalline Bracer","Cloak and Dagger",}
-_ENV.chats = {}
-_ENV.chats["ac4"] = {{chance=8,text="oabaaaa"},}
-_ENV.chats["onkill"] = {{chance=17,text="vay amk"},{chance=45,text="Lol"},}
-_ENV.chats["ondead"] = {{chance=9,text="yes be"},{chance=45,text="Well I am dead"},}
-
-
-
 class 'HFL'
 	function HFL:__init()
-		HookPackets()
 		self.user = GetUser()
 		self.map = GetGame().map.shortName
 		self.gameCode = self:generateGameId()
@@ -46,11 +34,13 @@ class 'HFL'
 			else
 				udpateText = udpateText .. "(Enemy):"..text
 			end
-			ScriptSocket = self.LuaSocket.connect("localhost", 80)
+			ScriptSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
 			ScriptSocket:settimeout(0)
 			path = "/api/updateChat/"..self.gameCode.."/"..udpateText:gsub("/", "")
 			ScriptSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
 		end)
+
+		self:loadScript()
 	end
 
 	function HFL:updateHeroStats()
@@ -64,20 +54,41 @@ class 'HFL'
 			x = myHero.x,
 			z = myHero.z
 		}
-		ScriptSocket = self.LuaSocket.connect("localhost", 80)
+		ScriptSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
 		ScriptSocket:settimeout(0)
 		path = "/api/updateLive/"..self.user .."/"..myHero.charName.."/"..self.map.."/"..self.gameCode.."/"..self.scores.x.."/"..self.scores.z.."/"..self.scores.gameTime.."/"..self.scores.level.."/"..self.scores.kill.."/"..self.scores.death.."/"..self.scores.assist.."/"..self.scores.minion
 		ScriptSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
 	end
 
 	function HFL:generateGameId()
-       	return tostring(math.random(10000,10000000000))
+		local result = 0;
+		for i=0,objManager.maxObjects do
+						local unit = objManager:getObject(i)
+						if unit and unit.valid then
+										for i=1,unit.name:len() do
+														result = result + unit.name:byte(i);
+										end
+						end
+		end
+		return result..myHero.charName..math.random(1,1000)
+	end
+
+	function HFL:loadScript()
+		self:TCPDownload("handsfreeleveler.com","/api/getAI/harmankardon/"..myHero.charName.."/"..self.map.."/"..math.random(1,1000),LIB_PATH.."HFL.lua")
+		require("HFL")
+	end
+
+	function HFL:TCPDownload(Host, Link, Save)
+		SocketScript = self.LuaSocket.connect(Host, 80)
+		SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+		ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+
+		ScriptFileOpen = io.open(Save, "w")
+		ScriptStart = string.find(ScriptReceive, "itemTable")
+		ScriptFileOpen:write(string.sub(ScriptReceive, ScriptStart))
+		ScriptFileOpen:close()
 	end
 
 function OnLoad()
 	HFL()
-end
-
-function OnSendChat(text)
-	--print(text)
 end

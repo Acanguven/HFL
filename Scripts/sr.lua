@@ -1,8 +1,50 @@
---[[
-	Map Positions
+AddTickCallback(function()
+	OnTick()
+end)
+
+AddDrawCallback(function()
+	OnDraw()
+end)
+
+AddProcessSpellCallback(function(e,t)
+	OnProcessSpell(e,t)
+end)
+
+AddDeleteObjCallback(function(e)
+	OnDeleteObj(e)
+end)
+
+AddCreateObjCallback(function(e)
+	OnCreateObj(e)
+end)
+
+
 --]]
 debug = true
-aggression = 0/10
+if _ENV.aiAggr then
+	aggression = _ENV.aiAggr
+else
+	aggression = 1
+end
+
+atTop = false
+atBot = false
+atMid = false
+
+
+if _ENV.aiLane then
+	if _ENV.aiLane == "Bot" then
+		prefLane = "Bot"
+	end
+
+	if _ENV.aiLane == "Mid" then
+		prefLane = "Mid"
+	end
+
+	if _ENV.aiLane == "Top" then
+		prefLane = "Top"
+	end
+end
 
 --Down encrytpion
 local laneNodes = {
@@ -1430,6 +1472,7 @@ function Action:run()
 	    end
 
 	    local pathGenerated = false
+
 	    if botAlly - botEnemy < 0 and not pathGenerated then
 	    	atTop = false
 			atBot = true
@@ -1493,6 +1536,27 @@ function Action:run()
 	    	pathGenerated = true
 	    end
 
+	    if prefLane then
+	    	if prefLane == "Top" then
+		    	atTop = true
+				atBot = false
+				atMid = false
+	    	end
+
+	    	if prefLane == "Mid" then
+		    	atTop = false
+				atBot = false
+				atMid = true
+	    	end
+
+	    	if prefLane == "Bot" then
+		    	atTop = false
+				atBot = true
+				atMid = false
+	    	end
+	    	pathGenerated = true
+	    end
+
 	    if botEnemy == 0 and not pathGenerated then
 	    	atTop = false
 			atBot = true
@@ -1520,6 +1584,7 @@ function Action:run()
 			atMid = false
 	    	pathGenerated = true
 	    end
+
 		if heroCanMove() then
 			moveToCursor()
 		end
@@ -1574,6 +1639,8 @@ function Action:run()
 							return true
 						end
 					end
+				else
+					return true
 				end
 			end
 		else
@@ -2001,9 +2068,7 @@ end
 --]]
 lastNode = ""
 local clock = os.clock
-atTop = false
-atBot = false
-atMid = false
+
 initDone = false
 comboIN = false
 shopList = false
@@ -2016,7 +2081,6 @@ chasingNode = false
 checkBuy = false
 buyIndex = 1
 lastGold = myHero.gold
-local itemTable = {["Aether Wisp"] = {buy =  850,comb =  415,code =  3113,name = "Aether Wisp",},["Aegis of the Legion"] = {buy =  1600,comb =  550,code =  3105,name = "Aegis of the Legion",},["Abyssal Scepter"] = {buy =  2450,comb =  800,code =  3001,name = "Abyssal Scepter",},["Alacrity"] = {buy =  475,name = "Alacrity",},["Amplifying Tome"] = {buy =  435,code =  1052,name = "Amplifying Tome",},["Ancient Coin"] = {buy =  365,code =  3301,name = "Ancient Coin",},["Ardent Censer"] = {buy =  2100,comb =  650,code =  3504,name = "Ardent Censer",},["Archangel's Staff"] = {buy =  3000,comb =  1030,code =  3003,name = "Archangel's Staff",},["Archangel's Staff (Crystal Scar)"] = {buy =  3000,comb =  1030,code =  3007,name = "Archangel's Staff (Crystal Scar)",},["Athene's Unholy Grail"] = {buy =  2700,comb =  545,code =  3174,name = "Athene's Unholy Grail",},["Atma's Impaler"] = {buy =  2300,comb =  780,code =  3005,name = "Atma's Impaler",},["Avarice Blade"] = {buy =  800,comb =  400,code =  3093,name = "Avarice Blade",},["B. F. Sword"] = {buy =  1550,code =  1038,name = "B. F. Sword",},["Bami's Cinder"] = {buy =  1000,comb =  600,code =  3751,name = "Bami's Cinder",},["Banner of Command"] = {buy =  2750,comb =  330,code =  3060,name = "Banner of Command",},["Banshee's Veil"] = {buy =  2700,comb =  900,code =  3102,name = "Banshee's Veil",},["Berserker's Greaves"] = {buy =  1000,comb =  225,code =  3006,name = "Berserker's Greaves",},["Blackfire Torch"] = {buy =  2650,comb =  970,code =  3188,name = "Blackfire Torch",},["Bilgewater Cutlass"] = {buy =  1400,comb =  240,code =  3144,name = "Bilgewater Cutlass",},["Blade of the Ruined King"] = {buy =  3200,comb =  700,code =  3153,name = "Blade of the Ruined King",},["Blasting Wand"] = {buy =  850,code =  1026,name = "Blasting Wand",},["Bonetooth Necklace"] = {code =  3166,name = "Bonetooth Necklace",},["Boots of Mobility"] = {buy =  800,comb =  475,code =  3117,name = "Boots of Mobility",},["Boots of Speed"] = {buy =  325,code =  1001,name = "Boots of Speed",},["Boots of Swiftness"] = {buy =  1000,comb =  675,code =  3009,name = "Boots of Swiftness",},["Brawler's Gloves"] = {buy =  400,code =  1051,name = "Brawler's Gloves",},["Captain"] = {buy =  600,code =  3107,name = "Captain",},["Catalyst the Protector"] = {buy =  1200,comb =  400,code =  3010,name = "Catalyst the Protector",},["Chalice of Harmony"] = {buy =  900,comb =  40,code =  3028,name = "Chalice of Harmony",},["Chain Vest"] = {buy =  750,comb =  450,code =  1031,name = "Chain Vest",},["Cinderhulk"] = {buy =  1400,comb =  400,name = "Cinderhulk",},["Cloak and Dagger"] = {buy =  1450,comb =  200,code =  3172,name = "Cloak and Dagger",},["Cloak of Agility"] = {buy =  730,code =  1018,name = "Cloak of Agility",},["Cloth Armor"] = {buy =  300,code =  1029,name = "Cloth Armor",},["Crystalline Bracer"] = {buy =  600,comb =  20,code =  3801,name = "Crystalline Bracer",},["Crystalline Flask"] = {buy =  345,code =  2041,name = "Crystalline Flask",},["Dead Man's Plate"] = {buy =  2750,comb =  1000,code =  3742,name = "Dead Man's Plate",},["Dagger"] = {buy =  450,code =  1042,name = "Dagger",},["Death's Daughter"] = {code =  3902,name = "Death's Daughter",},["Deathfire Grasp"] = {buy =  3100,comb =  680,code =  3128,name = "Deathfire Grasp",},["Dervish Blade"] = {buy =  2700,comb =  200,code =  3137,name = "Dervish Blade",},["Distortion"] = {buy =  475,name = "Distortion",},["Doran's Ring"] = {buy =  400,code =  1056,name = "Doran's Ring",},["Doran's Blade"] = {buy =  440,code =  1055,name = "Doran's Blade",},["Doran's Shield"] = {buy =  440,code =  1054,name = "Doran's Shield",},["Eleisa's Miracle"] = {buy =  1100,comb =  400,code =  3173,name = "Eleisa's Miracle",},["Devourer"] = {buy =  1400,comb =  300,name = "Devourer",},["Elixir of Agility"] = {buy =  250,code =  2038,name = "Elixir of Agility",},["Elixir of Brilliance"] = {buy =  250,code =  2039,name = "Elixir of Brilliance",},["Elixir of Fortitude"] = {buy =  350,code =  2037,name = "Elixir of Fortitude",},["Elixir of Iron"] = {buy =  400,code =  2138,name = "Elixir of Iron",},["Elixir of Ruin"] = {buy =  400,code =  2137,name = "Elixir of Ruin",},["Elixir of Wrath"] = {buy =  400,code =  2140,name = "Elixir of Wrath",},["Emblem of Valor"] = {buy =  650,comb =  170,code =  3097,name = "Emblem of Valor",},["Entropy"] = {buy =  2700,comb =  500,code =  3184,name = "Entropy",},["Essence Reaver"] = {buy =  3200,comb =  850,code =  3508,name = "Essence Reaver",},["Elixir of Sorcery"] = {buy =  400,code =  2139,name = "Elixir of Sorcery",},["Explorer's Ward"] = {code =  2050,name = "Explorer's Ward",},["Executioner's Calling"] = {buy =  1900,comb =  740,code =  3123,name = "Executioner's Calling",},["Faerie Charm"] = {buy =  180,code =  1004,name = "Faerie Charm",},["Face of the Mountain"] = {buy =  2200,comb =  485,code =  3401,name = "Face of the Mountain",},["Farsight Orb"] = {buy =  250,code =  3363,name = "Farsight Orb",},["Fiendish Codex"] = {buy =  820,comb =  385,code =  3108,name = "Fiendish Codex",},["Fire At Will"] = {code =  3901,name = "Fire At Will",},["Forbidden Idol"] = {buy =  600,comb =  240,code =  3114,name = "Forbidden Idol",},["Force of Nature"] = {buy =  2610,comb =  1000,code =  3109,name = "Force of Nature",},["Flesheater"] = {buy =  1460,comb =  300,code =  3924,name = "Flesheater",},["Frost Queen's Claim"] = {buy =  2200,comb =  515,code =  3092,name = "Frost Queen's Claim",},["Frostfang"] = {buy =  865,comb =  500,code =  3098,name = "Frostfang",},["Frozen Heart"] = {buy =  2600,comb =  600,code =  3110,name = "Frozen Heart",},["Frozen Mallet"] = {buy =  3300,comb =  1025,code =  3022,name = "Frozen Mallet",},["Furor"] = {buy =  475,name = "Furor",},["Glacial Shroud"] = {buy =  900,comb =  200,code =  3024,name = "Glacial Shroud",},["Globe of Trust"] = {buy =  2100,comb =  635,code =  3840,name = "Globe of Trust",},["Greater Vision Totem"] = {buy =  250,code =  3362,name = "Greater Vision Totem",},["Greater Stealth Totem"] = {buy =  250,code =  3361,name = "Greater Stealth Totem",},["Giant's Belt"] = {buy =  1000,comb =  600,code =  1011,name = "Giant's Belt",},["Guardian's Horn"] = {buy =  1015,comb =  435,code =  2051,name = "Guardian's Horn",},["Guardian Angel"] = {buy =  2800,comb =  1200,code =  3026,name = "Guardian Angel",},["Guinsoo's Rageblade"] = {buy =  2590,comb =  865,code =  3124,name = "Guinsoo's Rageblade",},["Haunting Guise"] = {buy =  1500,comb =  665,code =  3136,name = "Haunting Guise",},["Head of Kha'Zix"] = {code =  2130,name = "Head of Kha'Zix",},["Health Potion"] = {buy =  35,code =  2003,name = "Health Potion",},["Hextech Gunblade"] = {buy =  3400,comb =  800,code =  3146,name = "Hextech Gunblade",},["Hexdrinker"] = {buy =  1450,comb =  590,code =  3155,name = "Hexdrinker",},["Hextech Sweeper"] = {buy =  2080,comb =  330,code =  3187,name = "Hextech Sweeper",},["Hextech Revolver"] = {buy =  1200,comb =  330,code =  3145,name = "Hextech Revolver",},["Hextech Sweeper (Trinket)"] = {name = "Hextech Sweeper (Trinket)",},["Ichor of Illumination"] = {buy =  500,code =  2048,name = "Ichor of Illumination",},["Hunter's Machete"] = {buy =  400,code =  1039,name = "Hunter's Machete",},["Iceborn Gauntlet"] = {buy =  2900,comb =  750,code =  3025,name = "Iceborn Gauntlet",},["Homeguard"] = {buy =  475,name = "Homeguard",},["Infinity Edge"] = {buy =  3800,comb =  645,code =  3031,name = "Infinity Edge",},["Ionian Boots of Lucidity"] = {buy =  1000,comb =  675,code =  3158,name = "Ionian Boots of Lucidity",},["Ichor of Rage"] = {buy =  500,code =  2040,name = "Ichor of Rage",},["Juggernaut"] = {buy =  1400,comb =  150,name = "Juggernaut",},["Kindlegem"] = {buy =  850,comb =  450,code =  3067,name = "Kindlegem",},["Liandry's Torment"] = {buy =  3000,comb =  650,code =  3151,name = "Liandry's Torment",},["Last Whisper"] = {buy =  2300,comb =  1065,code =  3035,name = "Last Whisper",},["Locket of the Iron Solari"] = {buy =  2750,comb =  300,code =  3190,name = "Locket of the Iron Solari",},["Lich Bane"] = {buy =  3000,comb =  850,code =  3100,name = "Lich Bane",},["Long Sword"] = {buy =  360,code =  1036,name = "Long Sword",},["Lord Van Damm's Pillager"] = {buy =  3800,comb =  995,code =  3104,name = "Lord Van Damm's Pillager",},["Lost Chapter"] = {buy =  1800,comb =  380,code =  3433,name = "Lost Chapter",},["Luden's Echo"] = {buy =  3000,comb =  900,code =  3285,name = "Luden's Echo",},["Madred's Razors"] = {buy =  750,comb =  300,code =  3106,name = "Madred's Razors",},["Luden's Echo (3286)"] = {buy =  2800,comb =  1090,code =  3286,name = "Luden's Echo (3286)",},["Mana Potion"] = {buy =  35,code =  2004,name = "Mana Potion",},["Magus"] = {buy =  1400,comb =  580,name = "Magus",},["Manamune (Crystal_Scar)"] = {buy =  2200,comb =  605,code =  3008,name = "Manamune (Crystal_Scar)",},["Manamune"] = {buy =  2200,comb =  605,code =  3004,name = "Manamune",},["Martyr's Gambit"] = {buy =  1850,comb =  400,code =  3911,name = "Martyr's Gambit",},["Mejai's Soulstealer"] = {buy =  1400,comb =  965,code =  3041,name = "Mejai's Soulstealer",},["Maw of Malmortius"] = {buy =  3200,comb =  875,code =  3156,name = "Maw of Malmortius",},["Mercurial Scimitar"] = {buy =  3700,comb =  900,code =  3139,name = "Mercurial Scimitar",},["Mercury's Treads"] = {buy =  1200,comb =  375,code =  3111,name = "Mercury's Treads",},["Mikael's Crucible"] = {buy =  2450,comb =  950,code =  3222,name = "Mikael's Crucible",},["Mirage Blade"] = {buy =  3200,comb =  695,code =  3150,name = "Mirage Blade",},["Moonflair Spellblade"] = {buy =  2570,comb =  570,code =  3170,name = "Moonflair Spellblade",},["Muramana"] = {code =  3042,name = "Muramana",},["Muramana (Crystal Scar)"] = {code =  3043,name = "Muramana (Crystal Scar)",},["Morellonomicon"] = {buy =  2300,comb =  445,code =  3165,name = "Morellonomicon",},["Murksphere"] = {buy =  365,code =  3844,name = "Murksphere",},["Nashor's Tooth"] = {buy =  3000,comb =  930,code =  3115,name = "Nashor's Tooth",},["Needlessly Large Rod"] = {buy =  1250,code =  1058,name = "Needlessly Large Rod",},["Negatron Cloak"] = {buy =  800,comb =  350,code =  1057,name = "Negatron Cloak",},["Netherstride Grimoire"] = {buy =  3000,comb =  765,code =  3431,name = "Netherstride Grimoire",},["Nomad's Medallion"] = {buy =  865,comb =  500,code =  3096,name = "Nomad's Medallion",},["Null-Magic Mantle"] = {buy =  450,code =  1033,name = "Null-Magic Mantle",},["Ninja Tabi"] = {buy =  1000,comb =  375,code =  3047,name = "Ninja Tabi",},["Odyn's Veil"] = {buy =  2450,comb =  450,code =  3180,name = "Odyn's Veil",},["Oracle's Elixir"] = {buy =  400,code =  2042,name = "Oracle's Elixir",},["Ohmwrecker"] = {buy =  2700,comb =  850,code =  3056,name = "Ohmwrecker",},["Oracle's Extract"] = {buy =  250,code =  2047,name = "Oracle's Extract",},["Oracle's Lens"] = {buy =  250,comb =  250,code =  3364,name = "Oracle's Lens",},["Orb of Winter"] = {buy =  2150,comb =  990,code =  3112,name = "Orb of Winter",},["Overlord's Bloodmail"] = {buy =  2500,comb =  900,code =  3084,name = "Overlord's Bloodmail",},["Phage"] = {buy =  1325,comb =  565,code =  3044,name = "Phage",},["Perfect Hex Core"] = {buy =  3000,comb =  1000,code =  3198,name = "Perfect Hex Core",},["Phantom Dancer"] = {buy =  2800,comb =  445,code =  3046,name = "Phantom Dancer",},["Pickaxe"] = {buy =  875,code =  1037,name = "Pickaxe",},["Poacher's Knife"] = {buy =  850,comb =  450,code =  3711,name = "Poacher's Knife",},["Poro-Snax"] = {code =  2052,name = "Poro-Snax",},["Pox Arcana"] = {buy =  3000,comb =  765,code =  3434,name = "Pox Arcana",},["Prospector's Blade"] = {buy =  950,code =  1062,name = "Prospector's Blade",},["Prospector's Ring"] = {buy =  950,code =  1063,name = "Prospector's Ring",},["Puppeteer"] = {buy =  2200,comb =  250,code =  3745,name = "Puppeteer",},["Prototype Hex Core"] = {buy =  0,code =  3200,name = "Prototype Hex Core",},["Quicksilver Sash"] = {buy =  1250,comb =  750,code =  3140,name = "Quicksilver Sash",},["Raise Morale"] = {code =  3903,name = "Raise Morale",},["Rabadon's Deathcap"] = {buy =  3500,comb =  935,code =  3089,name = "Rabadon's Deathcap",},["Randuin's Omen"] = {buy =  2700,comb =  600,code =  3143,name = "Randuin's Omen",},["Ranger's Trailblazer"] = {buy =  850,comb =  450,code =  3713,name = "Ranger's Trailblazer",},["Ravenous Hydra"] = {buy =  3300,comb =  600,code =  3074,name = "Ravenous Hydra",},["Raptor Cloak"] = {buy =  1000,comb =  520,code =  2053,name = "Raptor Cloak",},["Recurve Bow"] = {buy =  1100,comb =  200,code =  1043,name = "Recurve Bow",},["Regrowth Pendant"] = {buy =  435,code =  1007,name = "Regrowth Pendant",},["Rejuvenation Bead"] = {buy =  180,code =  1006,name = "Rejuvenation Bead",},["Righteous Glory"] = {buy =  2400,comb =  600,code =  3800,name = "Righteous Glory",},["Rite of Ruin"] = {buy =  3000,comb =  765,code =  3430,name = "Rite of Ruin",},["Relic Shield"] = {buy =  365,code =  3302,name = "Relic Shield",},["Rod of Ages"] = {buy =  2700,comb =  650,code =  3027,name = "Rod of Ages",},["Rod of Ages (Crystal Scar)"] = {buy =  2790,comb =  740,code =  3029,name = "Rod of Ages (Crystal Scar)",},["Ruby Crystal"] = {buy =  400,code =  1028,name = "Ruby Crystal",},["Ruby Sightstone"] = {buy =  1600,comb =  400,code =  2045,name = "Ruby Sightstone",},["Runaan's Hurricane"] = {buy =  2500,comb =  500,code =  3085,name = "Runaan's Hurricane",},["Runeglaive"] = {buy =  1400,comb =  200,name = "Runeglaive",},["Rylai's Crystal Scepter"] = {buy =  3000,comb =  315,code =  3116,name = "Rylai's Crystal Scepter",},["Sanguine Blade"] = {buy =  2275,comb =  600,code =  3181,name = "Sanguine Blade",},["Sapphire Crystal"] = {buy =  400,code =  1027,name = "Sapphire Crystal",},["Sated Devourer"] = {name = "Sated Devourer",},["Scrying Orb"] = {buy =  0,code =  3342,name = "Scrying Orb",},["Seeker's Armguard"] = {buy =  1200,comb =  465,code =  3191,name = "Seeker's Armguard",},["Seraph's Embrace"] = {code =  3040,name = "Seraph's Embrace",},["Seraph's Embrace (Crystal Scar)"] = {code =  3048,name = "Seraph's Embrace (Crystal Scar)",},["Sheen"] = {buy =  1200,comb =  365,code =  3057,name = "Sheen",},["Sightstone"] = {buy =  800,comb =  400,code =  2049,name = "Sightstone",},["Soul Anchor"] = {buy =  0,code =  3345,name = "Soul Anchor",},["Sorcerer's Shoes"] = {buy =  1100,comb =  775,code =  3020,name = "Sorcerer's Shoes",},["Spectre's Cowl"] = {buy =  1200,comb =  350,code =  3211,name = "Spectre's Cowl",},["Spellthief's Edge"] = {buy =  365,code =  3303,name = "Spellthief's Edge",},["Staff of Flowing Water"] = {buy =  1635,comb =  300,code =  3744,name = "Staff of Flowing Water",},["Skirmisher's Sabre"] = {buy =  850,comb =  450,code =  3715,name = "Skirmisher's Sabre",},["Spirit Visage"] = {buy =  2700,comb =  650,code =  3065,name = "Spirit Visage",},["Stalker's Blade"] = {buy =  850,comb =  450,code =  3706,name = "Stalker's Blade",},["Statikk Shiv"] = {buy =  2500,comb =  600,code =  3087,name = "Statikk Shiv",},["Sterak's Gage"] = {buy =  2550,comb =  1190,code =  3748,name = "Sterak's Gage",},["Stealth Ward"] = {buy =  75,code =  2044,name = "Stealth Ward",},["Stinger"] = {buy =  1250,comb =  350,code =  3101,name = "Stinger",},["Sunfire Cape"] = {buy =  2600,comb =  850,code =  3068,name = "Sunfire Cape",},["Sweeping Lens"] = {buy =  0,code =  3341,name = "Sweeping Lens",},["Swindler's Orb"] = {buy =  865,comb =  500,code =  3841,name = "Swindler's Orb",},["Sword of the Occult"] = {buy =  1400,comb =  1040,code =  3141,name = "Sword of the Occult",},["Talisman of Ascension"] = {buy =  2100,comb =  635,code =  3069,name = "Talisman of Ascension",},["Tear of the Goddess"] = {buy =  720,comb =  140,code =  3070,name = "Tear of the Goddess",},["Targon's Brace"] = {buy =  865,comb =  500,code =  3097,name = "Targon's Brace",},["Teleport"] = {buy =  600,name = "Teleport",},["Tear of the Goddess (Crystal Scar)"] = {buy =  720,comb =  140,code =  3073,name = "Tear of the Goddess (Crystal Scar)",},["The Black Spear"] = {code =  3599,name = "The Black Spear",},["The Black Cleaver"] = {buy =  3000,comb =  825,code =  3071,name = "The Black Cleaver",},["The Bloodthirster"] = {buy =  3500,comb =  1150,code =  3072,name = "The Bloodthirster",},["The Hex Core mk-1"] = {buy =  1000,comb =  1000,code =  3196,name = "The Hex Core mk-1",},["The Brutalizer"] = {buy =  1337,comb =  617,code =  3134,name = "The Brutalizer",},["The Hex Core mk-2"] = {buy =  2000,comb =  1000,code =  3197,name = "The Hex Core mk-2",},["The Lightbringer"] = {buy =  2280,comb =  350,code =  3185,name = "The Lightbringer",},["Thornmail"] = {buy =  2300,comb =  1350,code =  3075,name = "Thornmail",},["Titanic Hydra"] = {buy =  3300,comb =  400,code =  3053,name = "Titanic Hydra",},["Tiamat"] = {buy =  1900,comb =  305,code =  3077,name = "Tiamat",},["Total Biscuit of Rejuvenation"] = {buy =  35,code =  2010,name = "Total Biscuit of Rejuvenation",},["Twin Shadows"] = {buy =  2400,comb =  730,code =  3023,name = "Twin Shadows",},["Trickster's Glass"] = {buy =  2115,comb =  215,code =  3829,name = "Trickster's Glass",},["Trinity Force"] = {buy =  3703,comb =  78,code =  3078,name = "Trinity Force",},["Twin Shadows (3290)"] = {buy =  2400,comb =  730,code =  3290,name = "Twin Shadows (3290)",},["Void Staff"] = {buy =  2500,comb =  1215,code =  3135,name = "Void Staff",},["Typhoon Claws"] = {buy =  2000,comb =  675,code =  3652,name = "Typhoon Claws",},["Vampiric Scepter"] = {buy =  800,comb =  440,code =  1053,name = "Vampiric Scepter",},["Warden's Mail"] = {buy =  1100,comb =  500,code =  3082,name = "Warden's Mail",},["Vision Ward"] = {buy =  100,code =  2043,name = "Vision Ward",},["Warmog's Armor"] = {buy =  2750,comb =  550,code =  3083,name = "Warmog's Armor",},["Warding Totem"] = {buy =  0,code =  3340,name = "Warding Totem",},["Warrior"] = {buy =  1400,comb =  63,name = "Warrior",},["Will of the Ancients"] = {buy =  2500,comb =  480,code =  3152,name = "Will of the Ancients",},["Wicked Hatchet"] = {buy =  1200,comb =  440,code =  3122,name = "Wicked Hatchet",},["Wit's End"] = {buy =  2550,comb =  550,code =  3091,name = "Wit's End",},["Wooglet's Witchcap"] = {buy =  3500,comb =  1050,code =  3090,name = "Wooglet's Witchcap",},["Youmuu's Ghostblade"] = {buy =  2700,comb =  563,code =  3142,name = "Youmuu's Ghostblade",},["Zeal"] = {buy =  1100,comb =  250,code =  3086,name = "Zeal",},["Zeke's Herald"] = {buy =  2450,comb =  800,code =  3050,name = "Zeke's Herald",},["Zephyr"] = {buy =  2850,comb =  725,code =  3172,name = "Zephyr",},["Zhonya's Hourglass"] = {buy =  3000,comb =  550,code =  3157,name = "Zhonya's Hourglass",},["Zeke's Harbinger"] = {buy =  2300,comb =  480,code =  3050,name = "Zeke's Harbinger",},}
 allyMinionsCore = minionManager(MINION_ALLY, 99999999, player, MINION_SORT_HEALTH_ASC)
 
 --sac
@@ -2201,7 +2265,12 @@ atMid = false
 
 
 function OnLoad()
-	shopList = getHeroItems()
+	if _ENV.aiItems then
+		shopList = _ENV.aiItems
+	else
+		shopList = getHeroItems()
+	end
+	
 
 	for i = 1, objManager.maxObjects do
         local tow = objManager:getObject(i)
@@ -3083,6 +3152,11 @@ function levelUp()
     elseif myHero.charName == "Zyra" then         abilitySequence = { 3, 2, 1, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2, }
     else abilitySequence = { 1, 2, 1, 3, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, }
     end
+
+	if _ENV.aiSpells then
+		abilitySequence = _ENV.aiSpells
+	end    
+
     if abilitySequence and #abilitySequence == 18 then
     	local qL, wL, eL, rL = myHero:GetSpellData(_Q).level, myHero:GetSpellData(_W).level, myHero:GetSpellData(_E).level, myHero:GetSpellData(_R).level
 		if qL + wL + eL + rL < myHero.level then
@@ -3152,7 +3226,7 @@ IDBytes = {
 
 local previousAttackCooldown = 0
 
-
+--Sida some Functions here
 
 --[[ Global Functions ]]--
 function getTrueRange()
@@ -3654,7 +3728,7 @@ function SkillsOnTick()
                     elseif skill.reqTarget == false and not skill.atMouse then
                         CastSelf(skill, target)
                     elseif skill.reqTarget == false and skill.atMouse then
-                        CastToTarget(skill,target)
+                        CastToTarget(skill,waypoint)
                     else
                         CastTargettedSpell(skill, target)
                     end
@@ -3715,10 +3789,17 @@ AutoCarry.GetNextAttackTime = function()
 end
 
 function CastTargettedSpell(skill, target)
-		if GetDistance(target) <= skill.range then
-				CastSpell(skill.spellKey, target)
-		end
+	if GetDistance(target) <= skill.range then
+		CastSpell(skill.spellKey, target)
+	end
 end
+
+function CastToTarget(skill, target)
+	if GetDistance(target) <= skill.range then
+		CastSpell(skill.spellKey, target)
+	end
+end
+
 
 function CastMouse(skill,target)
 	CastSpell(skill.spellKey, target.x, target.z)
@@ -4126,6 +4207,7 @@ function getSpellList()
 				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = false, minions = false, reset = true, reqTarget = true},
 				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false},
 				{ spellKey = _E, range = 800, speed = math.huge, delay = 500, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = false, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _R, range = 1500, speed = math.huge, delay = 3000, width = 500, configName = "R", displayName = "R", enabled = false, skillShot = true, minions = false, reset = false, reqTarget = false },
 				}
 		elseif myHero.charName == "Tristana" then
 				spellArray = {
@@ -4262,6 +4344,21 @@ function getSpellList()
 		elseif myHero.charName == "Shen" then
 			spellArray = {
 			{ spellKey = _Q, range = GetSpellData(_Q).range, speed = 1.45, delay = 250, width = 200, configName = "vorpalBlade", displayName = "Q (Vorpal Blade)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
+			}
+		else
+			spellArray = {
+				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _E, range = 800, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _R, range = 1500, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true},
+				{ spellKey = _E, range = 800, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _R, range = 650, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = true, minions = false, reset = false, reqTarget = true },
+				{ spellKey = _Q, range = 650, speed = 1.45, delay = 250, width = 200, configName = "doubleUp", displayName = "Q (Double Up)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false},
+				{ spellKey = _W, range = 580, speed = 1.45, delay = 250, width = 200, configName = "impureShots", displayName = "W (Impure Shots)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false},
+				{ spellKey = _E, range = 800, speed = math.huge, delay = 250, width = 500, configName = "makeItRain", displayName = "E (Make It Rain)", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false },
+				{ spellKey = _R, range = 650, speed = math.huge, delay = 250, width = 500, configName = "R", displayName = "R", enabled = true, skillShot = false, minions = false, reset = false, reqTarget = false },
 			}
 		end
 return spellArray
@@ -4466,7 +4563,6 @@ function BBurst(percent,ItemSlot)
 		if player:CanUseSpell(ItemSlot) then
 				if HealthCurrent < (HealthBefore-HealthProc) then
 						if player:CanUseSpell(ItemSlot) then
-								Print("green","Used life saver item")
 								CastSpell(ItemSlot)
 						end
 				end
@@ -4584,3 +4680,5 @@ function Round(tN, tIDP)
 	local iMult = (10 ^ (tIDP or 0));
 	return (math.floor(tN * iMult + 1/2) / iMult);
 end;
+
+OnLoad()

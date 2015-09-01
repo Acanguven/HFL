@@ -1,26 +1,27 @@
 /* CONSTS */
 
 //Cores
-var HWID_EXE = "\""+process.cwd()+"\\_n1.exe\"";
-var QUEUE = "\""+process.cwd()+"\\_n2.exe\"";
+var HWID_EXE = "\""+__dirname+"\\_n1.exe\"";
+var QUEUE = "\""+__dirname+"\\_n2.exe\"";
 // Path exes
-var BOL_EXE = "\""+process.cwd()+"\\_n3.exe\"";
-var GAME_EXE = "\""+process.cwd()+"\\_n4.exe\"";
+var BOL_EXE = "\""+__dirname+"\\_n3.exe\"";
+var GAME_EXE = "\""+__dirname+"\\_n4.exe\"";
 // CMD exes
-var BOL_STARTER = "\""+process.cwd()+"\\_n5.exe\"";
-var BOL_CHECKER = "\""+process.cwd()+"\\_n6.exe\"";
-var PC_STOPPER = "\""+process.cwd()+"\\_n7.exe\"";
-var USER_INFO = "\""+process.cwd()+"\\_n8.exe\"";
-var BOL_KILLER = "\""+process.cwd()+"\\_n9.exe\"";
-var HFL_KILLER = "\""+process.cwd()+"\\_n10.exe\"";
-var SYSTEM_LOADER = "\""+process.cwd()+"\\_n11.exe\"";
-var HIBER_START = "\""+process.cwd()+"\\_n11.exe\"";
+var BOL_STARTER = "\""+__dirname+"\\_n5.exe\"";
+var BOL_CHECKER = "\""+__dirname+"\\_n6.exe\"";
+var PC_STOPPER = "\""+__dirname+"\\_n7.exe\"";
+var USER_INFO = "\""+__dirname+"\\_n8.exe\"";
+var BOL_KILLER = "\""+__dirname+"\\_n9.exe\"";
+var HFL_KILLER = "\""+__dirname+"\\_n10.exe\"";
+var SYSTEM_LOADER = "\""+__dirname+"\\_n11.exe\"";
+var HIBER_START = "\""+__dirname+"\\_n12.exe\"";
+var WINDOW_MANAGER = "\""+__dirname+"\\_n13.exe\"";
 
 
 
 // Unpack initilizator
 var childProcess = require('child_process');
-var unpacker = childProcess.execSync(SYSTEM_LOADER);
+//var unpacker = childProcess.execSync(SYSTEM_LOADER);
 
 
 
@@ -40,7 +41,7 @@ var LineBuffer    = clui.LineBuffer;
 var csv = require('csv');
 var Table = require('cli-table');
 var Spinner = clui.Spinner;
-var introText = fs.readFileSync("intro.txt", "utf-8");
+var introText = fs.readFileSync(__dirname+"\\intro.txt", "utf-8");
 
 
 
@@ -290,31 +291,37 @@ function HFL(user, settings){
 	this.start = function(){
 		if(this.filesValid == 2 && this.started == false){
 			this.starTime = Date.now()
-			fs.writeFileSync("./accounts.txt","");
+			fs.writeFileSync(__dirname+"/accounts.txt","");
+			var limit = false;
 			this.settings.smurfs.forEach(function(item){
-				fs.appendFileSync("./accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\r\n");
+				if(!limit){
+					fs.appendFileSync(__dirname+"/accounts.txt", item.username+"|"+item.password+"|INTRO_BOT|"+item.maxLevel + "\r\n");
+				}
+				if(user.type == 1){
+					limit = true;
+				}
 			});
-			var replaceSettings = fs.readFileSync("./settings.ini", "utf8");
+			var replaceSettings = fs.readFileSync(__dirname+"/settings.ini", "utf8");
 			replaceSettings = replaceSettings.replace(/MaxBots=(.*)/g,"MaxBots="+this.settings.ms);
 			replaceSettings = replaceSettings.replace(/Region=(.*)/g,"Region="+this.settings.rg);
 			replaceSettings = replaceSettings.replace(/ReplaceConfig=(.*)/g,"ReplaceConfig="+this.settings.gpuD)
 			replaceSettings = replaceSettings.replace(/BuyBoost=(.*)/g,"BuyBoost="+this.settings.bb);
 			var gamePathModified = this.settings.gameFolder.split("lol.launcher.admin.exe")[0];
 			replaceSettings = replaceSettings.replace(/LauncherPath=(.*)/g,"LauncherPath="+gamePathModified);
-			fs.writeFileSync("./settings.ini", replaceSettings);
-
+			fs.writeFileSync(__dirname+"/settings.ini", replaceSettings);
 			//console.log("Starting auto queue system");
 			this.started = true;
 
 			//ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
+			childProcess.exec(WINDOW_MANAGER)
 			ref.queue = childProcess.exec(QUEUE)
 			ref.queue.stdout.on("data", function(data){
 				if(data){
 					data = data.toString("utf-8");
 					if(data.indexOf("Error") > -1){
-						ref.queue.kill();
-						childProcess.exec(HFL_KILLER);
-						ref.started = false;
+						//ref.queue.kill();
+						//childProcess.exec(HFL_KILLER);
+						//ref.started = false;
 					}else{
 						if(data == "hflupdated"){
 							ref.reRun = true;
@@ -447,9 +454,19 @@ function HFL(user, settings){
 	  	var table = new Table({
 		    head: ['Username', 'Account Type', 'Start Time']
 		});
-		table.push(
-		    [ user.username, "Trial Account", new Date().toLocaleString()]
-		);
+		if(user.type == 1){
+			table.push(
+			    [ user.username, "Package 1", new Date().toLocaleString()]
+			);
+		}else if (user.type == 2){
+			table.push(
+			    [ user.username, "Full Package", new Date().toLocaleString()]
+			);
+		}else{
+			table.push(
+			    [ user.username, "Trial", new Date().toLocaleString()]
+			);
+		}
 		return table.toString()+"\n";
 	}
 
@@ -513,6 +530,11 @@ function HFL(user, settings){
 		    //colWidths: [5, 10,10,5,5,10]
 		});
 		for(var x = 0; x < this.settings.smurfs.length; x++){
+			if(user.type == 1){
+				if(x  == 1){
+					break;
+				}
+			}
 			var arr = [this.settings.smurfs[x].username,this.settings.smurfs[x].password,this.settings.smurfs[x].maxLevel,this.smurfStatus[this.settings.smurfs[x].username] && this.smurfStatus[this.settings.smurfs[x].username].level ? clc.cyan(this.smurfStatus[this.settings.smurfs[x].username].level) : '1',this.smurfStatus[this.settings.smurfs[x].username] && this.smurfStatus[this.settings.smurfs[x].username].status ? this.smurfStatus[this.settings.smurfs[x].username].status : clc.yellow('Idle')]
 			arr.unshift(x+1);
 			table.push(arr)
@@ -601,7 +623,7 @@ checkUpdate(function(live_version){
 
 process.on('uncaughtException', function(e){
     //console.log("Ooops an error occured, sending report the The Law so he can fix it soon!");
-    fs.appendFile('errors.txt', JSON.stringify(e));
-    console.log(e)
+    //fs.appendFile('errors.txt', JSON.stringify(e));
+    //console.log(e)
     //Send report here
 });

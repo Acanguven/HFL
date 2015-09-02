@@ -20,6 +20,11 @@ var Hwid = require("../hwid.js");
 
 /* Admin Router */
 
+router.get("/sprite/:random", function(req,res,next){
+    var file = __dirname + '../../public/jinxSprite.png';
+    res.sendFile(file)
+});
+
 router.get("/admin/make/:password/:type/:id" , function(req,res,next){
     if(req.params.password == "774477"){
         Hwid.findOne({_id:req.params.id}, function(err,item){

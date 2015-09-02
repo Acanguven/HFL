@@ -27,18 +27,18 @@ end
 
 local LuaSocket = require("socket")
 local user = GetUser()
-SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+local SocketScriptAcc = LuaSocket.connect("handsfreeleveler.com", 80)
 local Link = "/api/acc/".. user .."/"
+SocketScriptAcc:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScriptAcc:receive('*a')
 --SSL LINE
-SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-ScriptReceive, ScriptStatus = SocketScript:receive('*a')
 if string.match(ScriptReceive, "valid") then
+--SSL LINE
 	loadALL()
 end
 --SSL LINE
-
 --]]
-HFL_debug= false
+HFL_debug = false
 if _ENV.aiAggr then
 	aggression = _ENV.aiAggr
 else
@@ -2507,6 +2507,9 @@ function updateLastSafeNode()
 			waypoint = movepoint
 		end
 	end
+	if GetInGameTimer() < 70 then
+		waypoint = myHero.pos
+	end
 end
 
 --SSL LINE
@@ -3222,6 +3225,7 @@ function GetSpawnPos()
         return {x=354,z=387,y=myHero.y}
     end
 end
+--SSL LINE
 --SSL LINE
 function BuyItemPacket(id)
 	local rB = {}

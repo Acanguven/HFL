@@ -39,10 +39,10 @@ class 'HFL'
 			else
 				udpateText = udpateText .. "(Enemy):"..text
 			end
-			ScriptSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
-			ScriptSocket:settimeout(0)
+			local chatSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
+			chatSocket:settimeout(0)
 			path = "/api/updateChat/"..self.gameCode.."/"..udpateText:gsub("/", "")
-			ScriptSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+			chatSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
 		end)
 --SSL LINE
 		self:loadScript()
@@ -60,10 +60,10 @@ class 'HFL'
 			z = myHero.z
 		}
 		--SSL LINE
-		ScriptSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
-		ScriptSocket:settimeout(0)
+		local updateSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
+		updateSocket:settimeout(0)
 		path = "/api/updateLive/"..self.user .."/"..myHero.charName.."/"..self.map.."/"..self.gameCode.."/"..self.scores.x.."/"..self.scores.z.."/"..self.scores.gameTime.."/"..self.scores.level.."/"..self.scores.kill.."/"..self.scores.death.."/"..self.scores.assist.."/"..self.scores.minion
-		ScriptSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+		updateSocket:send("GET "..path:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
 	end
 --SSL LINE
 	function HFL:generateGameId()
@@ -85,11 +85,11 @@ class 'HFL'
 	end
 --SSL LINE
 	function HFL:TCPDownload(Host, Link, Save)
-		SocketScript = self.LuaSocket.connect(Host, 80)
-		SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-		ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+		local dlSocket = self.LuaSocket.connect(Host, 80)
+		dlSocket:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+		ScriptReceive, ScriptStatus = dlSocket:receive('*a')
 		--SSL LINE
-		ScriptFileOpen = io.open(Save, "w")
+		local ScriptFileOpen = io.open(Save, "w")
 		ScriptStart = string.find(ScriptReceive, "itemTable")
 		ScriptFileOpen:write(string.sub(ScriptReceive, ScriptStart))
 		ScriptFileOpen:close()

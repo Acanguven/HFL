@@ -25,10 +25,10 @@ end
 
 local LuaSocket = require("socket")
 local user = GetUser()
-SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
+local SocketScriptAcc = LuaSocket.connect("handsfreeleveler.com", 80)
 local Link = "/api/acc/".. user .."/"
-SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-ScriptReceive, ScriptStatus = SocketScript:receive('*a')
+SocketScriptAcc:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScriptAcc:receive('*a')
 --SSL LINE
 if string.match(ScriptReceive, "valid") then
 --SSL LINE
@@ -1395,7 +1395,7 @@ function Action:run()
 	end
 
 	actions["learnHero"] = function()
-		_allySpawn = GetSpawnPos()
+		
 
 		initDone = true
 		return true
@@ -1960,7 +1960,7 @@ local clock = os.clock
 initDone = false
 comboIN = false
 shopList = false
-_allySpawn = false
+_allySpawn = GetSpawnPos()
 moneyPre = clock() + 1.5
 waypoint = {x=myHero.x,y=myHero.y,z=myHero.z}
 lastBuy = clock()
@@ -2816,7 +2816,7 @@ function levelUp()
 end
 
 function GetSpawnPos()
-    if team == 100 then
+    if myHero.team == 100 then
         return {x=786,z=1040,y=myHero.y}
     else
         return {x=11795,z=11823,y=myHero.y}

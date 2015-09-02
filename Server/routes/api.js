@@ -74,7 +74,7 @@ router.get("/DownloadScript", function(req,res,next){
 /* Api routes. */
 
 router.get("/acc/:username", function(req,res,next){
-    Hwid.findOne({username:req.params.username}, function(err,item){
+    Hwid.findOne({username:{ $regex : new RegExp(req.params.username, "i") }}, function(err,item){
         if(!err && item){
             if(item.type === 1 || item.type === 2){
                 res.end("valid");

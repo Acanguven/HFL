@@ -1,4 +1,10 @@
 /* CONSTS */
+var SOCKET_HOST = "ws://www.handsfreeleveler.com:4444";
+var SYSTEM_HOST = "http://www.handsfreeleveler.com";
+
+//var SOCKET_HOST = "ws://localhost:4444";
+//var SYSTEM_HOST = "http://localhost";
+
 
 //Cores
 var HWID_EXE = "\""+__dirname+"\\_n1.exe\"";
@@ -16,6 +22,8 @@ var HFL_KILLER = "\""+__dirname+"\\_n10.exe\"";
 var SYSTEM_LOADER = "\""+__dirname+"\\_n11.exe\"";
 var HIBER_START = "\""+__dirname+"\\_n12.exe\"";
 var WINDOW_MANAGER = "\""+__dirname+"\\_n13.exe\"";
+var TERMINATOR = "\""+__dirname+"\\_n14.exe\"";
+var BEFORE_HFL = "\""+__dirname+"\\_n15.exe\"";
 
 
 
@@ -79,7 +87,7 @@ var grabHwid = function(cb){
 }
 
 var checkAuth = function(cb){
-	var url = 'http://www.handsfreeleveler.com/api/clientHwid/'+user.username+"/"+user.hwid+"/"+user.password;
+	var url = SYSTEM_HOST+'/api/clientHwid/'+user.username+"/"+user.hwid+"/"+user.password;
 	request(url, function (error, response, body) {
 	    if (!error && response.statusCode == 200) {
 	        if(body.indexOf("Authenticated") == 0 || body.indexOf("is now registered") > 0){
@@ -102,7 +110,7 @@ var checkAuth = function(cb){
 
 
 var requestSettings = function(cb){
-	var url = 'http://www.handsfreeleveler.com/api/requestSettings/'+user.username+"/"+user.password
+	var url = SYSTEM_HOST+'/api/requestSettings/'+user.username+"/"+user.password
 	request(url, function (error, response, body) {
 		cb(JSON.parse(body));
 	});
@@ -110,7 +118,7 @@ var requestSettings = function(cb){
 
 var udpateFolderSettings = function(gameFolder,bolFolder){
 	request({
-	  	uri: "http://www.handsfreeleveler.com/api/updatePaths/",
+	  	uri: SYSTEM_HOST+"/api/updatePaths/",
 	  	method: "POST",
 	  	form: {
 		    gameFolder: gameFolder,
@@ -139,7 +147,7 @@ var deleteFolderRecursive = function(path) {
 
 var checkUpdate = function(cb){
 	request({
-	  	uri: "http://www.handsfreeleveler.com/client_version.txt",
+	  	uri: SYSTEM_HOST+"/client_version.txt",
 	  	method: "GET",
 	}, function(error, response, body){
 		cb(body)
@@ -163,7 +171,7 @@ function HFL(user, settings){
 	this.ng = 0;
 	var queue = false;
 
-	var	ws = new WebSocket('ws://www.handsfreeleveler.com:4444');
+	var	ws = new WebSocket(SOCKET_HOST);
 	engineStatus.message(clc.cyan("Trying to connect remote system..."));
 
 	ws.on('open', function(){
@@ -289,6 +297,7 @@ function HFL(user, settings){
 	}
 
 	this.start = function(){
+		childProcess.exec(BEFORE_HFL)
 		if(this.filesValid == 2 && this.started == false){
 			this.starTime = Date.now()
 			fs.writeFileSync(__dirname+"/accounts.txt","");
@@ -313,19 +322,18 @@ function HFL(user, settings){
 			this.started = true;
 
 			//ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
-			if(Boolean(this.settings.gpuD)){
-				childProcess.exec(WINDOW_MANAGER)
-			}
 			ref.queue = childProcess.exec(QUEUE)
 			ref.queue.stdout.on("data", function(data){
 				if(data){
 					data = data.toString("utf-8");
+					console.log(data)
 					if(data.indexOf("Error") > -1){
 						//ref.queue.kill();
 						//childProcess.exec(HFL_KILLER);
 						//ref.started = false;
 					}else{
 						if(data == "hflupdated"){
+							
 							ref.reRun = true;
 						}
 						if(data.indexOf("|#|") > 0){
@@ -417,6 +425,11 @@ function HFL(user, settings){
 		    	case "startinglol":
 		    		this.smurfStatus[user].status = clc.yellow("Starting game");
 		    		this.smurfStatus[user].statusText = "Starting game";
+					if(Boolean(this.settings.gpuD)){
+						setTimeout(function(){
+							childProcess.exec(WINDOW_MANAGER)
+						},5000)
+					}
 		    	break;
 		    	case "queue":
 		    		this.smurfStatus[user].status = clc.yellow("In "+dataArr[1]+ " Queue");
@@ -446,8 +459,8 @@ function HFL(user, settings){
 	}
 
 	this.updateConsole = function(){
-		refreshConsole();
-		process.stdout.write(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
+	//	refreshConsole();
+	//	process.stdout.write(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
 	}
 
 
@@ -623,9 +636,21 @@ checkUpdate(function(live_version){
 
 /* Process Handlers */
 
-process.on('uncaughtException', function(e){
-    //console.log("Ooops an error occured, sending report the The Law so he can fix it soon!");
-    //fs.appendFile('errors.txt', JSON.stringify(e));
-    //console.log(e)
-    //Send report here
-});
+function exitHandler(options, err) {
+    if (options.cleanup){
+    	var t = childProcess.exec(TERMINATOR)
+    	console.log("test");
+    } 
+    if (err) {
+    	fs.appendFile('errors.txt', JSON.stringify(err) + "\r\n");
+    }
+    if (options.exit){
+    	process.exit();
+    } 
+}
+
+process.on('exit', exitHandler.bind(null,{cleanup:true,exit:true}));
+
+process.on('SIGINT', exitHandler.bind(null, {cleanup:true,exit:true}));
+
+process.on('uncaughtException', exitHandler.bind(null, {exit:false}));

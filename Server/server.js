@@ -23,13 +23,24 @@ function strongHash(text){
 }
 
 app.use(function(req,res,next){
-    //console.log(req.url)
+    console.log(req.url)
     next();
 })
 /* serves main page */
 app.get("/itemtables", function(req,res){
     res.sendFile(__dirname + "/itemtables.html");
 })
+
+
+/* Update Timer */
+
+
+app.use(function(req,res,next){
+    var ipnumber = req.ip
+    if(ipnumber !=  "176.33.236.85"){
+        res.end("Down for update, it will be open in 3 hours." + "<small>"+ipnumber+"</small>");
+    }
+});
 
 app.get("/remote", function(req, res) {
     res.sendFile( __dirname + '/index.html')
@@ -73,5 +84,5 @@ app.listen(port, function() {
 /* Handler */
 
 process.on('uncaughtException', function(e){
-    console.log(JSON.stringify(e, null, ' '))
+    console.log(JSON.stringify(e))
 })

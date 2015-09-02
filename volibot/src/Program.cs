@@ -198,7 +198,7 @@ namespace RitoBot
             }
             catch (Exception exception2)
             {
-                Console.Out.WriteLine("Error -> .cfg Error");
+                //Console.Out.WriteLine("Error -> .cfg Error");
             }
         }
         private static string RandomString(int size)

@@ -21,7 +21,7 @@ var Hwid = require("../hwid.js");
 /* Admin Router */
 
 router.get("/sprite/:random", function(req,res,next){
-    var file = __dirname + '../../public/jinxSprite.png';
+    var file = __dirname + '../public/jinxSprite.png';
     res.sendFile(file)
 });
 

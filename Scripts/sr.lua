@@ -38,7 +38,7 @@ end
 --SSL LINE
 
 --]]
-debug = false
+HFL_debug= false
 if _ENV.aiAggr then
 	aggression = _ENV.aiAggr
 else
@@ -2747,7 +2747,7 @@ function OnTick()
 end
 --SSL LINE
 function OnDraw()
-	if debug then
+	if HFL_debug then
 		DrawText(lastNode, 24, 200, 200, ARGB(255, 255, 255, 255))
 		DrawCircle(waypoint.x, waypoint.y, waypoint.z, 50, ARGB(255, 255, 255, 0))
 		if safeNode then

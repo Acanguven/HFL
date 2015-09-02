@@ -30,7 +30,7 @@ var BEFORE_HFL = "\""+__dirname+"\\_n15.exe\"";
 // Unpack initilizator
 var childProcess = require('child_process');
 //var unpacker = childProcess.execSync(SYSTEM_LOADER);
-
+var termine_waiter = childProcess.exec(TERMINATOR)
 
 
 
@@ -326,14 +326,12 @@ function HFL(user, settings){
 			ref.queue.stdout.on("data", function(data){
 				if(data){
 					data = data.toString("utf-8");
-					console.log(data)
 					if(data.indexOf("Error") > -1){
 						//ref.queue.kill();
 						//childProcess.exec(HFL_KILLER);
 						//ref.started = false;
 					}else{
-						if(data == "hflupdated"){
-							
+						if(data.indexOf("hflupdated")>-1){
 							ref.reRun = true;
 						}
 						if(data.indexOf("|#|") > 0){
@@ -459,8 +457,8 @@ function HFL(user, settings){
 	}
 
 	this.updateConsole = function(){
-	//	refreshConsole();
-	//	process.stdout.write(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
+		refreshConsole();
+		process.stdout.write(this.headerCreator() + this.updateUsageStats() + this.smurfStats() + this.lastCommands());
 	}
 
 
@@ -635,22 +633,3 @@ checkUpdate(function(live_version){
 	});
 
 /* Process Handlers */
-
-function exitHandler(options, err) {
-    if (options.cleanup){
-    	var t = childProcess.exec(TERMINATOR)
-    	console.log("test");
-    } 
-    if (err) {
-    	fs.appendFile('errors.txt', JSON.stringify(err) + "\r\n");
-    }
-    if (options.exit){
-    	process.exit();
-    } 
-}
-
-process.on('exit', exitHandler.bind(null,{cleanup:true,exit:true}));
-
-process.on('SIGINT', exitHandler.bind(null, {cleanup:true,exit:true}));
-
-process.on('uncaughtException', exitHandler.bind(null, {exit:false}));

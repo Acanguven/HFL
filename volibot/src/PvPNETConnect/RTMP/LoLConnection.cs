@@ -567,10 +567,9 @@ namespace LoLLauncher
                         var fs = File.Create(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
                         fs.Close();
                         TextWriter tw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
+                        Console.Out.Write("hflupdated");
                         tw.WriteLine(newVersion);
                         tw.Close();
-                        Console.Out.WriteLine("hflupdated");
-                        Thread.Sleep(3000);
                         Environment.Exit(0);
                     }
                 }

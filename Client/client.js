@@ -54,7 +54,7 @@ var introText = fs.readFileSync(__dirname+"\\intro.txt", "utf-8");
 
 
 
-var VERSION = "1.0";
+var VERSION = "1.1";
 
 
 /* Cores */

@@ -23,10 +23,7 @@ function strongHash(text){
 }
 
 app.use(function(req,res,next){
-    var ipnumber = req.ip
-    if(ipnumber ==  "176.33.236.85"){
-        console.log(req.url)
-    }
+    //console.log(req.url)
     next();
 })
 /* serves main page */
@@ -37,7 +34,7 @@ app.get("/itemtables", function(req,res){
 
 /* Update Timer */
 
-
+/*
 app.use(function(req,res,next){
     var ipnumber = req.ip
     if(ipnumber !=  "176.33.236.85"){
@@ -46,6 +43,7 @@ app.use(function(req,res,next){
         next();
     }
 });
+*/
 
 app.get("/remote", function(req, res) {
     res.sendFile( __dirname + '/index.html')

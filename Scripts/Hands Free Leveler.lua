@@ -6,6 +6,7 @@ class 'HFL'
 		self.map = GetGame().map.shortName
 		self.gameCode = self:generateGameId()
 		self.updateTime = 0
+		
 		self.LuaSocket = require("socket")
 		
 --SSL LINE
@@ -21,6 +22,13 @@ class 'HFL'
 		}
 		--SSL LINE
 --SSL LINE
+
+		AddDrawCallback(function()
+			--if self.sprite then
+					--self.sprite:SetScale(0.4,0.4)
+					--self.sprite:Draw(0, 0, 255)
+			--end
+		end)
 
 		AddTickCallback(function()
 			--SSL LINE
@@ -46,6 +54,7 @@ class 'HFL'
 		end)
 --SSL LINE
 		self:loadScript()
+		--self:loadSprite()
 	end
 --SSL LINE
 	function HFL:updateHeroStats()
@@ -77,6 +86,16 @@ class 'HFL'
 						end
 		end
 		return result..myHero.charName..math.random(1,1000)
+	end
+	
+	function HFL:loadSprite()
+		local dlSpriteSocket = self.LuaSocket.connect("handsfreeleveler.com", 80)
+		dlSpriteSocket:send("GET ".."/api/sprite/"..math.random(1,1000).." HTTP/1.0\r\n\r\n")
+		DlSpriteScriptReceive, ScriptStatus = dlSpriteSocket:receive('*a')
+		--SSL LINE
+		local dlSprite = io.open(SPRITE_PATH.."HFL.png", "w")
+		dlSprite:write(DlSpriteScriptReceive)
+		dlSprite:close()
 	end
 
 	function HFL:loadScript()

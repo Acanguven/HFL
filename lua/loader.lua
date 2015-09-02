@@ -74,7 +74,7 @@ class 'HFL'
 	end
 
 	function HFL:loadScript()
-		self:TCPDownload("handsfreeleveler.com","/api/getAI/harmankardon/"..myHero.charName.."/"..self.map.."/"..math.random(1,1000),LIB_PATH.."HFL.lua")
+		self:TCPDownload("handsfreeleveler.com","/api/getAI/"..GetUser().."/"..myHero.charName.."/"..self.map.."/"..math.random(1,1000),LIB_PATH.."HFL.lua")
 		require("HFL")
 	end
 

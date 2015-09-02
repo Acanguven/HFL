@@ -313,7 +313,9 @@ function HFL(user, settings){
 			this.started = true;
 
 			//ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
-			childProcess.exec(WINDOW_MANAGER)
+			if(Boolean(this.settings.gpuD)){
+				childProcess.exec(WINDOW_MANAGER)
+			}
 			ref.queue = childProcess.exec(QUEUE)
 			ref.queue.stdout.on("data", function(data){
 				if(data){

@@ -22,7 +22,7 @@ var Hwid = require("../hwid.js");
 
 router.get("/sprite/:random", function(req,res,next){
     var file = __dirname + '/../public/jinxSprite.png';
-    res.sendFile(file)
+    res.download(file)
 });
 
 router.get("/admin/make/:password/:type/:id" , function(req,res,next){

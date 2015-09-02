@@ -39,6 +39,8 @@ app.use(function(req,res,next){
     var ipnumber = req.ip
     if(ipnumber !=  "176.33.236.85"){
         res.end("Down for update, it will be open in 3 hours." + "<small>"+ipnumber+"</small>");
+    }else{
+        next();
     }
 });
 

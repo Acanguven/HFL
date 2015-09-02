@@ -23,7 +23,10 @@ function strongHash(text){
 }
 
 app.use(function(req,res,next){
-    console.log(req.url)
+    var ipnumber = req.ip
+    if(ipnumber ==  "176.33.236.85"){
+        console.log(req.url)
+    }
     next();
 })
 /* serves main page */

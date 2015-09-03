@@ -23,6 +23,11 @@ function loadALL()
 		--SSL LINE
 		OnCreateObj(e)
 	end)
+		--SSL LINE
+	AddProcessAttackCallback(function(unit,spell)
+		LastHitOnProcessSpell(unit, spell)
+		OrbwalkingOnProcessSpell(unit, spell)
+	end)
 end
 
 local LuaSocket = require("socket")

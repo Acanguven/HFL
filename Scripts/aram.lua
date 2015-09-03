@@ -3,7 +3,7 @@ function loadALL()
 		--SSL LINE
 		OnTick()
 	end)
---SSL LINE
+
 	AddDrawCallback(function()
 		--SSL LINE
 		OnDraw()
@@ -15,11 +15,18 @@ function loadALL()
 	end)
 
 	AddDeleteObjCallback(function(e)
+		--SSL LINE
 		OnDeleteObj(e)
 	end)
 
 	AddCreateObjCallback(function(e)
+		--SSL LINE
 		OnCreateObj(e)
+	end)
+		--SSL LINE
+	AddProcessAttackCallback(function(unit,spell)
+		LastHitOnProcessSpell(unit, spell)
+		OrbwalkingOnProcessSpell(unit, spell)
 	end)
 end
 

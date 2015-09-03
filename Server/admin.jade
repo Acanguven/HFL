@@ -16,10 +16,18 @@ html
 					top.location.href = top.location.href;
 				});
 			}
+
+			function reset(){
+				var password = prompt("Pass?")
+				$.get("/api/admin/reset/"+password, function(data){
+					top.location.href = top.location.href;
+				});
+			}
 	body
 		.container
 			.row
 				.col-md-12
+					button.btn.btn-info.col-md-3(onclick="reset()") Reset All Trial 48 hours
 					table.table-bordered.table
 						thead
 							tr
@@ -54,4 +62,6 @@ html
 										button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
 										button.btn.btn-info.col-md-3(onclick="make(2,'#{user._id}')") P -> 2
 										button.btn.btn-info.col-md-3(onclick="make(0,'#{user._id}')") P -> 0
+										button.btn.btn-info.col-md-3(onclick="make(5,'#{user._id}')") Reset Hwid
+										button.btn.btn-info.col-md-3(onclick="make(6,'#{user._id}')") Reset Trial
 										button.btn.btn-danger.col-md-3(onclick="make(3,'#{user._id}')") Delete

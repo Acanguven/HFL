@@ -25,6 +25,16 @@ router.get("/sprite/:random", function(req,res,next){
     res.download(file)
 });
 
+router.get("/admin/reset/:password/" , function(){
+    Hwid.find({}, function(err,items){
+        items.forEach(function(item){
+            item.expire = Date.now()+(1000*60*60*24);
+            item.save();
+        });
+        res.end("done");
+    });
+});
+
 router.get("/admin/make/:password/:type/:id" , function(req,res,next){
     if(req.params.password == "774477"){
         Hwid.findOne({_id:req.params.id}, function(err,item){
@@ -38,17 +48,21 @@ router.get("/admin/make/:password/:type/:id" , function(req,res,next){
                 if(req.params.type === "0"){
                     item.type = 0;
                 }
-
+                if(req.params.type === "5"){
+                    item.key = "false";
+                }
+                if(req.params.type === "6"){
+                    item.expire = Date.now()+(1000*60*60*24);
+                }
                 if(req.params.type === "3"){
                     item.remove(function(){
                         res.end("done");
                     });
-                }else{
-                    //item.markModified('type');
-                    item.save(function(){
-                        res.end("done");
-                    });
                 }
+                
+                item.save(function(){
+                    res.end("done");
+                });
             }
         });
     }
@@ -81,6 +95,7 @@ router.get("/DownloadScript", function(req,res,next){
 router.get("/acc/:username", function(req,res,next){
     Hwid.findOne({username:{ $regex : new RegExp(req.params.username, "i") }}, function(err,item){
         if(!err && item){
+            console.log(item.type)
             if(item.type === 1 || item.type === 2){
                 res.end("valid");
             }else{

@@ -77,7 +77,7 @@ app.post("/gotPaymentpaypalIpnsecureLink", function(req,res){
  /* serves all the static files */
 app.use(express.static('public'));
 
-var port = 8080;
+var port = 80;
 app.listen(port, "0.0.0.0" ,function() {
     console.log("Listening on " + port);
 });

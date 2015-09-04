@@ -17,48 +17,34 @@ var Hwid = require("../hwid.js");
 
 /* Payment Handler */
 router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
-    fs.writeFile(__dirname + "/lastPayment",JSON.stringify(req.body));
-    /*
-   if(req.body.payment_status && req.body.payment_status == "Completed"){
-        if(req.body.username){
-            if(req.bodyhosted_button_id){
-                if(req.body.hosted_button_id == "PFNJALWD5N76Q"){
-                    //upgrade
-                    if(req.body.username && req.body.username.length > 3){
-                        Hwid.findOne({username:req.body.username}, function(err,item){
-                            if(!err & item){
-                                item.type == "2";
-                            }
-                        });
-                    }
+    if(req.body.payment_status && req.body.payment_status == "Completed"){
+        if(req.body.mc_gross == "30.00"){
+            Hwid.findOne({username:req.body.option_selection3}, function(err,item){
+                if(!err & item){
+                    item.type == 2;
+                    item.save();
                 }
-                if(req.body.hosted_button_id == "KF5SDDKVY9T2N"){
-                    //buy
-                    if(req.body.pk && req.body.pk == "1"){
-                        if(req.body.username && req.body.username.length > 3){
-                            Hwid.findOne({username:req.body.username}, function(err,item){
-                                if(!err & item){
-                                    item.type == "1";
-                                }
-                            });
-                        }
-                    }
-                    if(req.body.pk && req.body.pk == "2"){
-                        if(req.body.username && req.body.username.length > 3){
-                            Hwid.findOne({username:req.body.username}, function(err,item){
-                                if(!err & item){
-                                    item.type == "2";
-                                }
-                            });
-                        }
-                    }
+            });
+        }
+        if(req.body.mc_gross == "20.00"){
+            Hwid.findOne({username:req.body.option_selection3}, function(err,item){
+                if(!err & item){
+                    item.type == 1;
+                    item.save();
                 }
+            });
+        }
+        if(req.body.mc_gross == "10.00"){
+            if(req.body.option_selection1 && req.body.option_selection1.length > 2){
+                Hwid.findOne({username:req.body.option_selection1}, function(err,item){
+                    if(!err & item){
+                        item.type == 2;
+                        item.save();
+                    }
+                });
             }
         }
-    }*/
-    console.log(JSON.stringify(req.body))
-    res.end("Done");
-
+    }
 });
 
 
@@ -139,7 +125,6 @@ router.get("/DownloadScript", function(req,res,next){
 router.get("/acc/:username", function(req,res,next){
     Hwid.findOne({username:{ $regex : new RegExp(req.params.username, "i") }}, function(err,item){
         if(!err && item){
-            console.log(item.type)
             if(item.type === 1 || item.type === 2){
                 res.end("valid");
             }else{

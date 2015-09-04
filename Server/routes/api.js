@@ -17,7 +17,7 @@ var Hwid = require("../hwid.js");
 
 /* Payment Handler */
 router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
-    fs.writeFile("lastPatment",JSON.stringify(req.body));
+    fs.writeFile(__dirname + "/lastPayment",JSON.stringify(req.body));
     /*
    if(req.body.payment_status && req.body.payment_status == "Completed"){
         if(req.body.username){
@@ -56,6 +56,9 @@ router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
             }
         }
     }*/
+    console.log(JSON.stringify(req.body))
+    res.end("Done");
+
 });
 
 

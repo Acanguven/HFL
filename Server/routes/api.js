@@ -45,6 +45,7 @@ router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
             }
         }
     }
+    res.end("Got payment thank you")
 });
 
 

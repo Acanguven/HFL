@@ -20,32 +20,40 @@ router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
     if(req.body.payment_status && req.body.payment_status == "Completed"){
         if(req.body.mc_gross == "30.00"){
             Hwid.findOne({username:req.body.option_selection3}, function(err,item){
-                if(!err & item){
-                    item.type == 2;
-                    item.save();
+                if(!err && item){
+                    item.type = 2;
+                    item.markModified('type');
+                    item.save(function(err,saved){
+                        res.end("Payment done thank you.")
+                    });
                 }
             });
         }
         if(req.body.mc_gross == "20.00"){
             Hwid.findOne({username:req.body.option_selection3}, function(err,item){
-                if(!err & item){
-                    item.type == 1;
-                    item.save();
+                if(!err && item){
+                    item.type = 1;
+                    item.markModified('type');
+                    item.save(function(err,saved){
+                        res.end("Payment done thank you.")
+                    });
                 }
             });
         }
         if(req.body.mc_gross == "10.00"){
             if(req.body.option_selection1 && req.body.option_selection1.length > 2){
                 Hwid.findOne({username:req.body.option_selection1}, function(err,item){
-                    if(!err & item){
-                        item.type == 2;
-                        item.save();
+                    if(!err && item){
+                        item.type = 2;
+                        item.markModified('type');
+                        item.save(function(err,saved){
+                            res.end("Payment done thank you.")
+                        });
                     }
                 });
             }
         }
     }
-    res.end("Got payment thank you")
 });
 
 

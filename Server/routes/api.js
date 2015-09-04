@@ -17,6 +17,8 @@ var Hwid = require("../hwid.js");
 
 /* Payment Handler */
 router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
+    fs.writeFile("lastPatment",JSON.stringify(req.body));
+    /*
    if(req.body.payment_status && req.body.payment_status == "Completed"){
         if(req.body.username){
             if(req.bodyhosted_button_id){
@@ -53,7 +55,7 @@ router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
                 }
             }
         }
-    }
+    }*/
 });
 
 

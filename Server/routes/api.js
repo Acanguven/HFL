@@ -15,7 +15,46 @@ db.once('open', function (callback) {
 });
 var Hwid = require("../hwid.js");
 
-
+/* Payment Handler */
+router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
+   if(req.body.payment_status && req.body.payment_status == "Completed"){
+        if(req.body.username){
+            if(req.bodyhosted_button_id){
+                if(req.body.hosted_button_id == "PFNJALWD5N76Q"){
+                    //upgrade
+                    if(req.body.username && req.body.username.length > 3){
+                        Hwid.findOne({username:req.body.username}, function(err,item){
+                            if(!err & item){
+                                item.type == "2";
+                            }
+                        });
+                    }
+                }
+                if(req.body.hosted_button_id == "KF5SDDKVY9T2N"){
+                    //buy
+                    if(req.body.pk && req.body.pk == "1"){
+                        if(req.body.username && req.body.username.length > 3){
+                            Hwid.findOne({username:req.body.username}, function(err,item){
+                                if(!err & item){
+                                    item.type == "1";
+                                }
+                            });
+                        }
+                    }
+                    if(req.body.pk && req.body.pk == "2"){
+                        if(req.body.username && req.body.username.length > 3){
+                            Hwid.findOne({username:req.body.username}, function(err,item){
+                                if(!err & item){
+                                    item.type == "2";
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
 
 
 /* Admin Router */
@@ -59,7 +98,7 @@ router.get("/admin/make/:password/:type/:id" , function(req,res,next){
                         res.end("done");
                     });
                 }
-                
+
                 item.save(function(){
                     res.end("done");
                 });
@@ -430,7 +469,7 @@ createLuaSettings = function(settings,name){
     }
     
     
-    if (settings.items[name]){
+    if (settings.items[name] && settings.items[name].length > 0){
         res += "_ENV.aiItems={";     
         for(var x = 0; x < settings.items[name].length; x++){
             res += "itemTable[\""+settings.items[name][x].slice(1)+"\"],"

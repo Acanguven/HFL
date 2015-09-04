@@ -61,19 +61,6 @@ app.get("/admin", function(req,res){
 app.use('/api', api);
 
 
-app.post("/gotPaymentpaypalIpnsecureLink", function(req,res){
-    var keyGenerated = "46846312168943144354683434";
-    if(req.body.payment_status && req.body.payment_status == "Completed"){
-        transporter.sendMail({
-            from: 'thelaw@handsfreeleveler.com',
-            to: 'ahmetcanguven44@gmail.com',
-            subject: 'Hands Free Leveler Key',
-            text: 'Thank you for buying Hands Free Leveler, here is your key. \n\n 44554646551123134856 \n\n You can reedem the key from http://www.handsfreeleveler.com'
-        });
-    }
-    res.end("thanks");
-});
-
  /* serves all the static files */
 app.use(express.static('public'));
 

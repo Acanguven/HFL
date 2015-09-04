@@ -54,7 +54,7 @@ var introText = fs.readFileSync(__dirname+"\\intro.txt", "utf-8");
 
 
 
-var VERSION = "1.1";
+var VERSION = "1.2";
 
 
 /* Cores */
@@ -423,7 +423,7 @@ function HFL(user, settings){
 		    	case "startinglol":
 		    		this.smurfStatus[user].status = clc.yellow("Starting game");
 		    		this.smurfStatus[user].statusText = "Starting game";
-					if(Boolean(this.settings.gpuD)){
+					if(this.settings.gpuD != "false"){
 						setTimeout(function(){
 							childProcess.exec(WINDOW_MANAGER)
 						},5000)

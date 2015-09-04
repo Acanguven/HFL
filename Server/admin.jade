@@ -30,7 +30,6 @@ html
 				thead
 					tr
 						td Username
-						td Password
 						td Type
 						td Hwid Status
 						td Trial Status
@@ -40,7 +39,6 @@ html
 					if (user.type > 0)
 						tr(style="background-color:lightGreen;")
 							td=user.username
-							td=user.password
 							td=user.type
 							td=user.key
 							td=~~((user.expire-Date.now())/1000/60)
@@ -54,7 +52,6 @@ html
 					else
 						tr.userClass
 							td=user.username
-							td=user.password
 							td=user.type
 							td=user.key
 							td=~~((user.expire-Date.now())/1000/60)

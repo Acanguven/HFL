@@ -24,44 +24,42 @@ html
 				});
 			}
 	body
-		.container
-			.row
-				.col-md-12
-					button.btn.btn-info.col-md-3(onclick="reset()") Reset All Trial 48 hours
-					table.table-bordered.table
-						thead
-							tr
-								td Username
-								td Password
-								td Type
-								td Hwid Status
-								td Trial Status
-								td Total users:#{users.length}
-						tbody
-						each user in users
-							if (user.type > 0)
-								tr(style="background-color:lightGreen;")
-									td=user.username
-									td=user.password
-									td=user.type
-									td=user.key
-									td=~~((user.expire-Date.now())/1000/60)
-									td
-										button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
-										button.btn.btn-info.col-md-3(onclick="make(2,'#{user._id}')") P -> 2
-										button.btn.btn-info.col-md-3(onclick="make(0,'#{user._id}')") P -> 0
-										button.btn.btn-danger.col-md-3(onclick="make(3,'#{user._id}')") Delete
-							else
-								tr.userClass
-									td=user.username
-									td=user.password
-									td=user.type
-									td=user.key
-									td=~~((user.expire-Date.now())/1000/60)
-									td
-										button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
-										button.btn.btn-info.col-md-3(onclick="make(2,'#{user._id}')") P -> 2
-										button.btn.btn-info.col-md-3(onclick="make(0,'#{user._id}')") P -> 0
-										button.btn.btn-info.col-md-3(onclick="make(5,'#{user._id}')") Reset Hwid
-										button.btn.btn-info.col-md-3(onclick="make(6,'#{user._id}')") Reset Trial
-										button.btn.btn-danger.col-md-3(onclick="make(3,'#{user._id}')") Delete
+		.col-md-12
+			button.btn.btn-info.col-md-3(onclick="reset()") Reset All Trial 48 hours
+			table.table-bordered.table
+				thead
+					tr
+						td Username
+						td Password
+						td Type
+						td Hwid Status
+						td Trial Status
+						td Total users:#{users.length}
+				tbody
+				each user in users
+					if (user.type > 0)
+						tr(style="background-color:lightGreen;")
+							td=user.username
+							td=user.password
+							td=user.type
+							td=user.key
+							td=~~((user.expire-Date.now())/1000/60)
+							td
+								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
+								button.btn.btn-info.col-md-3(onclick="make(2,'#{user._id}')") P -> 2
+								button.btn.btn-info.col-md-3(onclick="make(0,'#{user._id}')") P -> 0
+								button.btn.btn-danger.col-md-3(onclick="make(3,'#{user._id}')") Delete
+					else
+						tr.userClass
+							td=user.username
+							td=user.password
+							td=user.type
+							td=user.key
+							td=~~((user.expire-Date.now())/1000/60)
+							td
+								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
+								button.btn.btn-info.col-md-3(onclick="make(2,'#{user._id}')") P -> 2
+								button.btn.btn-info.col-md-3(onclick="make(0,'#{user._id}')") P -> 0
+								button.btn.btn-info.col-md-3(onclick="make(5,'#{user._id}')") Reset Hwid
+								button.btn.btn-info.col-md-3(onclick="make(6,'#{user._id}')") Reset Trial
+								button.btn.btn-danger.col-md-3(onclick="make(3,'#{user._id}')") Delete

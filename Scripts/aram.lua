@@ -2313,7 +2313,7 @@ function nodeDanger()
 
 		--Enemy Champ Calculations
 		for _, enemy in pairs(GetEnemyHeroes()) do
-			if not enemy.dead and GetDistance(node,enemy) < 1200  then
+			if not enemy.dead and GetDistance(node,enemy) < 1000  then
 				node.danger = node.danger + 50
 			end
 		end
@@ -2353,8 +2353,8 @@ function nodeDanger()
 
 		--Ally Champ Calculations
 		for _, enemy in pairs(GetAllyHeroes()) do
-			if not enemy.dead and GetDistance(node,enemy) < 350 then
-				node.danger = node.danger - 50
+			if not enemy.dead and GetDistance(node,enemy) < 500 then
+				node.danger = node.danger - 60
 			end
 		end
 

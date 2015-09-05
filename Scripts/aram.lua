@@ -2664,7 +2664,7 @@ function spellUp(id)
 		[_R] = 0x97,
 	}
 	local p = CLoLPacket(0x142)
-	p.vTable = 0xE9F988
+	p.vTable = 0xEBFE44
 	p:EncodeF(myHero.networkID)
 	p:Encode1(0x00)
 	for i = 1, 4 do	p:Encode1(0x12)	end
@@ -2835,7 +2835,7 @@ function BuyItemPacket(id)
 	local rB = {}
 	for i=0, 255 do rB[IDBytes[i]] = i end
 	local p = CLoLPacket(0xB7)
-	p.vTable = 0xE485F0
+	p.vTable = 0xE63DD4
 	p:EncodeF(myHero.networkID)
 	local b1 = bit32.lshift(bit32.band(rB[bit32.band(bit32.rshift(bit32.band(id,0xFFFF),24),0xFF)],0xFF),24)
 	local b2 = bit32.lshift(bit32.band(rB[bit32.band(bit32.rshift(bit32.band(id,0xFFFFFF),16),0xFF)],0xFF),16)

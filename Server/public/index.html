@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="home">
 <head>
     <meta charset="utf-8">
     <title>Hands Free Leveler</title>
@@ -20,6 +20,22 @@
       ga('send', 'pageview');
 
     </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="liveScript.js"></script>
+    <style>
+            .heroMarker{
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                height: 20px;
+                border: 1px solid white;
+                width: 20px;
+                z-index: 99;
+                background-color: green;
+                border-radius: 50%;
+                border-color: white;
+            }
+    </style>
 </head>
 <body>
 	<div id="headerSection">
@@ -32,7 +48,7 @@
 			<div class="nav-collapse">
 				<ul class="nav">
 					<li><a href="#ourServices">About HFL</a></li>
-					<li><a href="#portfolioSection">Gallery</a></li>
+					<li><a href="#portfolioSection">Live Stats</a></li>
 					<li><a href="#blogSection">Features</a></li>
 					<li><a href="#blogSection2">Tutorial</a></li>
                     <li><a href="/client">Login & Register</a></li>
@@ -111,75 +127,48 @@
 
 <!-- Our Portfolio======================================== -->
 <div id="portfolioSection">
-<div class="span6"><h1 class="cntr">Gallery</h1>
-<p>Explore the world of this awesome bot! Two days trial</p></div>
-<div class="container">	
-<div class="clr"></div>
-<div class="tabbable tabs">
-<div class="tab-content label-primary">
-
-	<div class="tab-pane active" id="all">
-	<ul class="thumbnails">
-	
-		<li class="span4">
-			<div class="thumbnail">
-				<div class="blockDtl">
-				<a><img src="http://i.gyazo.com/17da85f609492c18e8b75190f1be1b50.png" alt=""></a>
-				</div>
-			</div>
-		</li>
-			
-		<li class="span4">
-            <div class="thumbnail">
-                <div class="blockDtl">
-                <a><img src="http://i.gyazo.com/9fae09b0c6eb7dc370c94289a0ad309a.png" alt=""></a>
-                </div>
-            </div>
-        </li>
-
-        <li class="span4">
-            <div class="thumbnail">
-                <div class="blockDtl">
-                <a><img src="http://i.gyazo.com/ffc8f7a5686e2238ff150084f01862df.jpg" alt=""></a>
-                </div>
-            </div>
-        </li>
-			
-	</ul>
-
-    <ul class="thumbnails">
-
-        <li class="span4">
-            <div class="thumbnail">
-                <div class="blockDtl">
-                <a><img src="http://i.gyazo.com/2b359d0ad570317124b523501149b3aa.png" alt=""></a>
-                </div>
-            </div>
-        </li>
-
-        <li class="span4">
-            <div class="thumbnail">
-                <div class="blockDtl">
-                <a><img src="http://i.gyazo.com/f41c261ae9ceedfca6e3aa4c2c53c5fa.png" alt=""></a>
-                </div>
-            </div>
-        </li>
-
-        <li class="span4">
-            <div class="thumbnail">
-                <div class="blockDtl">
-                <a><img src="http://i.gyazo.com/6b6a300555d459ea89983cafebefe7ec.png" alt=""></a>
-                </div>
-            </div>
-        </li>
-        
-            
-    </ul>
-    
-	</div>
-
+<div class="span6">
+    <h1 class="cntr">Live Stats</h1>
+    <p>No false advertising, here is the live stats from all over the world!</p>
 </div>
-</div>
+<div class="container" ng-controller="main" style="color:white;">	
+    <div class="col-md-12">
+        <div class="col-md-8">
+            <select ng-model="changeSmurf">
+                <option ng-repeat="smurf in liveSmurfs" value="{{$index}}" ng-selected="selectedSmurf == $index">Smurf {{$index + 1}}</option>
+            </select>
+            <div class="row" ng-if="liveSmurfs[selectedSmurf]">
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                      Kill <span class="badge" style="margin-left:20px;">{{liveSmurfs[selectedSmurf].kill}}</span>
+                    </div>
+                    <div class="col-md-3">
+                      Death <span class="badge" style="margin-left:20px;">{{liveSmurfs[selectedSmurf].death}}</span>
+                    </div>
+                    <div class="col-md-3">
+                      Assist <span class="badge" style="margin-left:20px;">{{liveSmurfs[selectedSmurf].assist}}</span>
+                    </div>
+                    <div class="col-md-3">
+                      Minion <span class="badge" style="margin-left:20px;">{{liveSmurfs[selectedSmurf].mininon}}</span>
+                    </div>
+                    <div class="col-md-3">
+                      Hero <span class="badge" style="margin-left:20px;">{{liveSmurfs[selectedSmurf].hero}}</span>
+                    </div>
+                    <div class="col-md-3">
+                      Time <span class="badge" style="margin-left:20px;">{{timeParser(liveSmurfs[selectedSmurf].time)}}</span>
+                    </div>
+                    <div class="col-md-3" style="width:200px;margin:0px auto;">
+                        <h4>Live Map <small></small></h4>
+                        <div style="position:relative;">
+                          <img ng-if="liveSmurfs[selectedSmurf].map == 'summonerRift'" src="/img/sr.jpg" width="200px" style="margin-bottom:20px;" id="currentmap"/>
+                          <img ng-if="liveSmurfs[selectedSmurf].map != 'summonerRift'" src="/img/aram.png" width="200px" style="margin-bottom:20px;" id="currentmap"/>
+                          <span class="heroMarker"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 

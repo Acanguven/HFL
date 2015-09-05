@@ -157,7 +157,7 @@ router.post('/register', function(req, res, next) {
 		});
 		newUser.save(function(err,item){
 			if(err){
-				res.json({type:"err",err:err.message})
+				res.json({type:"err",err:err})
 			}else{
 				var token = jwt.sign(item, TOKEN_KEY);
 				res.json({type:"user",username:item.username,settings:item.settings,key:item.key,usertype:item.type,token:token})
@@ -175,7 +175,7 @@ router.post("/login", function(req,res,next){
 				var token = jwt.sign(item, TOKEN_KEY);
 				res.json({type:"user",username:item.username,settings:item.settings,key:item.key,usertype:item.type,token:token})
 			}else{
-				res.json({type:"err",err:err.message})
+				res.json({type:"err",err:err})
 			}
 		});
 	}else{

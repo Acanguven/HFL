@@ -345,11 +345,6 @@ namespace RitoBot
                 if (message is EndOfGameStats)
                 {
                     EndOfGameStats eog = message as EndOfGameStats;
-                    /* Update win */
-                    Random rnd = new Random();
-                    int deliloy = rnd.Next(1000, 45000);
-                    this.updateStatus("waitqueue|#|" + deliloy, Accountname);
-                    await Task.Delay(deliloy);
 					this.joinQueue();
                 }
                 else
@@ -409,7 +404,11 @@ namespace RitoBot
 						queueType = actualQueueType;
 					}
 					matchParams.QueueIds = new Int32[1] { (int)queueType };
-
+                    /* Update win */
+                    Random rnd = new Random();
+                    int deliloy = rnd.Next(0, 45000);
+                    this.updateStatus("waitqueue|#|" + deliloy, Accountname);
+                    //await Task.Delay(deliloy);
 					Program.QueueValid = false;
 					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
 					if (m.PlayerJoinFailures == null)
@@ -423,15 +422,20 @@ namespace RitoBot
 
                         foreach (QueueDodger current in m.PlayerJoinFailures)
                         {
-                            if (current.ReasonFailed == "LEAVER_BUSTED")
+                            if (current.ReasonFailed == "LEAVER_BUSTED" || current.ReasonFailed == "QUEUE_DODGER")
                             {
                                 m_accessToken = current.AccessToken;
                                 if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
                                 {
                                     this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
                                 }
+                                if (current.DodgePenaltyRemainingTime > this.m_leaverBustedPenalty)
+                                {
+                                    this.updateStatus("queueBusted", this.Accountname);
+                                }
                             }
                         }
+
                         if (!string.IsNullOrEmpty(this.m_accessToken))
                         {
                             this.updateStatus("waitbusted|#|" + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);

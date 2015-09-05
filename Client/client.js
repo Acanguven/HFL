@@ -369,6 +369,7 @@ function HFL(user, settings){
     			this.smurfStatus[user] = {status:clc.red("Waiting"),level:1}
     		}
     		this.smurfStatus[user].username = user;
+    		//console.log(data)
 		    switch(type){
 		    	case "Disconnected":
 		    		this.smurfStatus[user].status = clc.red("Disconnected");
@@ -441,6 +442,10 @@ function HFL(user, settings){
 		    	break;
 		    	case "gameended":
 		    		this.ng++;
+		    	break;
+		    	case "queueBusted":
+		    		this.smurfStatus[user].status= clc.red("Queue Busted");
+		    		this.smurfStatus[user].statusText = "Queue Busted";
 		    	break;
 		    	case "won":
 		    		this.wg++;

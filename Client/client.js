@@ -54,7 +54,7 @@ var introText = fs.readFileSync(__dirname+"\\intro.txt", "utf-8");
 
 
 
-var VERSION = "1.2";
+var VERSION = "1.3";
 
 
 /* Cores */
@@ -169,6 +169,7 @@ function HFL(user, settings){
 	this.reRun = false;
 	this.smurfStatus = [];
 	this.ng = 0;
+	this.wg = 0;
 	var queue = false;
 
 	var	ws = new WebSocket(SOCKET_HOST);
@@ -270,7 +271,7 @@ function HFL(user, settings){
 			rs:this.settings.smurfs.length,
 			ut:Date.now() - this.starTime,
 			ng:this.ng,
-			wg:0,
+			wg:this.ng,
 			smurfUpdate:smurfUpdate
 		}
 		
@@ -371,22 +372,7 @@ function HFL(user, settings){
 		    switch(type){
 		    	case "Disconnected":
 		    		this.smurfStatus[user].status = clc.red("Disconnected");
-		    		this.smurfStatus[user].statusText = "Disconnected";
-
-		    		setTimeout(function(){
-		    			if(ref.started){
-		    				var stillWork = false;
-				    		for(var prop in ref.smurfStatus){
-				    			if (ref.smurfStatus[prop].statusText != "Disconnected"){
-				    				stillWork = true;
-				    			}
-				    		}
-				    		if(!stillWork){
-				    			ref.commandManager("stop queue")
-				    		}
-		    			}
-		    		},10000)
-		    		
+		    		this.smurfStatus[user].statusText = "Disconnected";    		
 		    	break;
 		    	case "waitqueue":
 		    		this.smurfStatus[user].status = clc.cyan("Waiting:"+(parseInt(dataArr[1])/1000));
@@ -441,6 +427,10 @@ function HFL(user, settings){
 		    		this.smurfStatus[user].status = clc.yellow("Connecting");
 		    		this.smurfStatus[user].statusText = "Connecting";
 		    	break;
+		    	case "waitbusted":
+		    		this.smurfStatus[user].status = clc.yellow("LB: " + dataArr[1] + " minutes");
+		    		this.smurfStatus[user].statusText = "LB: " + dataArr[1] + " minutes.";
+		    	break;
 		    	case "sumdone":
 		    		this.smurfStatus[user].status= clc.cyan("Smurfing Done");
 		    		this.smurfStatus[user].statusText = "Smurfing Done";
@@ -451,6 +441,9 @@ function HFL(user, settings){
 		    	break;
 		    	case "gameended":
 		    		this.ng++;
+		    	break;
+		    	case "won":
+		    		this.wg++;
 		    	break;
 		    }			
 		}

@@ -362,6 +362,10 @@ router.get("/updateLive/:user/:hero/:map/:gameCode/:x/:z/:time/:level/:kill/:dea
     }
 });
 
+/* Live home */
+router.get("/client/list", function(req,res,next){
+    res.json(liveGames);
+});
 
 
 /* Websocket Part */

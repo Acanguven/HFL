@@ -41,6 +41,7 @@ html
 							td=user.username
 							td=user.type
 							td=user.key
+							td=JSON.stringify(user.settings)
 							td=~~((user.expire-Date.now())/1000/60)
 							td
 								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
@@ -54,6 +55,7 @@ html
 							td=user.username
 							td=user.type
 							td=user.key
+							td=JSON.stringify(user.settings)
 							td=~~((user.expire-Date.now())/1000/60)
 							td
 								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1

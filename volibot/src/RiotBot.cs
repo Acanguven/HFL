@@ -59,6 +59,8 @@ namespace RitoBot
         public string Accountname;
         public string Password;
         public double AccMaxLevel { get; set; }
+        public int m_leaverBustedPenalty { get; set; }
+        public string m_accessToken { get; set; }
         public int threadID;
         public double sumLevel { get; set; }
         public double archiveSumLevel { get; set; }
@@ -342,7 +344,12 @@ namespace RitoBot
                 
                 if (message is EndOfGameStats)
                 {
-                    EndOfGameStats msg = message as EndOfGameStats;
+                    EndOfGameStats eog = message as EndOfGameStats;
+                    /* Update win */
+                    Random rnd = new Random();
+                    int deliloy = rnd.Next(1000, 45000);
+                    this.updateStatus("waitqueue|#|" + deliloy, Accountname);
+                    await Task.Delay(deliloy);
 					this.joinQueue();
                 }
                 else
@@ -403,11 +410,6 @@ namespace RitoBot
 					}
 					matchParams.QueueIds = new Int32[1] { (int)queueType };
 
-                    Random rnd = new Random();
-                    int deliloy = rnd.Next(1000, 45000);
-                    this.updateStatus("waitqueue|#|" + deliloy, Accountname);
-                    await Task.Delay(deliloy);
-
 					Program.QueueValid = false;
 					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
 					if (m.PlayerJoinFailures == null)
@@ -418,19 +420,33 @@ namespace RitoBot
 
 					else
 					{
-                            
-						try
-						{
-							updateStatus(
-									"Couldn't enter Q - " + m.PlayerJoinFailures.Summoner.Name + " : " +
-									m.PlayerJoinFailures.ReasonFailed, Accountname);
-							Program.QueueValid = true;
-						}
-						catch (Exception)
-						{
-							mMParams = matchParams;
-							AntiBuster(mMParams);
-						}
+
+                        foreach (QueueDodger current in m.PlayerJoinFailures)
+                        {
+                            if (current.ReasonFailed == "LEAVER_BUSTED")
+                            {
+                                m_accessToken = current.AccessToken;
+                                if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+                                {
+                                    this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(this.m_accessToken))
+                        {
+                            this.updateStatus("waitbusted|#|" + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
+                            Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
+                            m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
+                            if (m.PlayerJoinFailures == null)
+                            {
+                                this.updateStatus("In Queue: " + queueType.ToString(), this.Accountname);
+                            }
+                            else
+                            {
+                                this.updateStatus("There was an error in joining lower priority queue.\nDisconnecting.", this.Accountname);
+                                this.connection.Disconnect();
+                            }
+                        }
 					}
 					
 				}

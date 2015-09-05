@@ -86,8 +86,14 @@ namespace LoLLauncher
         [UseGarenaValue(true)]
         TH,
 
+        [ServerValue("prodid.lol.garenanow.com")]
+        [LoginQueueValue("https://lqid.lol.garenanow.com/")]
+        [LocaleValue("en_US")]
+        [UseGarenaValue(true)]
+        ID,
+
         [ServerValue("prodph.lol.garenanow.com")]
-        [LoginQueueValue("https://storeph.lol.garenanow.com/")]
+        [LoginQueueValue("https://lqph.lol.garenanow.com/")]
         [LocaleValue("en_US")]
         [UseGarenaValue(true)]
         PH,

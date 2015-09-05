@@ -1,7 +1,7 @@
 <div class="container" ng-if="form === 4" style="background-color:white;">
     <h1>Live Controller <small style="font-size:18px;">Live details of running smurfs</small></h1>
     <hr>
-    <div class="row" ng-if="remoted === true">
+    <div class="row">
         <div class="col-md-2">
             <ul class="list-group">
               <li class="list-group-item" ng-repeat="smurf in liveData" ng-class="smurf.gameCode == selectedCode ? 'list-group-item-success' : 'list-group-item-info'" style="cursor:pointer;" ng-click="select(smurf);">Smurf #{{$index+1}}</li>

@@ -367,9 +367,9 @@ router.get("/client/list", function(req,res,next){
     var games = [];
 
     for(var game in liveGames){
-        games.push(game);
+        games.push(liveGames[game]);
     }
-    
+
     res.json(games);
 });
 

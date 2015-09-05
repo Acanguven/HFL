@@ -74,5 +74,5 @@ app.listen(port, "0.0.0.0" ,function() {
 /* Handler */
 
 process.on('uncaughtException', function(e){
-    console.log(JSON.stringify(e))
+    console.log(e)
 })

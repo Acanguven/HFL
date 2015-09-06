@@ -408,9 +408,10 @@ namespace RitoBot
                     Random rnd = new Random();
                     int deliloy = rnd.Next(0, 45000);
                     this.updateStatus("waitqueue|#|" + deliloy, Accountname);
-                    //await Task.Delay(deliloy);
+                    await Task.Delay(deliloy);
 					Program.QueueValid = false;
 					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
+                    this.updateStatus("tryqueue", Accountname);
 					if (m.PlayerJoinFailures == null)
 					{
 						this.updateStatus("queue|#|" + queueType.ToString(), Accountname);
@@ -428,10 +429,6 @@ namespace RitoBot
                                 if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
                                 {
                                     this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
-                                }
-                                if (current.DodgePenaltyRemainingTime > this.m_leaverBustedPenalty)
-                                {
-                                    this.updateStatus("queueBusted", this.Accountname);
                                 }
                             }
                         }

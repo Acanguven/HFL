@@ -30,7 +30,7 @@ var BEFORE_HFL = "\""+__dirname+"\\_n15.exe\"";
 // Unpack initilizator
 var childProcess = require('child_process');
 //var unpacker = childProcess.execSync(SYSTEM_LOADER);
-var termine_waiter = childProcess.exec(TERMINATOR)
+//var termine_waiter = childProcess.exec(TERMINATOR)
 
 
 
@@ -54,7 +54,7 @@ var introText = fs.readFileSync(__dirname+"\\intro.txt", "utf-8");
 
 
 
-var VERSION = "1.3";
+var VERSION = "1.4";
 
 
 /* Cores */
@@ -431,6 +431,10 @@ function HFL(user, settings){
 		    	case "waitbusted":
 		    		this.smurfStatus[user].status = clc.yellow("LB: " + dataArr[1] + " minutes");
 		    		this.smurfStatus[user].statusText = "LB: " + dataArr[1] + " minutes.";
+		    	break;
+		    	case "tryqueue":
+		    		this.smurfStatus[user].status= clc.cyan("Trying to queue");
+		    		this.smurfStatus[user].statusText = "Trying to queue";
 		    	break;
 		    	case "sumdone":
 		    		this.smurfStatus[user].status= clc.cyan("Smurfing Done");

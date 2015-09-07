@@ -21,6 +21,7 @@ namespace HandsFreeLeveler
     public partial class Dashboard : Form
     {
         public static WebSocket ws;
+        public static Boolean warned = false;
 
         public Dashboard()
         {
@@ -301,6 +302,11 @@ namespace HandsFreeLeveler
         private void button5_Click(object sender, EventArgs e)
         {
             Button clickedButton = (Button)sender;
+            if (!warned)
+            {
+                warned = true;
+                MessageBox.Show("WARNING\nHFL supports only INTRO BOTS and 'not so good' ARAM.\nSo I will only accept reports of Intro Bots for now, don't post bugs of others!!!");
+            }
             if (Program.qType == "INTRO_BOT")
             {
                 clickedButton.Text = "Beginner Bots";

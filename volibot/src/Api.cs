@@ -99,6 +99,8 @@ namespace HandsFreeLeveler
                         using (var downloader = new System.Net.WebClient())
                         {
                             downloader.DownloadFile("http://handsfreeleveler.com/HFL.exe", "HFL.exe");
+                            MessageBox.Show("Hands Free Leveler updated. Please restart application.");
+                            System.Environment.Exit(1);
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
@@ -98,13 +99,19 @@ namespace HandsFreeLeveler
                     {
                         using (var downloader = new System.Net.WebClient())
                         {
-                            downloader.DownloadFile("http://handsfreeleveler.com/HFL.exe", "HFL.exe");
-                            MessageBox.Show("Hands Free Leveler updated. Please restart application.");
-                            System.Environment.Exit(1);
+                            downloader.DownloadFileCompleted += updateDone;
+                            Random rnd = new Random();
+                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFLt.exe?Random=" + rnd.Next(0, 20000)), "HFL.exe");
                         }
                     }
                 }
             }
+        }
+
+        public static void updateDone(object sender, AsyncCompletedEventArgs e)
+        {
+            MessageBox.Show("Hands Free Leveler updated. Please restart application.");
+            System.Environment.Exit(1);
         }
     }
 }

@@ -84,25 +84,28 @@ namespace HandsFreeLeveler
 
         public static async void getVersion()
         {
+            Random rnd = new Random();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://handsfreeleveler.com/");
                 client.DefaultRequestHeaders.Accept.Clear();
 
                 // HTTP GET
-                HttpResponseMessage response = await client.GetAsync("client_version.txt");
+                HttpResponseMessage response = await client.GetAsync("client_version.txt?Random=" + rnd.Next(0, 20000));
                 if (response.IsSuccessStatusCode)
                 {
                     String data = await response.Content.ReadAsStringAsync();
                     float version = float.Parse(data.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                     if (version > Program.version)
                     {
-                        using (var downloader = new System.Net.WebClient())
+                        MessageBox.Show("New version found please update your client from website");
+                        System.Environment.Exit(1);
+                        /*using (var downloader = new System.Net.WebClient())
                         {
                             downloader.DownloadFileCompleted += updateDone;
-                            Random rnd = new Random();
-                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFLt.exe?Random=" + rnd.Next(0, 20000)), "HFL.exe");
-                        }
+                            
+                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFLt.exe?Random=" + rnd.Next(0, 20000)), "HFLT.exe");
+                        }*/
                     }
                 }
             }

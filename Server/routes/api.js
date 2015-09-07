@@ -64,7 +64,7 @@ router.get("/sprite/:random", function(req,res,next){
     res.download(file)
 });
 
-router.get("/admin/reset/:password/" , function(){
+router.get("/admin/reset/:password/" , function(req,res,next){
     if(req.params.password = "774477"){
         Hwid.find({}, function(err,items){
             items.forEach(function(item){

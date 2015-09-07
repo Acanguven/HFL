@@ -16,6 +16,7 @@ using LoLLauncher.RiotObjects;
 using LoLLauncher.RiotObjects.Platform.Game;
 using LoLLauncher.RiotObjects.Platform.Game.Message;
 using LoLLauncher.RiotObjects.Platform.Matchmaking;
+using Microsoft.Win32;
 using LoLLauncher.RiotObjects.Platform.Messaging;
 
 namespace LoLLauncher
@@ -555,22 +556,16 @@ namespace LoLLauncher
             result = GetResult(id);
             if (result["result"].Equals("_error"))
             {
-                if (RitoBot.Program.AutoUpdate)
+                if (HandsFreeLeveler.Program.AutoUpdate)
                 {
                     string newVersion = (string)result.GetTO("data").GetTO("rootCause").GetArray("substitutionArguments")[1];
-                    if (newVersion != RitoBot.Program.cversion)
+                    if (newVersion != HandsFreeLeveler.Program.cversion)
                     {
-                        if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "version.txt"))
-                        {
-                            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
-                        }
-                        var fs = File.Create(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
-                        fs.Close();
-                        TextWriter tw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
-                        Console.Out.Write("hflupdated");
-                        tw.WriteLine(newVersion);
-                        tw.Close();
-                        Environment.Exit(0);
+                        RegistryKey regKey = Registry.CurrentUser;
+                        regKey = regKey.OpenSubKey(@"Software\HFL\Paths", true);
+                        regKey.SetValue("GAMEVERSION", newVersion);
+                        HandsFreeLeveler.Program.restartSystem();
+                        //Restart Botting here
                     }
                 }
                 else 

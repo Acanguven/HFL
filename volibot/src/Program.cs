@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,188 +6,165 @@ using Ini;
 using System.Collections;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net;
 using System.Management;
 using LoLLauncher;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
-namespace RitoBot
+namespace HandsFreeLeveler
 {
     public class Program
     {
 
 		public static bool QueueValid = true;
-        public static string Path2;
+        public static string gamePath;
         public static string Region;
-        public static ArrayList accounts = new ArrayList();
-        public static ArrayList accounts2 = new ArrayList();
+        public static List<smurfData> accounts = new List<smurfData>();
+        public static List<RiotBot> runningSmurfs = new List<RiotBot>();
         public static int maxBots = 1;
         public static bool replaceConfig =  false;
         public static int connectedAccs = 0;
         public static string championId = "";
+        public static int gamesPlayed = 0;
         public static string championId2 = "";
         public static int maxLevel = 31;
+        public static string qType = "INTRO_BOT";
+        public static bool started = false;
+        public static float version = 1.5f;
         public static bool buyBoost = false;
-        public static bool rndSpell = true;
-        public static string spell1 = "flash";
-        public static string spell2 = "ignite";
+        public static bool rndSpell = false;
+        public static string spell1 = "GHOST";
+        public static string spell2 = "HEAL";
         public static string cversion = "5.13.15_07_07_21_19";
-        public static bool AutoUpdate = false;
+        public static bool AutoUpdate = true;
+        public static bool loggedIn = false;
+        public static wsLogin login = new wsLogin();
+        public static System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
         public static bool LoadGUI = false;
-        public static frm_MainWindow MainWindow = new frm_MainWindow();
+        public static Dashboard homePage;
 
-
+        [STAThread]
         static void Main(string[] args)
         {
-            InitChecks();
-            loadVersion();
-            loadConfiguration();
-            if (replaceConfig)
-            {
-                gamecfg();
-            }
-            while (!File.Exists(Path2 + "lol.launcher.exe"))
-            {
-                Console.Out.WriteLine();
-                Console.Out.WriteLine("Error -> Launcher settings");
-                Console.Out.WriteLine();
-                System.Threading.Thread.Sleep(5000);
-                loadConfiguration();
-            }
-            ReloadAccounts:
-            loadAccounts();
-            int curRunning = 0;
-            if (LoadGUI) MainWindow.ShowDialog();
-            if (!LoadGUI)
-            {
-                foreach (string acc in accounts)
-                {
-                    try
-                    {
-                        accounts2.RemoveAt(0);
-                        string Accs = acc;
-                        string[] stringSeparators = new string[] { "|" };
-                        var result = Accs.Split(stringSeparators, StringSplitOptions.None);
-                        curRunning += 1;
-                        if (result[0].Contains("username"))
-                        {
-                            Console.Out.WriteLine("Error -> Your list is empty");
-                            goto ReloadAccounts;
-                        }
-                        if (result[2] != null)
-                        {
-                            QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[2]);
-                            RiotBot ritoBot = new RiotBot(result[0], result[1], result[3] ,Region, Path2, curRunning, queuetype);
-                        }
-                        else
-                        {
-                            QueueTypes queuetype = QueueTypes.ARAM;
-                            RiotBot ritoBot = new RiotBot(result[0], result[1], result[3] ,Region, Path2, curRunning, queuetype);
-                        }
-                        if (curRunning == maxBots)
-                            break;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Out.WriteLine(e.Message);
-                        Application.Exit();
-                    }
-                }
-            }
+            /* Update */
+            UpdateCheck();
+            /*Set Registry*/
+            registery();
+            /* Init starter */
+            homePage = new Dashboard();
+            //trylogin();
+            Application.Run(homePage);
         }
-        public static void loadVersion()
-        {
 
-            var versiontxt = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + @"version.txt");
-            cversion = versiontxt.ReadLine();
-            versiontxt.Close();
-        }
-        public static void lognNewAccount()
+        public static void UpdateCheck()
         {
-            accounts2 = accounts;
-            accounts.RemoveAt(0);
+            Api.getVersion();
+        }
+
+        public static void startBotting() {
             int curRunning = 0;
-            if (accounts.Count == 0)
+            started = true;
+            foreach (smurfData acc in accounts)
             {
-                Console.Out.WriteLine(getTimestamp() + "Error -> nothing to work on it");
-            }
-            foreach (string acc in accounts)
-            {
-                string Accs = acc;
-                string[] stringSeparators = new string[] { "|" };
-                var result = Accs.Split(stringSeparators, StringSplitOptions.None);
                 curRunning += 1;
-                if(result[2] != null)
-                {
-                    QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), result[2]);
-                    RiotBot ritoBot = new RiotBot(result[0], result[1], result[3], Region, Path2, curRunning, queuetype);
-                } else {
-                    QueueTypes queuetype = QueueTypes.ARAM;
-                    RiotBot ritoBot = new RiotBot(result[0], result[1], result[3], Region, Path2, curRunning, queuetype);
-                }
-                if (curRunning == maxBots)
+                QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), qType);
+                RiotBot ritoBot = new RiotBot(acc.username, acc.password, acc.maxLevel, Region, gamePath, curRunning, queuetype);
+                runningSmurfs.Add(ritoBot);
+                if (curRunning == maxBots) { 
                     break;
+                }
             }
+        
         }
-        public static void loadConfiguration()
+
+        public static void restartSystem()
         {
-            try
-            {
-                IniFile iniFile = new IniFile(AppDomain.CurrentDomain.BaseDirectory + @"settings.ini");
-                //General
-                Path2 = iniFile.IniReadValue("General", "LauncherPath");
-                LoadGUI = Convert.ToBoolean(iniFile.IniReadValue("General", "LoadGUI"));
-                maxBots = Convert.ToInt32(iniFile.IniReadValue("General", "MaxBots"));
-                maxLevel = Convert.ToInt32(iniFile.IniReadValue("General", "MaxLevel"));
-                championId = iniFile.IniReadValue("General", "ChampionPick").ToUpper();
-                spell1 = iniFile.IniReadValue("General", "Spell1").ToUpper();
-                spell2 = iniFile.IniReadValue("General", "Spell2").ToUpper();
-                rndSpell = Convert.ToBoolean(iniFile.IniReadValue("General", "RndSpell"));
-                replaceConfig = Convert.ToBoolean(iniFile.IniReadValue("General", "ReplaceConfig"));
-                AutoUpdate = Convert.ToBoolean(iniFile.IniReadValue("General", "AutoUpdate"));
-                //Account
-                Region = iniFile.IniReadValue("Account", "Region").ToUpper();
-                buyBoost = Convert.ToBoolean(iniFile.IniReadValue("Account", "BuyBoost"));
-            }
-            catch (Exception e)
-            {
-                Console.Out.WriteLine(e.Message);
-                Thread.Sleep(10000);
-                Application.Exit();
-            }
+            stopBotting();
+            registery();
+            startBotting();
         }
-        public static void loadAccounts()
+
+        public static void stopBotting()
         {
-            var accountsTxtPath = AppDomain.CurrentDomain.BaseDirectory + @"accounts.txt";
-            TextReader tr = File.OpenText(accountsTxtPath);
-            string line;
-            while ((line = tr.ReadLine()) != null)
+            started = false;
+            foreach (RiotBot thread in runningSmurfs)
             {
-                accounts.Add(line);
-                accounts2.Add(line);
+                thread.connection.Disconnect();
             }
-            tr.Close();
+            Thread.Sleep(500);
+            runningSmurfs.Clear();
+            Thread.Sleep(500);
+            
         }
+
+        public static void trylogin()
+        {
+            RegistryKey regKey = Registry.CurrentUser;
+            regKey = regKey.OpenSubKey(@"Software\HFL\Account");
+            login.username = regKey.GetValue("Username").ToString();
+            login.password = regKey.GetValue("Password").ToString();
+
+            if (login.username == null || login.password == null || (login.username == "null" && login.password == "null")) { 
+                login.username = Prompt.ShowDialog("Username", "Authenticating user");
+                login.password = Prompt.ShowDialog("Password", "Authenticating user");
+            }
+
+            login.key = HWID.Generate();
+            Api.checkAuth(login.username, login.key, login.password,homePage);
+        }
+
+        /* Websocket Part */
+        public class wsLogin
+        {
+            public string username { get; set; }
+            public string password { get; set; }
+            public string type { get; set; }
+            public string key { get; set; }
+        }
+
         public static String getTimestamp()
         {
            return "[" + DateTime.Now + "] ";
         }
-        public static void getColor(ConsoleColor color)
+
+        public static void registery()
         {
+            RegistryKey pathkey = Registry.CurrentUser.OpenSubKey("Software", true);
+            RegistryKey hflKey = pathkey.OpenSubKey("HFL", true);
+            if (hflKey == null) { 
+                hflKey = pathkey.CreateSubKey("HFL");
+                RegistryKey accountKey = hflKey.CreateSubKey("Account");
+                accountKey.SetValue("Username", "null");
+                accountKey.SetValue("Password", "null");
+                RegistryKey pathKey = hflKey.CreateSubKey("Paths");
+                pathKey.SetValue("BOL", "null");
+                pathKey.SetValue("GAME", "null");
+                pathKey.SetValue("GAMEVERSION", cversion);
+            }
+            else
+            {
+                RegistryKey regKey = hflKey.OpenSubKey(@"Paths");
+                cversion = regKey.GetValue("GAMEVERSION").ToString();
+                gamePath = Path.GetDirectoryName(regKey.GetValue("GAME").ToString() + "\\");
+            }            
         }
+
+
         public static void gamecfg()
         {
             try
             {
 
-                string path = Path2 + @"Config\\game.cfg";
+                string path = gamePath + @"Config\\game.cfg";
                 FileInfo fileInfo = new FileInfo(path);
                 fileInfo.IsReadOnly = false;
                 fileInfo.Refresh();
                 string str = "[General]\nGameMouseSpeed=9\nEnableAudio=0\nUserSetResolution=0\nBindSysKeys=0\nSnapCameraOnRespawn=0\nOSXMouseAcceleration=1\nAutoAcquireTarget=0\nEnableLightFx=0\nWindowMode=2\nShowTurretRangeIndicators=0\nPredictMovement=0\nWaitForVerticalSync=0\nColors=2\nHeight=10\nWidth=10\nSystemMouseSpeed=0\nCfgVersion=5.5.7\n\n[HUD]\nShowNeutralCamps=0\nDrawHealthBars=0\nAutoDisplayTarget=0\nMinimapMoveSelf=0\nItemShopPrevY=19\nItemShopPrevX=117\nShowAllChannelChat=0\nShowTimestamps=0\nObjectTooltips=0\nFlashScreenWhenDamaged=0\nNameTagDisplay=1\nShowChampionIndicator=0\nShowSummonerNames=0\nScrollSmoothingEnabled=0\nMiddleMouseScrollSpeed=0.5000\nMapScrollSpeed=0.5000\nShowAttackRadius=0\nNumericCooldownFormat=3\nSmartCastOnKeyRelease=0\nEnableLineMissileVis=0\nFlipMiniMap=0\nItemShopResizeHeight=47\nItemShopResizeWidth=455\nItemShopPrevResizeHeight=200\nItemShopPrevResizeWidth=300\nItemShopItemDisplayMode=1\nItemShopStartPane=1\n\n[Performance]\nShadowsEnabled=0\nEnableHUDAnimations=0\nPerPixelPointLighting=0\nEnableParticleOptimizations=0\nBudgetOverdrawAverage=10\nBudgetSkinnedVertexCount=10\nBudgetSkinnedDrawCallCount=10\nBudgetTextureUsage=10\nBudgetVertexCount=10\nBudgetTriangleCount=10\nBudgetDrawCallCount=1000\nEnableGrassSwaying=0\nEnableFXAA=0\nAdvancedShader=0\nFrameCapType=3\nGammaEnabled=1\nFull3DModeEnabled=0\nAutoPerformanceSettings=0\n=0\nEnvironmentQuality=0\nEffectsQuality=0\nShadowQuality=0\nGraphicsSlider=0\n\n[Volume]\nMasterVolume=1\nMusicMute=0\n\n[LossOfControl]\nShowSlows=0\n\n[ColorPalette]\nColorPalette=0\n\n[FloatingText]\nCountdown_Enabled=0\nEnemyTrueDamage_Enabled=0\nEnemyMagicalDamage_Enabled=0\nEnemyPhysicalDamage_Enabled=0\nTrueDamage_Enabled=0\nMagicalDamage_Enabled=0\nPhysicalDamage_Enabled=0\nScore_Enabled=0\nDisable_Enabled=0\nLevel_Enabled=0\nGold_Enabled=0\nDodge_Enabled=0\nHeal_Enabled=0\nSpecial_Enabled=0\nInvulnerable_Enabled=0\nDebug_Enabled=1\nAbsorbed_Enabled=1\nOMW_Enabled=1\nEnemyCritical_Enabled=0\nQuestComplete_Enabled=0\nQuestReceived_Enabled=0\nMagicCritical_Enabled=0\nCritical_Enabled=1\n\n[Replay]\nEnableHelpTip=0";
                 StringBuilder builder = new StringBuilder();
                 builder.AppendLine(str);
-                using (StreamWriter writer = new StreamWriter(Path2 + @"Config\game.cfg"))
+                using (StreamWriter writer = new StreamWriter(gamePath + @"Config\game.cfg"))
                 {
                     writer.Write(builder.ToString());
                 }
@@ -201,6 +176,7 @@ namespace RitoBot
                 //Console.Out.WriteLine("Error -> .cfg Error");
             }
         }
+
         private static string RandomString(int size)
         {
             StringBuilder builder = new StringBuilder();
@@ -214,6 +190,7 @@ namespace RitoBot
 
             return builder.ToString();
         }
+
         private static void InitChecks()
         {
             var accountsTxtLocation = AppDomain.CurrentDomain.BaseDirectory + @"accounts.txt";

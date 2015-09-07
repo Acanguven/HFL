@@ -183,6 +183,10 @@ function HFL(user, settings){
 		updater = setInterval(function(){
 			ref.updateSettings();
 			ref.updateStatus();
+
+			if(ref.started){
+				
+			}
 		},1000)
 	});
 
@@ -323,7 +327,8 @@ function HFL(user, settings){
 			this.started = true;
 
 			//ref.queue = require('child_process').spawn('cmd',["/c","_n2.exe"]);
-			ref.queue = childProcess.exec(QUEUE)
+			ref.queue = childProcess.exec(QUEUE);
+
 			ref.queue.stdout.on("data", function(data){
 				if(data){
 					data = data.toString("utf-8");
@@ -343,8 +348,7 @@ function HFL(user, settings){
 			});
 
 			ref.queue.on("exit", function(data){
-				ref.started = false;
-				if(ref.reRun){
+				if(ref.started){
 					ref.reRun = false;
 					ref.start();
 				}

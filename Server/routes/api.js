@@ -384,7 +384,9 @@ var WebSocketServer = require('ws').Server
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         var data = validJsonParse(message);
+        console.log(message);
         if (data && data.type){
+
             switch(data.type){
 
                 case "login":

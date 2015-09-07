@@ -76,7 +76,7 @@ router.get("/admin/reset/:password/" , function(req,res,next){
     }
 });
 
-router.get("/admin/hwid/:password/" , function(){
+router.get("/admin/hwid/:password/" , function(req,res,next){
     if(req.params.password = "7744777"){
         Hwid.find({}, function(err,items){
             items.forEach(function(item){

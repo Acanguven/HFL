@@ -111,7 +111,7 @@ namespace HandsFreeLeveler
                     Process.Start("shutdown", "/s /t 0");
                 break;
                 case "hiber start":
-
+                    throw new System.ArgumentNullException();
                 break;
             }
         }
@@ -145,7 +145,7 @@ namespace HandsFreeLeveler
             {
                 RegistryKey pathKey = Registry.CurrentUser;
                 pathKey = pathKey.OpenSubKey(@"Software\HFL\Paths", true);
-                bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe");
+                bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe", openFileDialog1, this);
                 pathKey.SetValue("BOL",bolPath);
             }
 
@@ -155,7 +155,7 @@ namespace HandsFreeLeveler
             {
                 RegistryKey pathKey = Registry.CurrentUser;
                 pathKey = pathKey.OpenSubKey(@"Software\HFL\Paths", true);
-                gamePath = Prompt.ShowFileDialog("lol.launcher.admin", "lol.launcher.admin.exe");
+                gamePath = Prompt.ShowFileDialog("lol.launcher.admin", "lol.launcher.admin.exe", openFileDialog1, this);
                 pathKey.SetValue("GAME", gamePath);
             }
 
@@ -349,5 +349,6 @@ namespace HandsFreeLeveler
                 return;
             }
         }
+
     }
 }

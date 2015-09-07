@@ -98,14 +98,14 @@ namespace HandsFreeLeveler
                     float version = float.Parse(data.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                     if (version > Program.version)
                     {
-                        MessageBox.Show("New version found please update your client from website");
-                        System.Environment.Exit(1);
-                        /*using (var downloader = new System.Net.WebClient())
+                        //MessageBox.Show("New version found please update your client from website");
+                        //System.Environment.Exit(1);
+                        using (var downloader = new System.Net.WebClient())
                         {
                             downloader.DownloadFileCompleted += updateDone;
                             
-                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFLt.exe?Random=" + rnd.Next(0, 20000)), "HFLT.exe");
-                        }*/
+                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFL.exe?Random=" + rnd.Next(0, 20000)), "HFL.exe");
+                        }
                     }
                 }
             }

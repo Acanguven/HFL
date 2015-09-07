@@ -44,8 +44,8 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.bolfinder = new System.Windows.Forms.FolderBrowserDialog();
             this.button5 = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -166,12 +166,6 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // bolfinder
-            // 
-            this.bolfinder.Description = "Please select \"Bol Studio.exe\" in your Bol directory.";
-            this.bolfinder.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            this.bolfinder.ShowNewFolderButton = false;
-            // 
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(537, 99);
@@ -181,6 +175,10 @@
             this.button5.Text = "Intro Bots";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // Dashboard
             // 
@@ -199,7 +197,7 @@
             this.MaximumSize = new System.Drawing.Size(640, 2000);
             this.MinimumSize = new System.Drawing.Size(640, 38);
             this.Name = "Dashboard";
-            this.Text = "Hands Free Leveler | Version: 2,1";
+            this.Text = "Hands Free Leveler | Version: 1,9";
             this.SizeChanged += new System.EventHandler(this.Dashboard_SizeChanged);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -225,8 +223,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.FolderBrowserDialog bolfinder;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
 
     }
 }

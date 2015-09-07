@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 public static class Prompt
 {
     public static string ShowDialog(string text, string caption)
@@ -26,16 +27,25 @@ public static class Prompt
     }
 
 
-    public static string ShowFileDialog(string FileName,string fileFull)
+    public static string ShowFileDialog(string FileName, string fileFull, System.Windows.Forms.FileDialog dialog,Form parent)
     {
         string selectedPath = "";
         var t = new Thread((ThreadStart)(() =>
         {
-            FileDialog fbd = new OpenFileDialog();
-            fbd.Filter = FileName+"|" + fileFull;
-            if (fbd.ShowDialog() == DialogResult.OK)
+            HandsFreeLeveler.Program.homePage.Invoke(new Action(
+            delegate()
             {
-                selectedPath = fbd.FileName;
+                dialog.Filter = FileName + "|" + fileFull;
+                dialog.FileName = FileName;
+                parent.Activate();
+                parent.TopMost = true;  // important
+                parent.TopMost = false; // important
+                parent.Focus();  
+            }));
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                selectedPath = dialog.FileName;
             }
         }));
         t.SetApartmentState(ApartmentState.STA);

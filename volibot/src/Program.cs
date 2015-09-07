@@ -32,7 +32,7 @@ namespace HandsFreeLeveler
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
         public static bool started = false;
-        public static float version = 1.9f;
+        public static float version = 2.0f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -48,14 +48,30 @@ namespace HandsFreeLeveler
         [STAThread]
         static void Main(string[] args)
         {
-            /* Update */
-            UpdateCheck();
-            /*Set Registry*/
-            registery();
-            /* Init starter */
-            homePage = new Dashboard();
-            trylogin();
-            Application.Run(homePage);
+            /* .NET */
+            try
+            {
+                /* Update */
+                UpdateCheck();
+                /*Set Registry*/
+                registery();
+                /* Init starter */
+                homePage = new Dashboard();
+                trylogin();
+                Application.Run(homePage);
+            }
+            catch (Exception ex)
+            {
+                string filePath = "Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("Message :" + ex.Message + "<br/>" + Environment.NewLine + "StackTrace :" + ex.StackTrace +
+                       "" + Environment.NewLine + "Date :" + DateTime.Now.ToString());
+                    writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
+                }
+                MessageBox.Show("HFL client just crashed and I created a file called 'Errors.txt' in the directory. Please send it to The Law.");
+            }
+
         }
 
         public static void UpdateCheck()

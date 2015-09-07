@@ -65,13 +65,27 @@ router.get("/sprite/:random", function(req,res,next){
 });
 
 router.get("/admin/reset/:password/" , function(){
-    Hwid.find({}, function(err,items){
-        items.forEach(function(item){
-            item.expire = Date.now()+(1000*60*60*24);
-            item.save();
+    if(req.params.password = "774477"){
+        Hwid.find({}, function(err,items){
+            items.forEach(function(item){
+                item.expire = Date.now()+(1000*60*60*24);
+                item.save();
+            });
+            res.end("done");
         });
-        res.end("done");
-    });
+    }
+});
+
+router.get("/admin/hwid/:password/" , function(){
+    if(req.params.password = "7744777"){
+        Hwid.find({}, function(err,items){
+            items.forEach(function(item){
+                item.key = "false";
+                item.save();
+            });
+            res.end("done");
+        });
+    }
 });
 
 router.get("/admin/make/:password/:type/:id" , function(req,res,next){

@@ -23,9 +23,17 @@ html
 					top.location.href = top.location.href;
 				});
 			}
+
+			function hwid(){
+				var password = prompt("Pass?")
+				$.get("/api/admin/hwid/"+password, function(data){
+					top.location.href = top.location.href;
+				});
+			}
 	body
 		.col-md-12
 			button.btn.btn-info.col-md-3(onclick="reset()") Reset All Trial 48 hours
+			button.btn.btn-info.col-md-3(onclick="hwid()") Reset All HWID
 			table.table-bordered.table
 				thead
 					tr
@@ -41,7 +49,6 @@ html
 							td=user.username
 							td=user.type
 							td=user.key
-							td=JSON.stringify(user.settings)
 							td=~~((user.expire-Date.now())/1000/60)
 							td
 								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1
@@ -55,7 +62,6 @@ html
 							td=user.username
 							td=user.type
 							td=user.key
-							td=JSON.stringify(user.settings)
 							td=~~((user.expire-Date.now())/1000/60)
 							td
 								button.btn.btn-info.col-md-3(onclick="make(1,'#{user._id}')") P -> 1

@@ -32,7 +32,7 @@ namespace HandsFreeLeveler
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
         public static bool started = false;
-        public static float version = 1.5f;
+        public static float version = 1.6f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -54,7 +54,7 @@ namespace HandsFreeLeveler
             registery();
             /* Init starter */
             homePage = new Dashboard();
-            //trylogin();
+            trylogin();
             Application.Run(homePage);
         }
 

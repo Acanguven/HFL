@@ -32,7 +32,7 @@ namespace HandsFreeLeveler
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
         public static bool started = false;
-        public static float version = 2.0f;
+        public static float version = 2.1f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -51,6 +51,10 @@ namespace HandsFreeLeveler
             /* .NET */
             try
             {
+                if (File.Exists("HFLOLD.exe"))
+                {
+                    File.Delete("HFLOLD.exe");
+                }
                 /* Update */
                 UpdateCheck();
                 /*Set Registry*/

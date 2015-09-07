@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Net.Http.Headers;
 using Microsoft.Win32;
+using System.IO;
 
 namespace HandsFreeLeveler
 {
@@ -103,8 +104,7 @@ namespace HandsFreeLeveler
                         using (var downloader = new System.Net.WebClient())
                         {
                             downloader.DownloadFileCompleted += updateDone;
-                            
-                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFL.exe?Random=" + rnd.Next(0, 20000)), "HFL.exe");
+                            downloader.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFL.exe?Random=" + rnd.Next(0, 20000)), "HFLNEW.exe");
                         }
                     }
                 }
@@ -113,8 +113,15 @@ namespace HandsFreeLeveler
 
         public static void updateDone(object sender, AsyncCompletedEventArgs e)
         {
-            MessageBox.Show("Hands Free Leveler updated. Please restart application.");
-            System.Environment.Exit(1);
+
+            if (File.Exists("HFLNEW.exe"))
+            {
+                System.IO.File.Move("HFL.exe", "HFLOLD.exe");
+                System.IO.File.Move("HFLNEW.exe", "HFL.exe");
+                System.Diagnostics.Process.Start("HFL.exe");
+                MessageBox.Show("Hands Free Leveler updated.");
+                System.Environment.Exit(1);
+            }
         }
     }
 }

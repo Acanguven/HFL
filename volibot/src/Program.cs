@@ -32,7 +32,7 @@ namespace HandsFreeLeveler
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
         public static bool started = false;
-        public static float version = 2.1f;
+        public static float version = 2.2f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -49,11 +49,17 @@ namespace HandsFreeLeveler
         static void Main(string[] args)
         {
             /* .NET */
+
             try
             {
+                while (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1) {
+                    Thread.Sleep(100);
+                }
+
                 if (File.Exists("HFLOLD.exe"))
                 {
                     File.Delete("HFLOLD.exe");
+                    MessageBox.Show("Hands Free Leveler is just auto updated to version:" + Program.version.ToString());
                 }
                 /* Update */
                 UpdateCheck();

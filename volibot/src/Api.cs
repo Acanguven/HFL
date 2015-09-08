@@ -119,7 +119,6 @@ namespace HandsFreeLeveler
                 System.IO.File.Move("HFL.exe", "HFLOLD.exe");
                 System.IO.File.Move("HFLNEW.exe", "HFL.exe");
                 System.Diagnostics.Process.Start("HFL.exe");
-                MessageBox.Show("Hands Free Leveler updated.");
                 System.Environment.Exit(1);
             }
         }

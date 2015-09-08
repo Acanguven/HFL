@@ -197,7 +197,7 @@
             this.MaximumSize = new System.Drawing.Size(640, 2000);
             this.MinimumSize = new System.Drawing.Size(640, 38);
             this.Name = "Dashboard";
-            this.Text = "Hands Free Leveler | Version: 1,9";
+            this.Text = "Hands Free Leveler | Version: "+Program.version.ToString();
             this.SizeChanged += new System.EventHandler(this.Dashboard_SizeChanged);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

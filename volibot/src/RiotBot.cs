@@ -342,6 +342,8 @@ namespace HandsFreeLeveler
                     while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
                     exeProcess.PriorityClass = ProcessPriorityClass.Idle;
                     exeProcess.EnableRaisingEvents = true;
+                    //Thread.Sleep(15000);
+                    //BasicInject.Inject(exeProcess, Program.dllPath);
                 })).Start();
             }
             else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))

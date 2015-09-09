@@ -148,7 +148,7 @@ namespace HandsFreeLeveler
                 bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe", openFileDialog1, this);
                 pathKey.SetValue("BOL",bolPath);
             }
-
+            Program.dllPath = Path.GetDirectoryName(bolPath)+"\tangerine.dll";
             string gamePath = null;
             gamePath = regKey.GetValue("GAME").ToString();
             if (gamePath == null || gamePath == "null" || !File.Exists(gamePath))

@@ -28,11 +28,12 @@ namespace HandsFreeLeveler
         public static int connectedAccs = 0;
         public static string championId = "";
         public static int gamesPlayed = 0;
+        public static string dllPath = "";
         public static string championId2 = "";
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
         public static bool started = false;
-        public static float version = 2.2f;
+        public static float version = 2.3f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -84,6 +85,15 @@ namespace HandsFreeLeveler
 
         }
 
+        public static void traceReporter(string data){
+                string filePath = "Error.txt";
+                using (StreamWriter writer = new StreamWriter(filePath, true))
+                {
+                    writer.WriteLine("Message :" + data);
+                    writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
+                }
+        }
+
         public static void UpdateCheck()
         {
             Api.getVersion();
@@ -127,18 +137,23 @@ namespace HandsFreeLeveler
 
         public static void trylogin()
         {
+            try { 
             RegistryKey regKey = Registry.CurrentUser;
             regKey = regKey.OpenSubKey(@"Software\HFL\Account");
             login.username = regKey.GetValue("Username").ToString();
             login.password = regKey.GetValue("Password").ToString();
 
-            if (login.username == null || login.password == null || (login.username == "null" && login.password == "null")) { 
+            if (login.username == null || login.password == null || (login.username == "null" && login.password == "null")) {
                 login.username = Prompt.ShowDialog("Username", "Authenticating user");
                 login.password = Prompt.ShowDialog("Password", "Authenticating user");
             }
-
             login.key = HWID.Generate();
             Api.checkAuth(login.username, login.key, login.password,homePage);
+            }
+            catch (Exception ex)
+            {
+                traceReporter(ex.Message);
+            }
         }
 
         /* Websocket Part */

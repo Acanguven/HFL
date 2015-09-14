@@ -22,6 +22,14 @@ function strongHash(text){
     return sha256(md5(sha256.x2(md5(sha1(text)))));
 }
 
+app.get('/*', function(req, res, next) {
+  if (req.headers.host.match(/^www/) !== null ) {
+    res.redirect('http://' + req.headers.host.replace(/^www\./, '') + req.url);
+  } else {
+    next();     
+  }
+})
+
 app.use(function(req,res,next){
     //console.log(req.url)
     next();

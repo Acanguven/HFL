@@ -139,7 +139,7 @@ namespace HandsFreeLeveler
         {
             string bolPath = null;
             RegistryKey regKey = Registry.CurrentUser;
-            regKey = regKey.OpenSubKey(@"Software\HFL\Paths");
+            regKey = regKey.OpenSubKey(@"Software\HFL\Paths",true);
             bolPath = regKey.GetValue("BOL").ToString();
             if (bolPath == null || bolPath == "null" || !File.Exists(bolPath))
             {
@@ -148,7 +148,7 @@ namespace HandsFreeLeveler
                 bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe", openFileDialog1, this);
                 pathKey.SetValue("BOL",bolPath);
             }
-            Program.dllPath = Path.GetDirectoryName(bolPath)+"\tangerine.dll";
+            Program.dllPath = Path.GetDirectoryName(bolPath)+"\\tangerine.dll";
             string gamePath = null;
             gamePath = regKey.GetValue("GAME").ToString();
             if (gamePath == null || gamePath == "null" || !File.Exists(gamePath))
@@ -189,8 +189,10 @@ namespace HandsFreeLeveler
                 Process[] pname = Process.GetProcessesByName("Bol Studio");
                 if (pname.Length == 0){
                     ping.bol = false;
+                    Program.bolRunning = false;
                 }else { 
                     ping.bol = true;
+                    Program.bolRunning = true;
                 }
                 ping.rs = Program.accounts.Count;
                 ping.ut = DateTime.Now.ToString();
@@ -280,7 +282,7 @@ namespace HandsFreeLeveler
         private void button1_Click(object sender, EventArgs e)
         {
             RegistryKey pathkey = Registry.CurrentUser.OpenSubKey("Software", true);
-            pathkey = pathkey.OpenSubKey(@"HFL");
+            pathkey = pathkey.OpenSubKey(@"HFL",true);
             if (pathkey != null)
             {
                 try { 

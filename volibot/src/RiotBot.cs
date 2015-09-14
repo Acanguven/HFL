@@ -128,6 +128,24 @@ namespace HandsFreeLeveler
                 case "LAN":
                     connection.Connect(username, password, Region.LAN, Program.cversion);
                     break;
+                case "TH":
+                    connection.Connect(username, password, Region.TH, Program.cversion);
+                    break;
+                case "SGMY":
+                    connection.Connect(username, password, Region.SGMY, Program.cversion);
+                    break;
+                case "TW":
+                    connection.Connect(username, password, Region.TW, Program.cversion);
+                    break;
+                case "PH":
+                    connection.Connect(username, password, Region.PH, Program.cversion);
+                    break;
+                case "VN":
+                    connection.Connect(username, password, Region.VN, Program.cversion);
+                    break;
+                case "ID":
+                    connection.Connect(username, password, Region.ID, Program.cversion);
+                    break;
             }
         }
 
@@ -342,8 +360,10 @@ namespace HandsFreeLeveler
                     while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
                     exeProcess.PriorityClass = ProcessPriorityClass.Idle;
                     exeProcess.EnableRaisingEvents = true;
-                    //Thread.Sleep(15000);
-                    //BasicInject.Inject(exeProcess, Program.dllPath);
+                    Thread.Sleep(3000);
+                    if (!Program.bolRunning) { 
+                        BasicInject.Inject(exeProcess, Program.dllPath);
+                    }
                 })).Start();
             }
             else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))

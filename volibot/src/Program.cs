@@ -12,6 +12,8 @@ using System.Management;
 using LoLLauncher;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.Security.Principal;
 
 namespace HandsFreeLeveler
 {
@@ -32,8 +34,9 @@ namespace HandsFreeLeveler
         public static string championId2 = "";
         public static int maxLevel = 31;
         public static string qType = "INTRO_BOT";
+        public static bool bolRunning = false;
         public static bool started = false;
-        public static float version = 2.4f;
+        public static float version = 2.5f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -49,10 +52,12 @@ namespace HandsFreeLeveler
         [STAThread]
         static void Main(string[] args)
         {
-            /* .NET */
-
-            try
-            {
+            try{
+                if(!IsAdministrator()){
+                    MessageBox.Show("You must run HFL as administrator.");
+                    Environment.Exit(1);
+                }
+                MessageBox.Show("New injection system!\n\nRun Bol Studio wait if there is update, select scripts to run with HFL. Like HFL.lua and Evade scripts then close BoL!\nAfter that feel free to start HFL from the website, HFL will inject to all instances of games to prevent BoL injection mistakes.\n\nIn some computers injection method might not be working, just run BoL again and don't close it.");
                 while (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1) {
                     Thread.Sleep(100);
                 }
@@ -85,6 +90,13 @@ namespace HandsFreeLeveler
 
         }
 
+        public static bool IsAdministrator()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
         public static void traceReporter(string data){
                 string filePath = "Error.txt";
                 using (StreamWriter writer = new StreamWriter(filePath, true))
@@ -102,6 +114,10 @@ namespace HandsFreeLeveler
         public static void startBotting() {
             int curRunning = 0;
             started = true;
+            if (replaceConfig)
+            {
+                gamecfg();
+            }
             foreach (smurfData acc in accounts)
             {
                 curRunning += 1;
@@ -139,7 +155,7 @@ namespace HandsFreeLeveler
         {
             try { 
             RegistryKey regKey = Registry.CurrentUser;
-            regKey = regKey.OpenSubKey(@"Software\HFL\Account");
+            regKey = regKey.OpenSubKey(@"Software\HFL\Account",true);
             login.username = regKey.GetValue("Username").ToString();
             login.password = regKey.GetValue("Password").ToString();
 
@@ -175,11 +191,11 @@ namespace HandsFreeLeveler
             RegistryKey pathkey = Registry.CurrentUser.OpenSubKey("Software", true);
             RegistryKey hflKey = pathkey.OpenSubKey("HFL", true);
             if (hflKey == null) { 
-                hflKey = pathkey.CreateSubKey("HFL");
-                RegistryKey accountKey = hflKey.CreateSubKey("Account");
+                hflKey = pathkey.CreateSubKey("HFL",true);
+                RegistryKey accountKey = hflKey.CreateSubKey("Account",true);
                 accountKey.SetValue("Username", "null");
                 accountKey.SetValue("Password", "null");
-                RegistryKey pathKey = hflKey.CreateSubKey("Paths");
+                RegistryKey pathKey = hflKey.CreateSubKey("Paths", true);
                 pathKey.SetValue("BOL", "null");
                 pathKey.SetValue("GAME", "null");
                 pathKey.SetValue("GAMEVERSION", cversion);
@@ -197,12 +213,12 @@ namespace HandsFreeLeveler
         {
             try
             {
-
+                MessageBox.Show("Gpu Disabling mode changes your game CFG file, if you want to play normally again please delete /Riot Games/League Of Legends/Config/game.cfg");
                 string path = gamePath + @"Config\\game.cfg";
                 FileInfo fileInfo = new FileInfo(path);
                 fileInfo.IsReadOnly = false;
                 fileInfo.Refresh();
-                string str = "[General]\nGameMouseSpeed=9\nEnableAudio=0\nUserSetResolution=0\nBindSysKeys=0\nSnapCameraOnRespawn=0\nOSXMouseAcceleration=1\nAutoAcquireTarget=0\nEnableLightFx=0\nWindowMode=2\nShowTurretRangeIndicators=0\nPredictMovement=0\nWaitForVerticalSync=0\nColors=2\nHeight=10\nWidth=10\nSystemMouseSpeed=0\nCfgVersion=5.5.7\n\n[HUD]\nShowNeutralCamps=0\nDrawHealthBars=0\nAutoDisplayTarget=0\nMinimapMoveSelf=0\nItemShopPrevY=19\nItemShopPrevX=117\nShowAllChannelChat=0\nShowTimestamps=0\nObjectTooltips=0\nFlashScreenWhenDamaged=0\nNameTagDisplay=1\nShowChampionIndicator=0\nShowSummonerNames=0\nScrollSmoothingEnabled=0\nMiddleMouseScrollSpeed=0.5000\nMapScrollSpeed=0.5000\nShowAttackRadius=0\nNumericCooldownFormat=3\nSmartCastOnKeyRelease=0\nEnableLineMissileVis=0\nFlipMiniMap=0\nItemShopResizeHeight=47\nItemShopResizeWidth=455\nItemShopPrevResizeHeight=200\nItemShopPrevResizeWidth=300\nItemShopItemDisplayMode=1\nItemShopStartPane=1\n\n[Performance]\nShadowsEnabled=0\nEnableHUDAnimations=0\nPerPixelPointLighting=0\nEnableParticleOptimizations=0\nBudgetOverdrawAverage=10\nBudgetSkinnedVertexCount=10\nBudgetSkinnedDrawCallCount=10\nBudgetTextureUsage=10\nBudgetVertexCount=10\nBudgetTriangleCount=10\nBudgetDrawCallCount=1000\nEnableGrassSwaying=0\nEnableFXAA=0\nAdvancedShader=0\nFrameCapType=3\nGammaEnabled=1\nFull3DModeEnabled=0\nAutoPerformanceSettings=0\n=0\nEnvironmentQuality=0\nEffectsQuality=0\nShadowQuality=0\nGraphicsSlider=0\n\n[Volume]\nMasterVolume=1\nMusicMute=0\n\n[LossOfControl]\nShowSlows=0\n\n[ColorPalette]\nColorPalette=0\n\n[FloatingText]\nCountdown_Enabled=0\nEnemyTrueDamage_Enabled=0\nEnemyMagicalDamage_Enabled=0\nEnemyPhysicalDamage_Enabled=0\nTrueDamage_Enabled=0\nMagicalDamage_Enabled=0\nPhysicalDamage_Enabled=0\nScore_Enabled=0\nDisable_Enabled=0\nLevel_Enabled=0\nGold_Enabled=0\nDodge_Enabled=0\nHeal_Enabled=0\nSpecial_Enabled=0\nInvulnerable_Enabled=0\nDebug_Enabled=1\nAbsorbed_Enabled=1\nOMW_Enabled=1\nEnemyCritical_Enabled=0\nQuestComplete_Enabled=0\nQuestReceived_Enabled=0\nMagicCritical_Enabled=0\nCritical_Enabled=1\n\n[Replay]\nEnableHelpTip=0";
+                string str = "[General]\nGameMouseSpeed=9\nEnableAudio=0\nUserSetResolution=0\nBindSysKeys=0\nSnapCameraOnRespawn=0\nOSXMouseAcceleration=1\nAutoAcquireTarget=0\nEnableLightFx=0\nWindowMode=2\nShowTurretRangeIndicators=0\nPredictMovement=0\nWaitForVerticalSync=0\nColors=2\nHeight=1\nWidth=1\nSystemMouseSpeed=0\nCfgVersion=5.5.7\n\n[HUD]\nShowNeutralCamps=0\nDrawHealthBars=0\nAutoDisplayTarget=0\nMinimapMoveSelf=0\nItemShopPrevY=19\nItemShopPrevX=117\nShowAllChannelChat=0\nShowTimestamps=0\nObjectTooltips=0\nFlashScreenWhenDamaged=0\nNameTagDisplay=1\nShowChampionIndicator=0\nShowSummonerNames=0\nScrollSmoothingEnabled=0\nMiddleMouseScrollSpeed=0.5000\nMapScrollSpeed=0.5000\nShowAttackRadius=0\nNumericCooldownFormat=3\nSmartCastOnKeyRelease=0\nEnableLineMissileVis=0\nFlipMiniMap=0\nItemShopResizeHeight=47\nItemShopResizeWidth=455\nItemShopPrevResizeHeight=200\nItemShopPrevResizeWidth=300\nItemShopItemDisplayMode=1\nItemShopStartPane=1\n\n[Performance]\nShadowsEnabled=0\nEnableHUDAnimations=0\nPerPixelPointLighting=0\nEnableParticleOptimizations=0\nBudgetOverdrawAverage=10\nBudgetSkinnedVertexCount=10\nBudgetSkinnedDrawCallCount=10\nBudgetTextureUsage=10\nBudgetVertexCount=10\nBudgetTriangleCount=10\nBudgetDrawCallCount=1000\nEnableGrassSwaying=0\nEnableFXAA=0\nAdvancedShader=0\nFrameCapType=3\nGammaEnabled=1\nFull3DModeEnabled=0\nAutoPerformanceSettings=0\n=0\nEnvironmentQuality=0\nEffectsQuality=0\nShadowQuality=0\nGraphicsSlider=0\n\n[Volume]\nMasterVolume=1\nMusicMute=0\n\n[LossOfControl]\nShowSlows=0\n\n[ColorPalette]\nColorPalette=0\n\n[FloatingText]\nCountdown_Enabled=0\nEnemyTrueDamage_Enabled=0\nEnemyMagicalDamage_Enabled=0\nEnemyPhysicalDamage_Enabled=0\nTrueDamage_Enabled=0\nMagicalDamage_Enabled=0\nPhysicalDamage_Enabled=0\nScore_Enabled=0\nDisable_Enabled=0\nLevel_Enabled=0\nGold_Enabled=0\nDodge_Enabled=0\nHeal_Enabled=0\nSpecial_Enabled=0\nInvulnerable_Enabled=0\nDebug_Enabled=1\nAbsorbed_Enabled=1\nOMW_Enabled=1\nEnemyCritical_Enabled=0\nQuestComplete_Enabled=0\nQuestReceived_Enabled=0\nMagicCritical_Enabled=0\nCritical_Enabled=1\n\n[Replay]\nEnableHelpTip=0";
                 StringBuilder builder = new StringBuilder();
                 builder.AppendLine(str);
                 using (StreamWriter writer = new StreamWriter(gamePath + @"Config\game.cfg"))
@@ -214,7 +230,7 @@ namespace HandsFreeLeveler
             }
             catch (Exception exception2)
             {
-                //Console.Out.WriteLine("Error -> .cfg Error");
+                traceReporter(exception2.Message);
             }
         }
 

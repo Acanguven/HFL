@@ -36,7 +36,7 @@ namespace HandsFreeLeveler
         public static string qType = "INTRO_BOT";
         public static bool bolRunning = false;
         public static bool started = false;
-        public static float version = 2.5f;
+        public static float version = 2.6f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -203,6 +203,16 @@ namespace HandsFreeLeveler
             else
             {
                 RegistryKey regKey = hflKey.OpenSubKey(@"Paths");
+                if (regKey == null) { 
+                    RegistryKey accountKey = hflKey.CreateSubKey("Account",true);
+                    accountKey.SetValue("Username", "null");
+                    accountKey.SetValue("Password", "null");
+                    RegistryKey pathKey = hflKey.CreateSubKey("Paths",true);
+                    pathKey.SetValue("BOL", "null");
+                    pathKey.SetValue("GAME", "null");
+                    pathKey.SetValue("GAMEVERSION", cversion);
+                }
+                regKey = hflKey.OpenSubKey(@"Paths");
                 cversion = regKey.GetValue("GAMEVERSION").ToString();
                 gamePath = Path.GetDirectoryName(regKey.GetValue("GAME").ToString() + "\\");
             }            

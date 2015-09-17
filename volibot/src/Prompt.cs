@@ -32,25 +32,25 @@ public static class Prompt
         string selectedPath = "";
         var t = new Thread((ThreadStart)(() =>
         {
-            HandsFreeLeveler.Program.homePage.Invoke(new Action(
+            HandsFreeLeveler.Program.homePage.BeginInvoke(new Action(
             delegate()
             {
-                dialog.Filter = FileName + "|" + fileFull;
-                dialog.FileName = FileName;
                 parent.Activate();
                 parent.TopMost = true;  // important
                 parent.TopMost = false; // important
-                parent.Focus();  
+                parent.Focus();
+                parent.BringToFront();
             }));
-
+            dialog.Filter = FileName + "|" + fileFull;
+            dialog.FileName = FileName;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 selectedPath = dialog.FileName;
             }
         }));
+
         t.SetApartmentState(ApartmentState.STA);
         t.Start();
-
         t.Join();
         return selectedPath;
     }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Xml;
+using System.Xml.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +22,9 @@ namespace HandsFreeLeveler
 {
     public partial class Dashboard : Form
     {
-        public static WebSocket ws;
+        public WebSocket ws;
         public static Boolean warned = false;
+        public Boolean wsLoggedIn = false;
 
         public Dashboard()
         {
@@ -31,18 +34,54 @@ namespace HandsFreeLeveler
             toolStripStatusLabel1.Text = "Remote connection not working.";
             ws = new WebSocket("ws://handsfreeleveler.com:4444");
             ws.OnMessage += commandManager;
-            ws.OnOpen += (sender, e) =>
-            {
-                toolStripStatusLabel1.Text = "Remote system live, trying to authenticate user.";
-            };
-            ws.Connect();
-
+            ws.OnOpen += wsConnect;
+            ws.OnClose += wsEnded;
+            ws.OnError += wsFailed;
+            
 
             UITimer timer;
             timer = new UITimer();
             timer.Interval = 1000;
             timer.Tick += new EventHandler(updateSettings);
             timer.Start();
+        }
+
+        public void wsConnect(Object sender, EventArgs msg){
+            HandsFreeLeveler.Program.homePage.Invoke(new Action(
+            delegate()
+            {
+                toolStripStatusLabel1.Text = "Waiting commands from remote panel, http://www.handsfreeleveler.com/Dashboard";
+                offlineStart.Visible = false;
+                RemoteButton.ForeColor = System.Drawing.Color.Green;
+                RemoteButton.Text = "Remote";
+            }));
+        }
+
+        public void wsEnded(Object sender, CloseEventArgs msg)
+        {
+            HandsFreeLeveler.Program.homePage.Invoke(new Action(
+            delegate()
+            {
+                toolStripStatusLabel1.Text = "Remote system is not working or disabled, offline mode enabled.";
+                offlineStart.Visible = true;
+                RemoteButton.ForeColor = System.Drawing.Color.Red;
+                RemoteButton.Text = "Offline";
+                wsLoggedIn = false;
+            }));
+        }
+
+        public void wsFailed(Object sender, WebSocketSharp.ErrorEventArgs msg)
+        {
+            HandsFreeLeveler.Program.homePage.Invoke(new Action(
+            delegate()
+            {
+                toolStripStatusLabel1.Text = "Remote system crashed, offline mode enabled. Created error report.";
+                Program.traceReporter("WsError:" + msg.Exception);
+                RemoteButton.ForeColor = System.Drawing.Color.Red;
+                RemoteButton.Text = "Offline";
+                wsLoggedIn = false;
+                offlineStart.Visible = true;
+            }));
         }
 
         private void Dashboard_SizeChanged(object sender, EventArgs e)
@@ -62,6 +101,7 @@ namespace HandsFreeLeveler
         {
             this.Show();
             this.Activate();
+            this.BringToFront();
         }
 
         public void fillList(List<smurfData> smurfs)
@@ -118,10 +158,11 @@ namespace HandsFreeLeveler
 
         public void login()
         {
+            ws.Connect();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             string dataStr = serializer.Serialize(new loginPacket() { type = "client", username = Program.login.username, key=Program.login.key});
-            toolStripStatusLabel1.Text = "Waiting commands from remote panel, http://www.handsfreeleveler.com/Dashboard";
             ws.Send(dataStr);
+            wsLoggedIn = true;
         }
 
         public void updateList(string username, string currentLevel, string status)
@@ -137,27 +178,27 @@ namespace HandsFreeLeveler
 
         public string pathSettings(string type)
         {
-            string bolPath = null;
-            RegistryKey regKey = Registry.CurrentUser;
-            regKey = regKey.OpenSubKey(@"Software\HFL\Paths",true);
-            bolPath = regKey.GetValue("BOL").ToString();
-            if (bolPath == null || bolPath == "null" || !File.Exists(bolPath))
+            XDocument settings = XDocument.Load("settings.xml");
+            
+            /* For BOL */
+            string bolPath = settings.Element("HFL").Element("Paths").Element("BOL").Value.ToString();
+            if (bolPath == null || bolPath == "null" || !File.Exists(bolPath) || bolPath == "")
             {
-                RegistryKey pathKey = Registry.CurrentUser;
-                pathKey = pathKey.OpenSubKey(@"Software\HFL\Paths", true);
                 bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe", openFileDialog1, this);
-                pathKey.SetValue("BOL",bolPath);
+                settings.Element("HFL").Element("Paths").Element("BOL").SetValue(bolPath);
             }
             Program.dllPath = Path.GetDirectoryName(bolPath)+"\\tangerine.dll";
-            string gamePath = null;
-            gamePath = regKey.GetValue("GAME").ToString();
-            if (gamePath == null || gamePath == "null" || !File.Exists(gamePath))
+
+
+            /* For Game */
+            string gamePath = settings.Element("HFL").Element("Paths").Element("GAME").Value.ToString();
+            if (gamePath == null || gamePath == "null" || !File.Exists(gamePath) || gamePath == "")
             {
-                RegistryKey pathKey = Registry.CurrentUser;
-                pathKey = pathKey.OpenSubKey(@"Software\HFL\Paths", true);
                 gamePath = Prompt.ShowFileDialog("lol.launcher.admin", "lol.launcher.admin.exe", openFileDialog1, this);
-                pathKey.SetValue("GAME", gamePath);
+                settings.Element("HFL").Element("Paths").Element("GAME").SetValue(gamePath);
             }
+
+            settings.Save("settings.xml");
 
             Program.gamePath = Path.GetDirectoryName(gamePath) + "\\";
 
@@ -181,9 +222,17 @@ namespace HandsFreeLeveler
 
         private void updateSettings(object sender, EventArgs ea)
         {
-            if (Program.loggedIn)
-            {
+            try { 
+            if (Program.loggedIn) { 
                 Api.getSettings(Program.login.username, Program.login.password, this);
+                if (Program.started){
+                    offlineStart.Text = "Stop";
+                }else{
+                    offlineStart.Text = "Start";
+                }
+            }
+            if (Program.loggedIn && ws.IsAlive && wsLoggedIn)
+            {
                 status ping = new status();
                 ping.hfl = Program.started;
                 Process[] pname = Process.GetProcessesByName("Bol Studio");
@@ -198,6 +247,7 @@ namespace HandsFreeLeveler
                 ping.ut = DateTime.Now.ToString();
                 ping.ng = Program.gamesPlayed;
                 ping.wg = Program.gamesPlayed;
+
                 foreach(smurfData smurf in Program.accounts){
                     ping.smurfUpdate.Add(smurf);
                 }
@@ -207,7 +257,12 @@ namespace HandsFreeLeveler
 
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 string dataStr = serializer.Serialize(newUpdate);
-                ws.Send(dataStr);
+                ws.SendAsync(dataStr, null);
+            }
+            }
+            catch (Exception ex)
+            {
+                Program.traceReporter(ex.Message);
             }
         }
 
@@ -281,19 +336,11 @@ namespace HandsFreeLeveler
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RegistryKey pathkey = Registry.CurrentUser.OpenSubKey("Software", true);
-            pathkey = pathkey.OpenSubKey(@"HFL",true);
-            if (pathkey != null)
-            {
-                try { 
-                    pathkey.DeleteSubKeyTree("Account");
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show("Your system is not allowing me to remove keys from your registry.\nWindows-R -> Regedit -> CurrentUser -> Software -> HFL -> Delete Account");
-                }
-            }
-            Application.Exit();
+            XDocument settings = XDocument.Load("settings.xml");
+            settings.Element("HFL").Element("Account").Element("Username").SetValue("null");
+            settings.Element("HFL").Element("Account").Element("Password").SetValue("null");
+            settings.Save("settings.xml");
+            Environment.Exit(1);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -349,6 +396,27 @@ namespace HandsFreeLeveler
                 Program.qType = "INTRO_BOT";
                 clickedButton.Text = "Intro Bots";
                 return;
+            }
+        }
+
+        public void offlineStart_Click(object sender, EventArgs e)
+        {
+            if (Program.started){
+                Program.stopBotting();
+            }else{
+                pathSettings("NP");
+                Program.startBotting();
+            }
+        }
+
+        private void RemoteButton_Click(object sender, EventArgs e)
+        {
+            if (ws.IsAlive) { 
+                ws.Close();
+            }
+            else
+            {
+                login();
             }
         }
 

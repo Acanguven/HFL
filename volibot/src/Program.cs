@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Management;
 using LoLLauncher;
+using System.Xml;
+using System.Xml.Linq;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using System.Diagnostics;
@@ -36,7 +38,7 @@ namespace HandsFreeLeveler
         public static string qType = "INTRO_BOT";
         public static bool bolRunning = false;
         public static bool started = false;
-        public static float version = 2.6f;
+        public static float version = 2.8f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
         public static string spell1 = "GHOST";
@@ -57,6 +59,7 @@ namespace HandsFreeLeveler
                     MessageBox.Show("You must run HFL as administrator.");
                     Environment.Exit(1);
                 }
+                MessageBox.Show("                                                     ===CHANGELOG===\n\n1. Offline mod added\n\nJust use your remote client to edit smurfs. You can start the bot from your computer anytime your want.\n\nIf your computer can't connect to remote server or remote server crashed unexpectedly, bot will change to offline mode. So you can continue to smurf.\n\n2. Fixed Important Crashes\n\nNow, you can leave your computer till your computer explode ;)\n\n3. Garena is almost alive... Should be in a week.\n\n4. OCE will be fixed in this week");
                 MessageBox.Show("New injection system!\n\nRun Bol Studio wait if there is update, select scripts to run with HFL. Like HFL.lua and Evade scripts then close BoL!\nAfter that feel free to start HFL from the website, HFL will inject to all instances of games to prevent BoL injection mistakes.\n\nIn some computers injection method might not be working, just run BoL again and don't close it.");
                 while (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1) {
                     Thread.Sleep(100);
@@ -112,6 +115,12 @@ namespace HandsFreeLeveler
         }
 
         public static void startBotting() {
+            runningSmurfs.Clear();
+            if (accounts.Count < 1)
+            {
+                MessageBox.Show("Try to add smurfs before starting, ok?");
+                return;
+            }
             int curRunning = 0;
             started = true;
             if (replaceConfig)
@@ -144,27 +153,24 @@ namespace HandsFreeLeveler
             foreach (RiotBot thread in runningSmurfs)
             {
                 thread.connection.Disconnect();
-            }
-            Thread.Sleep(500);
+                thread.stopForced = true;
+            }         
             runningSmurfs.Clear();
-            Thread.Sleep(500);
-            
         }
 
         public static void trylogin()
         {
-            try { 
-            RegistryKey regKey = Registry.CurrentUser;
-            regKey = regKey.OpenSubKey(@"Software\HFL\Account",true);
-            login.username = regKey.GetValue("Username").ToString();
-            login.password = regKey.GetValue("Password").ToString();
-
-            if (login.username == null || login.password == null || (login.username == "null" && login.password == "null")) {
-                login.username = Prompt.ShowDialog("Username", "Authenticating user");
-                login.password = Prompt.ShowDialog("Password", "Authenticating user");
-            }
-            login.key = HWID.Generate();
-            Api.checkAuth(login.username, login.key, login.password,homePage);
+            try {
+                XDocument settings = XDocument.Load("settings.xml");
+                login.username = settings.Element("HFL").Element("Account").Element("Username").Value.ToString();
+                login.password = settings.Element("HFL").Element("Account").Element("Password").Value.ToString();
+                if (login.username == null || login.password == null || (login.username == "null" && login.password == "null"))
+                {
+                    login.username = Prompt.ShowDialog("Username", "Authenticating user");
+                    login.password = Prompt.ShowDialog("Password", "Authenticating user");
+                }
+                login.key = HWID.Generate();
+                Api.checkAuth(login.username, login.key, login.password, homePage);
             }
             catch (Exception ex)
             {
@@ -188,34 +194,29 @@ namespace HandsFreeLeveler
 
         public static void registery()
         {
-            RegistryKey pathkey = Registry.CurrentUser.OpenSubKey("Software", true);
-            RegistryKey hflKey = pathkey.OpenSubKey("HFL", true);
-            if (hflKey == null) { 
-                hflKey = pathkey.CreateSubKey("HFL",true);
-                RegistryKey accountKey = hflKey.CreateSubKey("Account",true);
-                accountKey.SetValue("Username", "null");
-                accountKey.SetValue("Password", "null");
-                RegistryKey pathKey = hflKey.CreateSubKey("Paths", true);
-                pathKey.SetValue("BOL", "null");
-                pathKey.SetValue("GAME", "null");
-                pathKey.SetValue("GAMEVERSION", cversion);
+            if (File.Exists("settings.xml"))
+            {
+                XDocument settings = XDocument.Load("settings.xml");
+                cversion = settings.Element("HFL").Element("Paths").Element("GAMEVERSION").Value.ToString();
+                gamePath = settings.Element("HFL").Element("Paths").Element("GAME").Value.ToString() + "\\";
             }
             else
             {
-                RegistryKey regKey = hflKey.OpenSubKey(@"Paths");
-                if (regKey == null) { 
-                    RegistryKey accountKey = hflKey.CreateSubKey("Account",true);
-                    accountKey.SetValue("Username", "null");
-                    accountKey.SetValue("Password", "null");
-                    RegistryKey pathKey = hflKey.CreateSubKey("Paths",true);
-                    pathKey.SetValue("BOL", "null");
-                    pathKey.SetValue("GAME", "null");
-                    pathKey.SetValue("GAMEVERSION", cversion);
-                }
-                regKey = hflKey.OpenSubKey(@"Paths");
-                cversion = regKey.GetValue("GAMEVERSION").ToString();
-                gamePath = Path.GetDirectoryName(regKey.GetValue("GAME").ToString() + "\\");
-            }            
+                XDocument settings = new XDocument(
+                    new XElement("HFL",
+                        new XElement("Account",
+                            new XElement("Username", "null"),
+                            new XElement("Password", "null")
+                        ),
+                        new XElement("Paths",
+                            new XElement("BOL", "null"),
+                            new XElement("GAME", "null"),
+                            new XElement("GAMEVERSION", cversion)
+                        )
+                    )
+                );
+                settings.Save("settings.xml");
+            }
         }
 
 

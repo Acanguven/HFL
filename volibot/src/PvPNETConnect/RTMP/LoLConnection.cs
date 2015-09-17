@@ -11,7 +11,8 @@ using System.Threading;
 using System.Web.Script.Serialization;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
+using System.Xml;
+using System.Xml.Linq;
 using LoLLauncher.RiotObjects;
 using LoLLauncher.RiotObjects.Platform.Game;
 using LoLLauncher.RiotObjects.Platform.Game.Message;
@@ -561,11 +562,11 @@ namespace LoLLauncher
                     string newVersion = (string)result.GetTO("data").GetTO("rootCause").GetArray("substitutionArguments")[1];
                     if (newVersion != HandsFreeLeveler.Program.cversion)
                     {
-                        RegistryKey regKey = Registry.CurrentUser;
-                        regKey = regKey.OpenSubKey(@"Software\HFL\Paths", true);
-                        regKey.SetValue("GAMEVERSION", newVersion);
+                        XDocument settings = XDocument.Load("settings.xml");
+                        settings.Element("HFL").Element("Paths").Element("GAMEVERSION").SetValue(newVersion);
+                        settings.Save("settings.xml");
+
                         HandsFreeLeveler.Program.restartSystem();
-                        //Restart Botting here
                     }
                 }
                 else 
@@ -671,7 +672,6 @@ namespace LoLLauncher
                 if (OnDisconnect != null)
                     OnDisconnect(this, EventArgs.Empty);
             });
-
             t.Start();
         }
         #endregion

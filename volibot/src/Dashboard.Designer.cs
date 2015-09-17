@@ -46,6 +46,8 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.RemoteButton = new System.Windows.Forms.Button();
+            this.offlineStart = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -180,11 +182,35 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // RemoteButton
+            // 
+            this.RemoteButton.ForeColor = System.Drawing.Color.Red;
+            this.RemoteButton.Location = new System.Drawing.Point(537, 128);
+            this.RemoteButton.Name = "RemoteButton";
+            this.RemoteButton.Size = new System.Drawing.Size(75, 23);
+            this.RemoteButton.TabIndex = 8;
+            this.RemoteButton.Text = "Remote";
+            this.RemoteButton.UseVisualStyleBackColor = true;
+            this.RemoteButton.Click += new System.EventHandler(this.RemoteButton_Click);
+            // 
+            // offlineStart
+            // 
+            this.offlineStart.Location = new System.Drawing.Point(537, 157);
+            this.offlineStart.Name = "offlineStart";
+            this.offlineStart.Size = new System.Drawing.Size(75, 23);
+            this.offlineStart.TabIndex = 9;
+            this.offlineStart.Text = "Start";
+            this.offlineStart.UseVisualStyleBackColor = true;
+            this.offlineStart.Visible = false;
+            this.offlineStart.Click += new System.EventHandler(this.offlineStart_Click);
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 562);
+            this.Controls.Add(this.offlineStart);
+            this.Controls.Add(this.RemoteButton);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -225,6 +251,8 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button RemoteButton;
+        public System.Windows.Forms.Button offlineStart;
 
     }
 }

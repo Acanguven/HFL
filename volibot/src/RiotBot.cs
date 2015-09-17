@@ -71,6 +71,7 @@ namespace HandsFreeLeveler
         public string regionURL;
         public bool QueueFlag;
         public int LastAntiBusterAttempt = 0;
+        public bool stopForced = false;
 
         public RiotBot(string username, string password, string accmaxlevel ,string reg, string path, int threadid, QueueTypes QueueType)
         {
@@ -82,19 +83,26 @@ namespace HandsFreeLeveler
             queueType = QueueType;
             region = reg;
 
-            Random rnd = new Random();
-            int deliloy = rnd.Next(0, 20000);
-            this.updateStatus("Waiting for " + deliloy + " miliseconds", Accountname);
-            Thread.Sleep(deliloy);
-
-
             connection.OnConnect += new LoLConnection.OnConnectHandler(this.connection_OnConnect);
             connection.OnDisconnect += new LoLConnection.OnDisconnectHandler(this.connection_OnDisconnect);
             connection.OnError += new LoLConnection.OnErrorHandler(this.connection_OnError);
             connection.OnLogin += new LoLConnection.OnLoginHandler(this.connection_OnLogin);
             connection.OnLoginQueueUpdate += new LoLConnection.OnLoginQueueUpdateHandler(this.connection_OnLoginQueueUpdate);
             connection.OnMessageReceived += new LoLConnection.OnMessageReceivedHandler(this.connection_OnMessageReceived);
-            
+
+            init(region, username, password);
+        }
+
+        public async void init(String region, String username, String password)
+        {
+            Random rnd = new Random(username.GetHashCode());
+            int deliloy = rnd.Next(0, 55000);
+            this.updateStatus("Waiting for " + deliloy + " miliseconds", Accountname);
+            await Task.Delay(deliloy);
+            if (stopForced)
+            {
+                return;
+            }
             switch (region)
             {
                 case "EUW":
@@ -360,8 +368,8 @@ namespace HandsFreeLeveler
                     while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
                     exeProcess.PriorityClass = ProcessPriorityClass.Idle;
                     exeProcess.EnableRaisingEvents = true;
-                    Thread.Sleep(3000);
-                    if (!Program.bolRunning) { 
+                    if (!Program.bolRunning) {
+                        Thread.Sleep(3000);
                         BasicInject.Inject(exeProcess, Program.dllPath);
                     }
                 })).Start();

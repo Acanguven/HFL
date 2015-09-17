@@ -22,8 +22,12 @@ var hwid = new Schema({
             chat:{init:true}
         }
     },
-    expire:{type:String,default:Date.now()+(1000*60*60*24)}
+    expire:{type:String,default:Date.now()}
 });
 
+hwid.pre("save", function(next) {
+    this.expire = Date.now()+(1000*60*60*48);
+    next();
+});
 
 module.exports = mongoose.model('Hwid', hwid);

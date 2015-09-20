@@ -32,10 +32,10 @@ end
 
 local LuaSocket = require("socket")
 local user = GetUser()
-local SocketScriptAcc = LuaSocket.connect("handsfreeleveler.com", 80)
+local SocketScript = LuaSocket.connect("handsfreeleveler.com", 80)
 local Link = "/api/acc/".. user .."/"
-SocketScriptAcc:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
-ScriptReceive, ScriptStatus = SocketScriptAcc:receive('*a')
+SocketScript:send("GET "..Link:gsub(" ", "%%20").." HTTP/1.0\r\n\r\n")
+ScriptReceive, ScriptStatus = SocketScript:receive('*a')
 --SSL LINE
 if string.match(ScriptReceive, "valid") then
 --SSL LINE

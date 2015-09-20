@@ -1,0 +1,50 @@
+Message :WsError:WebSocketSharp.WebSocketException: The header part of a frame cannot be read from the data source.
+   at WebSocketSharp.WebSocketFrame.<>c__DisplayClass7.<ReadAsync>b__6(Byte[] header)
+   at WebSocketSharp.Ext.<>c__DisplayClass6.<ReadBytesAsync>b__5(IAsyncResult ar)
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+
+Message :Can't fetch settings from remote server
+
+-----------------------------------------------------------------------------
+

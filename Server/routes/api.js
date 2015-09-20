@@ -18,25 +18,21 @@ var Hwid = require("../hwid.js");
 /* Payment Handler */
 router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
     if(req.body.payment_status && req.body.payment_status == "Completed"){
-        if(req.body.mc_gross == "30.00"){
+        if(req.body.mc_gross == "22.00"){
             Hwid.findOne({username:req.body.option_selection3}, function(err,item){
                 if(!err && item){
                     item.type = 2;
                     item.markModified('type');
-                    item.save(function(err,saved){
-                        res.end("Payment done thank you.")
-                    });
+                    item.save();
                 }
             });
         }
-        if(req.body.mc_gross == "20.00"){
+        if(req.body.mc_gross == "12.00"){
             Hwid.findOne({username:req.body.option_selection3}, function(err,item){
                 if(!err && item){
                     item.type = 1;
                     item.markModified('type');
-                    item.save(function(err,saved){
-                        res.end("Payment done thank you.")
-                    });
+                    item.save();
                 }
             });
         }
@@ -46,14 +42,13 @@ router.post("/gotPaymentpaypalIpnsecureLinkOYeah", function(req,res,next){
                     if(!err && item){
                         item.type = 2;
                         item.markModified('type');
-                        item.save(function(err,saved){
-                            res.end("Payment done thank you.")
-                        });
+                        item.save();
                     }
                 });
             }
         }
     }
+    res.end("Thanks")
 });
 
 

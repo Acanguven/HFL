@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://zikenziemaster:Metallica44!@ds059712.mongolab.com:59712/hfl');
+mongoose.connect("mongodb://localhost:27017/db");
 var db = mongoose.connection;
 var fs = require("fs");
 var Schema = mongoose.Schema;

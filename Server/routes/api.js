@@ -210,7 +210,7 @@ router.get("/getAI/:username/:champion/:map/:random/:version", function(req,res,
                     }else{
                         var errWrite = "";
                         errWrite += "print('Please tell law to update the script for the version and please send the information below to him!')";
-                        errWrite += "print('Version:' .. split(GetGameVersion()," ")[1])";
+                        errWrite += "print('Version:' .. split(GetGameVersion(),' ')[1])";
                         errWrite += "print('Region:' .. GetRegion()";
                         res.end(errWrite);
                     }
@@ -225,7 +225,7 @@ router.get("/getAI/:username/:champion/:map/:random/:version", function(req,res,
                     }else{
                         var errWrite = "";
                         errWrite += "print('Please tell law to update the script for the version and please send the information below to him!')";
-                        errWrite += "print('Version:' .. split(GetGameVersion()," ")[1])";
+                        errWrite += "print('Version:' .. split(GetGameVersion(),' ')[1])";
                         errWrite += "print('Region:' .. GetRegion()";
                         res.end(errWrite);
                     }

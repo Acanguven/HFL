@@ -6,7 +6,7 @@ function loadALL()
 
 	AddDrawCallback(function()
 		--SSL LINE
-		OnDraw()
+		--OnDraw()
 	end)
 
 	AddProcessSpellCallback(function(e,t)

@@ -200,6 +200,7 @@ router.get("/getAI/:username/:champion/:map/:random/:version", function(req,res,
                 responseString = table + "\n\n";
                 responseString = responseString + createLuaSettings(item.settings,req.params.champion);
                 if(req.params.map == "summonerRift"){
+                    console.log(req.params)
                     if(fs.existsSync(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_sr.lua')){
                         fs.readFile(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_sr.lua', 'utf8', function (err,data) {
                             responseString = responseString + "print('Loaded AI Module')";

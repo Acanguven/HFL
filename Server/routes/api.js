@@ -192,7 +192,7 @@ router.post("/login", function(req,res,next){
 	}
 });
 
-router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
+router.get("/getAI/:username/:champion/:map/:random/:version", function(req,res,next){
     var responseString = ""
     Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err && item){
@@ -200,19 +200,35 @@ router.get("/getAI/:username/:champion/:map/:random", function(req,res,next){
                 responseString = table + "\n\n";
                 responseString = responseString + createLuaSettings(item.settings,req.params.champion);
                 if(req.params.map == "summonerRift"){
-                    fs.readFile(__dirname + '/../../ScriptsEncoded/sr_enc.lua', 'utf8', function (err,data) {
-                        responseString = responseString + "print('Loaded AI Module')";
-                        responseString = responseString + "\n\n\n\n";
-                        responseString = responseString + data;
-                        res.end(responseString);
-                    });
+                    if(fs.existsSync(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_sr.lua')){
+                        fs.readFile(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_sr.lua', 'utf8', function (err,data) {
+                            responseString = responseString + "print('Loaded AI Module')";
+                            responseString = responseString + "\n\n\n\n";
+                            responseString = responseString + data;
+                            res.end(responseString);
+                        });
+                    }else{
+                        var errWrite = "";
+                        errWrite += "print('Please tell law to update the script for the version and please send the information below to him!')";
+                        errWrite += "print('Version:' .. split(GetGameVersion()," ")[1])";
+                        errWrite += "print('Region:' .. GetRegion()";
+                        res.end(errWrite);
+                    }
                 }else{
-                    fs.readFile(__dirname + '/../../ScriptsEncoded/aram_enc.lua', 'utf8', function (err,data) {
-                        responseString = responseString + "print('Loaded AI Module')";
-                        responseString = responseString + "\n\n\n\n";
-                        responseString = responseString + data;
-                        res.end(responseString);
-                    });
+                    if(fs.existsSync(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_aram.lua')){
+                        fs.readFile(__dirname + '/../../ScriptsEncoded/'+req.params.version+'_aram.lua', 'utf8', function (err,data) {
+                            responseString = responseString + "print('Loaded AI Module')";
+                            responseString = responseString + "\n\n\n\n";
+                            responseString = responseString + data;
+                            res.end(responseString);
+                        });
+                    }else{
+                        var errWrite = "";
+                        errWrite += "print('Please tell law to update the script for the version and please send the information below to him!')";
+                        errWrite += "print('Version:' .. split(GetGameVersion()," ")[1])";
+                        errWrite += "print('Region:' .. GetRegion()";
+                        res.end(errWrite);
+                    }
                 }
             });
         }else{

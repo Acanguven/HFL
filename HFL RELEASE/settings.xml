@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HFL>
+  <Account>
+    <Username>harmankardon</Username>
+    <Password>123321</Password>
+  </Account>
+  <Paths>
+    <BOL>C:\BoL Studio\BoL Studio.exe</BOL>
+    <GAME>C:\Riot Games\League of Legends\lol.launcher.admin.exe</GAME>
+    <GAMEVERSION>5.18.15_09_09_18_45</GAMEVERSION>
+  </Paths>
+</HFL>

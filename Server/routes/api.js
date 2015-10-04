@@ -481,11 +481,11 @@ function validJsonParse(str){
 createLuaSettings = function(settings,name){
     var res = '';
     if(settings.ai[name]){
-        res += "_ENV.aiAggr="+settings.ai[name].aggr+"\n"
-        res += "_ENV.aiLane=\""+settings.ai[name].lane+"\"\n"
+        res += "_G.aiAggr="+settings.ai[name].aggr+"\n"
+        res += "_G.aiLane=\""+settings.ai[name].lane+"\"\n"
     }
     if(settings.spells[name]){
-        res += "_ENV.aiSpells={";     
+        res += "_G.aiSpells={";     
         for(var x = 0; x < settings.spells[name].length; x++){
             switch(settings.spells[name][x]){
                 case "Q":
@@ -508,7 +508,7 @@ createLuaSettings = function(settings,name){
     
     
     if (settings.items[name] && settings.items[name].length > 0){
-        res += "_ENV.aiItems={";     
+        res += "_G.aiItems={";     
         for(var x = 0; x < settings.items[name].length; x++){
             res += "itemTable[\""+settings.items[name][x].slice(1)+"\"],"
         }       
@@ -517,10 +517,10 @@ createLuaSettings = function(settings,name){
     }
     
     if(settings.chat){
-        res += "_ENV.chats = {}\n";
+        res += "_G.chats = {}\n";
         for(prop in settings.chat){
             if(prop != "init"){
-                res += "_ENV.chats[\""+prop+"\"] = {"
+                res += "_G.chats[\""+prop+"\"] = {"
                 for(var x = 0 ; x < settings.chat[prop].length; x++){
                        res += ("{chance=" + settings.chat[prop][x].chance + "," + "text=\"" + settings.chat[prop][x].text.replace(/\"/g,"")+"\"},")
                 }

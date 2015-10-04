@@ -42,8 +42,8 @@ end
 --SSL LINE
 --]]
 HFL_debug = false
-if _ENV.aiAggr then
-	aggression = _ENV.aiAggr
+if _G.aiAggr then
+	aggression = _G.aiAggr
 else
 	aggression = 1
 end
@@ -53,16 +53,16 @@ atBot = false
 atMid = false
 
 
-if _ENV.aiLane then
-	if _ENV.aiLane == "Bot" then
+if _G.aiLane then
+	if _G.aiLane == "Bot" then
 		prefLane = "Bot"
 	end
 
-	if _ENV.aiLane == "Mid" then
+	if _G.aiLane == "Mid" then
 		prefLane = "Mid"
 	end
 
-	if _ENV.aiLane == "Top" then
+	if _G.aiLane == "Top" then
 		prefLane = "Top"
 	end
 end
@@ -2286,8 +2286,8 @@ atMid = false
 --SSL LINE
 
 function OnLoad()
-	if _ENV.aiItems then
-		shopList = _ENV.aiItems
+	if _G.aiItems then
+		shopList = _G.aiItems
 	else
 		shopList = getHeroItems()
 	end
@@ -3199,8 +3199,8 @@ function levelUp()
     else abilitySequence = { 1, 2, 1, 3, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3, }
     end
 
-	if _ENV.aiSpells then
-		abilitySequence = _ENV.aiSpells
+	if _G.aiSpells then
+		abilitySequence = _G.aiSpells
 	end    
 
     if abilitySequence and #abilitySequence == 18 then

@@ -921,7 +921,7 @@ namespace LoLLauncher
         {
             int Id = Invoke("gameService", "startChampionSelection", new object[] { gameId, optomisticLock });
             while (!results.ContainsKey(Id))
-                await Task.Delay(10);
+							await Task.Delay(10);
             TypedObject messageBody = results[Id].GetTO("data").GetTO("body");
             StartChampSelectDTO result = new StartChampSelectDTO(messageBody);
             results.Remove(Id);

@@ -96,9 +96,9 @@ namespace HandsFreeLeveler
         public async void init(String region, String username, String password)
         {
             Random rnd = new Random(username.GetHashCode());
-            int deliloy = rnd.Next(0, 55000);
-            this.updateStatus("Waiting for " + deliloy + " miliseconds", Accountname);
-            await Task.Delay(deliloy);
+            //int deliloy = rnd.Next(0, 55000);
+            //this.updateStatus("Waiting for " + deliloy + " miliseconds", Accountname);
+            //await Task.Delay(deliloy);
             if (stopForced)
             {
                 return;
@@ -181,6 +181,14 @@ namespace HandsFreeLeveler
                 GameDTO game = message as GameDTO;
                 switch (game.GameState)
                 {
+									case "TEAM_SELECT":
+										int totalPlayers = game.TeamOne.Count + game.TeamTwo.Count;
+										this.updateStatus("In custom lobby, playerCount:" + totalPlayers, Accountname);
+										if (totalPlayers == 2 && game.OwnerSummary.AccountId == this.connection.AccountID()) 
+										{
+											await connection.StartChampionSelection(game.Id, game.OptimisticLock);
+										}
+										break;
                     case "CHAMP_SELECT":
 												Program.QueueValid = true;
                         if (this.firstTimeInLobby)
@@ -411,8 +419,9 @@ namespace HandsFreeLeveler
 
 				public async void joinQueue()
 				{
-                    
-					LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
+
+					CreatePracticeGame();
+					/*LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
 					if (queueType == QueueTypes.INTRO_BOT)
 					{
 						matchParams.BotDifficulty = "INTRO";
@@ -438,54 +447,86 @@ namespace HandsFreeLeveler
 					{
 						queueType = actualQueueType;
 					}
+
+					queueType = QueueTypes.CUSTOM;
 					matchParams.QueueIds = new Int32[1] { (int)queueType };
-                    /* Update win */
+					//Testing custom CUSTOM
 					Program.QueueValid = false;
-					LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
-                    this.updateStatus("Trying to join queue", Accountname);
-					if (m.PlayerJoinFailures == null)
-					{
-						this.updateStatus("In queue for " + queueType.ToString(), Accountname);
+				 
+				 LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
+				 this.updateStatus("Trying to join queue", Accountname);
+				 if (m.PlayerJoinFailures == null)
+				 {
+					 this.updateStatus("In queue for " + queueType.ToString(), Accountname);
                             
-					}
+				 }
 
-					else
-					{
+				 else
+				 {
 
-                        foreach (QueueDodger current in m.PlayerJoinFailures)
-                        {
-                            if (current.ReasonFailed == "LEAVER_BUSTED")
-                            {
-                                m_accessToken = current.AccessToken;
-                                if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
-                                {
-                                    this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
-                                }
-                            }
-                            else
-                            {
-                                this.updateStatus("Queue busted, login to your account", Accountname);
-                            }
-                        }
+											 foreach (QueueDodger current in m.PlayerJoinFailures)
+											 {
+													 if (current.ReasonFailed == "LEAVER_BUSTED")
+													 {
+															 m_accessToken = current.AccessToken;
+															 if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+															 {
+																	 this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+															 }
+													 }
+													 else
+													 {
+															 this.updateStatus("Queue busted, login to your account", Accountname);
+													 }
+											 }
 
-                        if (!string.IsNullOrEmpty(this.m_accessToken))
-                        {
-                            this.updateStatus("Waiting leaver busted " + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
-                            Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
-                            m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
-                            if (m.PlayerJoinFailures == null)
-                            {
-                                this.updateStatus("In queue for " + queueType.ToString(), this.Accountname);
-                            }
-                            else
-                            {
-                                this.joinQueue();
-                            }
-                        }
-					}
-					
+											 if (!string.IsNullOrEmpty(this.m_accessToken))
+											 {
+													 this.updateStatus("Waiting leaver busted " + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
+													 Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
+													 m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
+													 if (m.PlayerJoinFailures == null)
+													 {
+															 this.updateStatus("In queue for " + queueType.ToString(), this.Accountname);
+													 }
+													 else
+													 {
+															 this.joinQueue();
+													 }
+											 }
+				 }
+				 */
 				}
 
+				async void CreatePracticeGame()
+        {
+					this.updateStatus("Looking for HFL games", Accountname);
+					PracticeGameSearchResult[] gameList = await connection.ListAllPracticeGames();
+					object gameFound = gameList.FirstOrDefault(_ => (_.Name.Contains("thelawkings") && (_.Team1Count < 3 || _.Team2Count < 3)));
+					if (gameFound != null)
+					{
+						this.updateStatus("Joining to custom game", Accountname);
+					}
+					else { 
+            this.updateStatus("Creating custom game", Accountname);
+						LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig cfg = new LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig();
+						cfg.GameName = "thelawkings" + new Random().Next().ToString();
+						LoLLauncher.RiotObjects.Platform.Game.Map.GameMap map = new LoLLauncher.RiotObjects.Platform.Game.Map.GameMap();
+						map.Description = "desc";
+						map.DisplayName = "dummy";
+						map.TotalPlayers = 2;
+						map.Name = "dummy";
+						map.MapId = (int)GameMode.TwistedTreeline;
+						map.MinCustomPlayers = 1;
+						cfg.GameMap = map;
+						cfg.MaxNumPlayers = 6;
+						cfg.GamePassword = "hflthelawtheking";
+						cfg.GameTypeConfig = 1;
+						cfg.AllowSpectators = "NONE";
+						cfg.GameMode = StringEnum.GetStringValue(GameMode.TwistedTreeline);
+						GameDTO game = await connection.CreatePracticeGame(cfg);
+					}
+        }
         void exeProcess_Exited(object sender, EventArgs e)
         {
            updateStatus("Restarting game", Accountname);

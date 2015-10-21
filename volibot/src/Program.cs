@@ -22,13 +22,13 @@ namespace HandsFreeLeveler
     public class Program
     {
 
-		public static bool QueueValid = true;
+        public static bool QueueValid = true;
         public static string gamePath;
         public static string Region;
         public static List<smurfData> accounts = new List<smurfData>();
         public static List<RiotBot> runningSmurfs = new List<RiotBot>();
         public static int maxBots = 1;
-        public static bool replaceConfig =  false;
+        public static bool replaceConfig = false;
         public static int connectedAccs = 0;
         public static string championId = "";
         public static int gamesPlayed = 0;
@@ -38,6 +38,7 @@ namespace HandsFreeLeveler
         public static string qType = "INTRO_BOT";
         public static bool bolRunning = false;
         public static bool started = false;
+        public static long lastLogin = 0;
         public static float version = 2.8f;
         public static bool buyBoost = false;
         public static bool rndSpell = false;
@@ -54,14 +55,17 @@ namespace HandsFreeLeveler
         [STAThread]
         static void Main(string[] args)
         {
-            try{
-                if(!IsAdministrator()){
+            try
+            {
+                if (!IsAdministrator())
+                {
                     MessageBox.Show("You must run HFL as administrator.");
                     Environment.Exit(1);
                 }
                 MessageBox.Show("                                                     ===CHANGELOG===\n\n1. Offline mod added\n\nJust use your remote client to edit smurfs. You can start the bot from your computer anytime your want.\n\nIf your computer can't connect to remote server or remote server crashed unexpectedly, bot will change to offline mode. So you can continue to smurf.\n\n2. Fixed Important Crashes\n\nNow, you can leave your computer till your computer explode ;)\n\n3. Garena is almost alive... Should be in a week.\n\n4. OCE will be fixed in this week");
                 MessageBox.Show("New injection system!\n\nRun Bol Studio wait if there is update, select scripts to run with HFL. Like HFL.lua and Evade scripts then close BoL!\nAfter that feel free to start HFL from the website, HFL will inject to all instances of games to prevent BoL injection mistakes.\n\nIn some computers injection method might not be working, just run BoL again and don't close it.");
-                while (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1) {
+                while (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1)
+                {
                     Thread.Sleep(100);
                 }
 
@@ -100,13 +104,14 @@ namespace HandsFreeLeveler
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static void traceReporter(string data){
-                string filePath = "Error.txt";
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    writer.WriteLine("Message :" + data);
-                    writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
-                }
+        public static void traceReporter(string data)
+        {
+            string filePath = "Error.txt";
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.WriteLine("Message :" + data);
+                writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
+            }
         }
 
         public static void UpdateCheck()
@@ -114,7 +119,8 @@ namespace HandsFreeLeveler
             Api.getVersion();
         }
 
-        public static void startBotting() {
+        public static void startBotting()
+        {
             runningSmurfs.Clear();
             if (accounts.Count < 1)
             {
@@ -127,17 +133,22 @@ namespace HandsFreeLeveler
             {
                 gamecfg();
             }
+            int difVal = 0;
             foreach (smurfData acc in accounts)
             {
                 curRunning += 1;
                 QueueTypes queuetype = (QueueTypes)System.Enum.Parse(typeof(QueueTypes), qType);
-                RiotBot ritoBot = new RiotBot(acc.username, acc.password, acc.maxLevel, Region, gamePath, curRunning, queuetype);
+                long startTime = Stopwatch.GetTimestamp() + difVal * 10000;
+                
+                RiotBot ritoBot = new RiotBot(acc.username, acc.password, acc.maxLevel, Region, gamePath, curRunning, queuetype, startTime);
+                difVal++;
                 runningSmurfs.Add(ritoBot);
-                if (curRunning == maxBots) { 
+                if (curRunning == maxBots)
+                {
                     break;
                 }
             }
-        
+
         }
 
         public static void restartSystem()
@@ -154,13 +165,14 @@ namespace HandsFreeLeveler
             {
                 thread.connection.Disconnect();
                 thread.stopForced = true;
-            }         
+            }
             runningSmurfs.Clear();
         }
 
         public static void trylogin()
         {
-            try {
+            try
+            {
                 XDocument settings = XDocument.Load("settings.xml");
                 login.username = settings.Element("HFL").Element("Account").Element("Username").Value.ToString();
                 login.password = settings.Element("HFL").Element("Account").Element("Password").Value.ToString();
@@ -189,7 +201,7 @@ namespace HandsFreeLeveler
 
         public static String getTimestamp()
         {
-           return "[" + DateTime.Now + "] ";
+            return "[" + DateTime.Now + "] ";
         }
 
         public static void registery()
@@ -265,5 +277,5 @@ namespace HandsFreeLeveler
             var configTxtLocation = AppDomain.CurrentDomain.BaseDirectory + @"settings.ini";
             var versionTxtLocation = AppDomain.CurrentDomain.BaseDirectory + @"version.txt";
         }
-   }
+    }
 }

@@ -47,9 +47,7 @@ namespace HandsFreeLeveler
                                 Program.maxBots = 1000;
                                 Program.loggedIn = true;
                             }
-                            //
-                            //
-                            //
+
 
                             XDocument settings = XDocument.Load("settings.xml");
                             settings.Element("HFL").Element("Account").Element("Username").SetValue(Program.login.username);
@@ -64,7 +62,7 @@ namespace HandsFreeLeveler
                             settings.Element("HFL").Element("Account").Element("Username").SetValue("null");
                             settings.Element("HFL").Element("Account").Element("Password").SetValue("null");
                             settings.Save("settings.xml");
-                            Program.trylogin();
+                            Environment.Exit(1);
                         }
 
                     }
@@ -118,8 +116,6 @@ namespace HandsFreeLeveler
                         float version = float.Parse(data.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                         if (version > Program.version)
                         {
-                            //MessageBox.Show("New version found please update your client from website");
-                            //System.Environment.Exit(1);
                             using (var downloader = new System.Net.WebClient())
                             {
                                 downloader.DownloadFileCompleted += updateDone;

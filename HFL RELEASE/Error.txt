@@ -52,3 +52,7 @@ Message :WsError:
 
 -----------------------------------------------------------------------------
 
+Message :Could not find a part of the path 'C:\Riot Games\League of Legends\lol.launcher.admin.exe\Config\\game.cfg'.
+
+-----------------------------------------------------------------------------
+

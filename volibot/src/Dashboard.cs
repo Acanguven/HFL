@@ -28,7 +28,7 @@ namespace HandsFreeLeveler
 
         public Dashboard()
         {
-            
+
             InitializeComponent();
             pictureBox1.Image = Properties.Resources.jinxSprite;
             toolStripStatusLabel1.Text = "Remote connection not working.";
@@ -37,7 +37,7 @@ namespace HandsFreeLeveler
             ws.OnOpen += wsConnect;
             ws.OnClose += wsEnded;
             ws.OnError += wsFailed;
-            
+
 
             UITimer timer;
             timer = new UITimer();
@@ -46,7 +46,8 @@ namespace HandsFreeLeveler
             timer.Start();
         }
 
-        public void wsConnect(Object sender, EventArgs msg){
+        public void wsConnect(Object sender, EventArgs msg)
+        {
             HandsFreeLeveler.Program.homePage.Invoke(new Action(
             delegate()
             {
@@ -93,7 +94,7 @@ namespace HandsFreeLeveler
                 notifyIcon1.Icon = Properties.Resources.fe1iHm3;
                 notifyIcon1.BalloonTipText = "HFL is running minimized now";
                 notifyIcon1.ShowBalloonTip(1000);
-                
+
             }
         }
 
@@ -115,11 +116,11 @@ namespace HandsFreeLeveler
                 t.SubItems.Add(smurf.password);
                 t.SubItems.Add(smurf.currentLevel);
                 t.SubItems.Add(smurf.maxLevel);
-                t.SubItems.Add(smurf.status != null ? smurf.status  : "Idle");
+                t.SubItems.Add(smurf.status != null ? smurf.status : "Idle");
                 listView1.Items.Add(t);
                 Program.accounts.Add(smurf);
             }
-            
+
         }
         public class socketRecieve
         {
@@ -135,24 +136,24 @@ namespace HandsFreeLeveler
             {
                 case "start bol":
                     startBol();
-                break;
+                    break;
                 case "close bol":
                     Process[] proc = Process.GetProcessesByName("Bol Studio");
-	                proc[0].Kill();
-                break;
+                    proc[0].Kill();
+                    break;
                 case "start queue":
                     pathSettings("NP");
                     Program.startBotting();
-                break;
+                    break;
                 case "stop queue":
                     Program.stopBotting();
-                break;
+                    break;
                 case "stop pc":
                     Process.Start("shutdown", "/s /t 0");
-                break;
+                    break;
                 case "hiber start":
                     throw new System.ArgumentNullException();
-                break;
+                    break;
             }
         }
 
@@ -160,7 +161,7 @@ namespace HandsFreeLeveler
         {
             ws.Connect();
             JavaScriptSerializer serializer = new JavaScriptSerializer();
-            string dataStr = serializer.Serialize(new loginPacket() { type = "client", username = Program.login.username, key=Program.login.key});
+            string dataStr = serializer.Serialize(new loginPacket() { type = "client", username = Program.login.username, key = Program.login.key });
             ws.Send(dataStr);
             wsLoggedIn = true;
         }
@@ -169,7 +170,8 @@ namespace HandsFreeLeveler
         {
             foreach (ListViewItem current in listView1.Items)
             {
-                if (username == current.SubItems[0].Text) {
+                if (username == current.SubItems[0].Text)
+                {
                     current.SubItems[2].Text = currentLevel;
                     current.SubItems[4].Text = status;
                 }
@@ -179,7 +181,7 @@ namespace HandsFreeLeveler
         public string pathSettings(string type)
         {
             XDocument settings = XDocument.Load("settings.xml");
-            
+
             /* For BOL */
             string bolPath = settings.Element("HFL").Element("Paths").Element("BOL").Value.ToString();
             if (bolPath == null || bolPath == "null" || !File.Exists(bolPath) || bolPath == "")
@@ -187,7 +189,7 @@ namespace HandsFreeLeveler
                 bolPath = Prompt.ShowFileDialog("Bol Studio", "Bol Studio.exe", openFileDialog1, this);
                 settings.Element("HFL").Element("Paths").Element("BOL").SetValue(bolPath);
             }
-            Program.dllPath = Path.GetDirectoryName(bolPath)+"\\tangerine.dll";
+            Program.dllPath = Path.GetDirectoryName(bolPath) + "\\tangerine.dll";
 
 
             /* For Game */
@@ -222,43 +224,52 @@ namespace HandsFreeLeveler
 
         private void updateSettings(object sender, EventArgs ea)
         {
-            try { 
-            if (Program.loggedIn) { 
-                Api.getSettings(Program.login.username, Program.login.password, this);
-                if (Program.started){
-                    offlineStart.Text = "Stop";
-                }else{
-                    offlineStart.Text = "Start";
-                }
-            }
-            if (Program.loggedIn && ws.IsAlive && wsLoggedIn)
+            try
             {
-                status ping = new status();
-                ping.hfl = Program.started;
-                Process[] pname = Process.GetProcessesByName("Bol Studio");
-                if (pname.Length == 0){
-                    ping.bol = false;
-                    Program.bolRunning = false;
-                }else { 
-                    ping.bol = true;
-                    Program.bolRunning = true;
+                if (Program.loggedIn)
+                {
+                    Api.getSettings(Program.login.username, Program.login.password, this);
+                    if (Program.started)
+                    {
+                        offlineStart.Text = "Stop";
+                    }
+                    else
+                    {
+                        offlineStart.Text = "Start";
+                    }
                 }
-                ping.rs = Program.accounts.Count;
-                ping.ut = DateTime.Now.ToString();
-                ping.ng = Program.gamesPlayed;
-                ping.wg = Program.gamesPlayed;
+                if (Program.loggedIn && ws.IsAlive && wsLoggedIn)
+                {
+                    status ping = new status();
+                    ping.hfl = Program.started;
+                    Process[] pname = Process.GetProcessesByName("Bol Studio");
+                    if (pname.Length == 0)
+                    {
+                        ping.bol = false;
+                        Program.bolRunning = false;
+                    }
+                    else
+                    {
+                        ping.bol = true;
+                        Program.bolRunning = true;
+                    }
+                    ping.rs = Program.accounts.Count;
+                    ping.ut = DateTime.Now.ToString();
+                    ping.ng = Program.gamesPlayed;
+                    ping.wg = Program.gamesPlayed;
 
-                foreach(smurfData smurf in Program.accounts){
-                    ping.smurfUpdate.Add(smurf);
+                    foreach (smurfData smurf in Program.accounts)
+                    {
+                        ping.smurfUpdate.Add(smurf);
+                    }
+
+                    serverUpdate newUpdate = new serverUpdate();
+                    newUpdate.status = ping;
+
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    string dataStr = serializer.Serialize(newUpdate);
+                    ws.SendAsync(dataStr, null);
                 }
-
-                serverUpdate newUpdate = new serverUpdate();
-                newUpdate.status = ping;
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                string dataStr = serializer.Serialize(newUpdate);
-                ws.SendAsync(dataStr, null);
-            }
             }
             catch (Exception ex)
             {
@@ -287,7 +298,8 @@ namespace HandsFreeLeveler
 
         public void recieveSettings(string settingsJSON)
         {
-            if (!Program.started) { 
+            if (!Program.started)
+            {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 settings serverSettings = serializer.Deserialize<settings>(settingsJSON);
                 fillList(serverSettings.smurfs);
@@ -393,6 +405,13 @@ namespace HandsFreeLeveler
 
             if (Program.qType == "NORMAL_3x3")
             {
+                Program.qType = "CUSTOM";
+                clickedButton.Text = "Fast Mode";
+                return;
+            }
+
+            if (Program.qType == "CUSTOM")
+            {
                 Program.qType = "INTRO_BOT";
                 clickedButton.Text = "Intro Bots";
                 return;
@@ -401,9 +420,12 @@ namespace HandsFreeLeveler
 
         public void offlineStart_Click(object sender, EventArgs e)
         {
-            if (Program.started){
+            if (Program.started)
+            {
                 Program.stopBotting();
-            }else{
+            }
+            else
+            {
                 pathSettings("NP");
                 Program.startBotting();
             }
@@ -411,7 +433,8 @@ namespace HandsFreeLeveler
 
         private void RemoteButton_Click(object sender, EventArgs e)
         {
-            if (ws.IsAlive) { 
+            if (ws.IsAlive)
+            {
                 ws.Close();
             }
             else

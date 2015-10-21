@@ -130,8 +130,20 @@ namespace LoLLauncher
                     if (!GetIpAddress())
                         return;
 
-                    sslStream = new SslStream(client.GetStream(), false, AcceptAllCertificates);
-                    var ar = sslStream.BeginAuthenticateAsClient(server, null, null);
+                    var ar = (IAsyncResult)null;
+                    try
+                    {
+                        sslStream = new SslStream(client.GetStream(), false, AcceptAllCertificates);
+                        ar = sslStream.BeginAuthenticateAsClient(server, null, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        Disconnect();
+                    }
+
+                    
+
+
                     using (ar.AsyncWaitHandle)
                     {
                         if (ar.AsyncWaitHandle.WaitOne(-1))

@@ -69,11 +69,12 @@ namespace HandsFreeLeveler
         public QueueTypes actualQueueType { get; set; }
         public string region { get; set; }
         public string regionURL;
+        public long startTime = 0;
         public bool QueueFlag;
         public int LastAntiBusterAttempt = 0;
         public bool stopForced = false;
 
-        public RiotBot(string username, string password, string accmaxlevel ,string reg, string path, int threadid, QueueTypes QueueType)
+        public RiotBot(string username, string password, string accmaxlevel, string reg, string path, int threadid, QueueTypes QueueType, long starttime)
         {
             ipath = path;
             Accountname = username;
@@ -81,6 +82,7 @@ namespace HandsFreeLeveler
             AccMaxLevel = Convert.ToInt32(accmaxlevel);
             threadID = threadid;
             queueType = QueueType;
+            startTime = starttime;
             region = reg;
 
             connection.OnConnect += new LoLConnection.OnConnectHandler(this.connection_OnConnect);
@@ -95,10 +97,14 @@ namespace HandsFreeLeveler
 
         public async void init(String region, String username, String password)
         {
-            Random rnd = new Random(username.GetHashCode());
-            //int deliloy = rnd.Next(0, 55000);
-            //this.updateStatus("Waiting for " + deliloy + " miliseconds", Accountname);
-            //await Task.Delay(deliloy);
+
+
+            int startDiff = Convert.ToInt32(startTime - Stopwatch.GetTimestamp());
+            if (startDiff > 0) {
+                this.updateStatus("Waiting for " + (startDiff / 1000) + " seconds", Accountname);
+                await Task.Delay(startDiff);
+            }
+
             if (stopForced)
             {
                 return;
@@ -161,17 +167,17 @@ namespace HandsFreeLeveler
         {
             //Thx to mah niggah Everance
             //who made this possible
-            
+
             if (QueueFlag)
-                {
-                    Console.Out.WriteLine("Something wrong with smurf list");
-                    connection.Disconnect();
-                }
-                else
-                {
-                    this.updateStatus("You are leaver busted.", Accountname);
-                    connection.Disconnect();
-                }
+            {
+                Console.Out.WriteLine("Something wrong with smurf list");
+                connection.Disconnect();
+            }
+            else
+            {
+                this.updateStatus("You are leaver busted.", Accountname);
+                connection.Disconnect();
+            }
         }
 
         public async void connection_OnMessageReceived(object sender, object message)
@@ -181,16 +187,16 @@ namespace HandsFreeLeveler
                 GameDTO game = message as GameDTO;
                 switch (game.GameState)
                 {
-									case "TEAM_SELECT":
-										int totalPlayers = game.TeamOne.Count + game.TeamTwo.Count;
-										this.updateStatus("In custom lobby, playerCount:" + totalPlayers, Accountname);
-										if (totalPlayers == 2 && game.OwnerSummary.AccountId == this.connection.AccountID()) 
-										{
-											await connection.StartChampionSelection(game.Id, game.OptimisticLock);
-										}
-										break;
+                    case "TEAM_SELECT":
+                        int totalPlayers = game.TeamOne.Count + game.TeamTwo.Count;
+                        this.updateStatus("In custom lobby, playerCount:" + totalPlayers, Accountname);
+                        if (totalPlayers == 6 && game.OwnerSummary.AccountId == this.connection.AccountID())
+                        {
+                            await connection.StartChampionSelection(game.Id, game.OptimisticLock);
+                        }
+                        break;
                     case "CHAMP_SELECT":
-												Program.QueueValid = true;
+                        Program.QueueValid = true;
                         if (this.firstTimeInLobby)
                         {
                             QueueFlag = true;
@@ -201,7 +207,7 @@ namespace HandsFreeLeveler
                             {
                                 if (Program.championId != "" && Program.championId != "RANDOM")
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -231,13 +237,13 @@ namespace HandsFreeLeveler
                                     }
 
                                     await connection.SelectSpells(Spell1, Spell2);
-								
+
                                     await connection.SelectChampion(Enums.championToId(Program.championId));
                                     await connection.ChampionSelectCompleted();
                                 }
                                 else if (Program.championId == "RANDOM")
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -269,8 +275,8 @@ namespace HandsFreeLeveler
                                     await connection.SelectSpells(Spell1, Spell2);
 
                                     var randAvailableChampsArray = availableChampsArray.Shuffle();
-									int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
-									await connection.SelectChampion(randomAdc);
+                                    int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
+                                    await connection.SelectChampion(randomAdc);
 
 
                                     await connection.ChampionSelectCompleted();
@@ -278,7 +284,7 @@ namespace HandsFreeLeveler
                                 }
                                 else
                                 {
-								
+
                                     int Spell1;
                                     int Spell2;
                                     if (!Program.rndSpell)
@@ -309,10 +315,10 @@ namespace HandsFreeLeveler
 
                                     await connection.SelectSpells(Spell1, Spell2);
 
-								    var randAvailableChampsArray = availableChampsArray.Shuffle();
-								    int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
+                                    var randAvailableChampsArray = availableChampsArray.Shuffle();
+                                    int randomAdc = randAvailableChampsArray.First(champ => (champ.Owned || champ.FreeToPlay) && (champ.ChampionId == 22 || champ.ChampionId == 51 || champ.ChampionId == 42 || champ.ChampionId == 119 || champ.ChampionId == 81 || champ.ChampionId == 104 || champ.ChampionId == 222 || champ.ChampionId == 429 || champ.ChampionId == 96 || champ.ChampionId == 236 || champ.ChampionId == 21 || champ.ChampionId == 133 || champ.ChampionId == 15 || champ.ChampionId == 18 || champ.ChampionId == 29 || champ.ChampionId == 110 || champ.ChampionId == 67)).ChampionId;
 
-								    await connection.SelectChampion(randomAdc);
+                                    await connection.SelectChampion(randomAdc);
 
                                     await connection.ChampionSelectCompleted();
                                 }
@@ -341,6 +347,10 @@ namespace HandsFreeLeveler
                     case "TERMINATED":
                         this.updateStatus("Re entering to queue", Accountname);
                         this.firstTimeInQueuePop = true;
+                        if (queueType == QueueTypes.CUSTOM)
+                        {
+                            CreatePracticeGame();
+                        }
                         break;
                     case "JOINING_CHAMP_SELECT":
                         if (this.firstTimeInQueuePop && game.StatusOfParticipants.Contains("1"))
@@ -365,6 +375,10 @@ namespace HandsFreeLeveler
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.CreateNoWindow = false;
                 startInfo.WorkingDirectory = str;
+                if (Program.replaceConfig)
+                {
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                }
                 startInfo.FileName = "League of Legends.exe";
                 startInfo.Arguments = "\"8394\" \"LoLLauncher.exe\" \"\" \"" + credentials.ServerIp + " " +
                 credentials.ServerPort + " " + credentials.EncryptionKey + " " + credentials.SummonerId + "\"";
@@ -376,23 +390,25 @@ namespace HandsFreeLeveler
                     while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
                     exeProcess.PriorityClass = ProcessPriorityClass.Idle;
                     exeProcess.EnableRaisingEvents = true;
-                    if (!Program.bolRunning) {
+                    if (!Program.bolRunning)
+                    {
                         Thread.Sleep(3000);
                         BasicInject.Inject(exeProcess, Program.dllPath);
+
                     }
                 })).Start();
             }
             else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))
             {
-                
+
                 if (message is EndOfGameStats)
                 {
                     EndOfGameStats eog = message as EndOfGameStats;
-					this.joinQueue();
+                    this.joinQueue();
                 }
                 else
                 {
-                    
+
                     if (message.ToString().Contains("EndOfGameStats"))
                     {
                         updateStatus("Game ending, calculating results", Accountname);
@@ -417,134 +433,147 @@ namespace HandsFreeLeveler
             }
         }
 
-				public async void joinQueue()
-				{
-
-					CreatePracticeGame();
-					/*LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
-					if (queueType == QueueTypes.INTRO_BOT)
-					{
-						matchParams.BotDifficulty = "INTRO";
-					}
-					else if (queueType == QueueTypes.BEGINNER_BOT)
-					{
-						matchParams.BotDifficulty = "EASY";
-					}
-					else if (queueType == QueueTypes.MEDIUM_BOT)
-					{
-						matchParams.BotDifficulty = "MEDIUM";
-					}
-
-					if (sumLevel == 3 && actualQueueType == QueueTypes.NORMAL_5x5)
-					{
-						queueType = actualQueueType;
-					}
-					else if (sumLevel == 6 && actualQueueType == QueueTypes.ARAM)
-					{
-						queueType = actualQueueType;
-					}
-					else if (sumLevel == 7 && actualQueueType == QueueTypes.NORMAL_3x3)
-					{
-						queueType = actualQueueType;
-					}
-
-					queueType = QueueTypes.CUSTOM;
-					matchParams.QueueIds = new Int32[1] { (int)queueType };
-					//Testing custom CUSTOM
-					Program.QueueValid = false;
-				 
-				 LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
-				 this.updateStatus("Trying to join queue", Accountname);
-				 if (m.PlayerJoinFailures == null)
-				 {
-					 this.updateStatus("In queue for " + queueType.ToString(), Accountname);
-                            
-				 }
-
-				 else
-				 {
-
-											 foreach (QueueDodger current in m.PlayerJoinFailures)
-											 {
-													 if (current.ReasonFailed == "LEAVER_BUSTED")
-													 {
-															 m_accessToken = current.AccessToken;
-															 if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
-															 {
-																	 this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
-															 }
-													 }
-													 else
-													 {
-															 this.updateStatus("Queue busted, login to your account", Accountname);
-													 }
-											 }
-
-											 if (!string.IsNullOrEmpty(this.m_accessToken))
-											 {
-													 this.updateStatus("Waiting leaver busted " + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
-													 Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
-													 m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
-													 if (m.PlayerJoinFailures == null)
-													 {
-															 this.updateStatus("In queue for " + queueType.ToString(), this.Accountname);
-													 }
-													 else
-													 {
-															 this.joinQueue();
-													 }
-											 }
-				 }
-				 */
-				}
-
-				async void CreatePracticeGame()
+        public async void joinQueue()
         {
-					this.updateStatus("Looking for HFL games", Accountname);
-					PracticeGameSearchResult[] gameList = await connection.ListAllPracticeGames();
-					object gameFound = gameList.FirstOrDefault(_ => (_.Name.Contains("thelawkings") && (_.Team1Count < 3 || _.Team2Count < 3)));
-					if (gameFound != null)
-					{
-						this.updateStatus("Joining to custom game", Accountname);
-					}
-					else { 
-            this.updateStatus("Creating custom game", Accountname);
-						LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig cfg = new LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig();
-						cfg.GameName = "thelawkings" + new Random().Next().ToString();
-						LoLLauncher.RiotObjects.Platform.Game.Map.GameMap map = new LoLLauncher.RiotObjects.Platform.Game.Map.GameMap();
-						map.Description = "desc";
-						map.DisplayName = "dummy";
-						map.TotalPlayers = 2;
-						map.Name = "dummy";
-						map.MapId = (int)GameMode.TwistedTreeline;
-						map.MinCustomPlayers = 1;
-						cfg.GameMap = map;
-						cfg.MaxNumPlayers = 6;
-						cfg.GamePassword = "hflthelawtheking";
-						cfg.GameTypeConfig = 1;
-						cfg.AllowSpectators = "NONE";
-						cfg.GameMode = StringEnum.GetStringValue(GameMode.TwistedTreeline);
-						GameDTO game = await connection.CreatePracticeGame(cfg);
-					}
+            if (queueType == QueueTypes.CUSTOM)
+            {
+                CreatePracticeGame();
+            }
+            else
+            {
+                LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams matchParams = new LoLLauncher.RiotObjects.Platform.Matchmaking.MatchMakerParams();
+                if (queueType == QueueTypes.INTRO_BOT)
+                {
+                    matchParams.BotDifficulty = "INTRO";
+                }
+                else if (queueType == QueueTypes.BEGINNER_BOT)
+                {
+                    matchParams.BotDifficulty = "EASY";
+                }
+                else if (queueType == QueueTypes.MEDIUM_BOT)
+                {
+                    matchParams.BotDifficulty = "MEDIUM";
+                }
+
+                if (sumLevel == 3 && actualQueueType == QueueTypes.NORMAL_5x5)
+                {
+                    queueType = actualQueueType;
+                }
+                else if (sumLevel == 6 && actualQueueType == QueueTypes.ARAM)
+                {
+                    queueType = actualQueueType;
+                }
+                else if (sumLevel == 7 && actualQueueType == QueueTypes.NORMAL_3x3)
+                {
+                    queueType = actualQueueType;
+                }
+
+                matchParams.QueueIds = new Int32[1] { (int)queueType };
+                Program.QueueValid = false;
+
+                LoLLauncher.RiotObjects.Platform.Matchmaking.SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
+                this.updateStatus("Trying to join queue", Accountname);
+                if (m.PlayerJoinFailures == null)
+                {
+                    this.updateStatus("In queue for " + queueType.ToString(), Accountname);
+
+                }
+
+                else
+                {
+
+                    foreach (QueueDodger current in m.PlayerJoinFailures)
+                    {
+                        if (current.ReasonFailed == "LEAVER_BUSTED")
+                        {
+                            m_accessToken = current.AccessToken;
+                            if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+                            {
+                                this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+                            }
+                        }
+                        else
+                        {
+                            this.updateStatus("Queue busted, login to your account", Accountname);
+                            await Task.Delay(5000);
+                            this.joinQueue();
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(this.m_accessToken))
+                    {
+                        this.updateStatus("Waiting leaver busted " + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
+                        Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
+                        m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
+                        if (m.PlayerJoinFailures == null)
+                        {
+                            this.updateStatus("In queue for " + queueType.ToString(), this.Accountname);
+                        }
+                        else
+                        {
+                            this.joinQueue();
+                        }
+                    }
+                }
+            }
+        }
+
+        async void CreatePracticeGame()
+        {
+            this.updateStatus("Looking for HFL games", Accountname);
+            PracticeGameSearchResult[] gameList = await connection.ListAllPracticeGames();
+            dynamic gameFound = gameList.FirstOrDefault(_ => (_.Name.Contains("thelawkings") && (_.Team1Count < 3 || _.Team2Count < 3)));
+            if (gameFound != null)
+            {
+                this.updateStatus("Joining to custom game", Accountname);
+                await connection.JoinGame(gameFound.Id, "hflthelawtheking");
+            }
+            else
+            {
+                this.updateStatus("Creating custom game", Accountname);
+                LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig cfg = new LoLLauncher.RiotObjects.Platform.Game.PracticeGameConfig();
+                cfg.GameName = "thelawkings" + new Random().Next().ToString();
+                LoLLauncher.RiotObjects.Platform.Game.Map.GameMap map = new LoLLauncher.RiotObjects.Platform.Game.Map.GameMap();
+                map.Description = "desc";
+                map.DisplayName = "dummy";
+                map.TotalPlayers = 2;
+                map.Name = "dummy";
+                map.MapId = (int)GameMode.TwistedTreeline;
+                map.MinCustomPlayers = 1;
+                cfg.GameMap = map;
+                cfg.MaxNumPlayers = 6;
+                cfg.GamePassword = "hflthelawtheking";
+                cfg.GameTypeConfig = 1;
+                cfg.AllowSpectators = "NONE";
+                cfg.GameMode = StringEnum.GetStringValue(GameMode.TwistedTreeline);
+                GameDTO game = await connection.CreatePracticeGame(cfg);
+                if (game.Id == 0)
+                {
+                    CreatePracticeGame();
+                }
+                else { 
+                    this.updateStatus("Game (" + game.Id + ") created.", Accountname);
+                }
+            }
         }
         void exeProcess_Exited(object sender, EventArgs e)
         {
-           updateStatus("Restarting game", Accountname);
-           Thread.Sleep(1000);
-           if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
-           {
-               this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
-           }
-           else
-               this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
+            updateStatus("Restarting game", Accountname);
+            Thread.Sleep(1000);
+            if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
+            {
+                this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
+            }
+            else
+                this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
         }
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        
+
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-       
+
         private void updateStatus(string status, string accname)
         {
             HandsFreeLeveler.Program.homePage.Invoke(new Action(
@@ -552,15 +581,15 @@ namespace HandsFreeLeveler
             {
                 HandsFreeLeveler.Program.homePage.updateList(accname, this.sumLevel.ToString(), status);
             }));
-        }        
-        
+        }
+
         private async void RegisterNotifications()
         {
             object obj1 = await this.connection.Subscribe("bc", this.connection.AccountID());
             object obj2 = await this.connection.Subscribe("cn", this.connection.AccountID());
             object obj3 = await this.connection.Subscribe("gn", this.connection.AccountID());
         }
-        
+
         private void connection_OnLoginQueueUpdate(object sender, int positionInLine)
         {
             if (positionInLine <= 0)
@@ -571,10 +600,10 @@ namespace HandsFreeLeveler
         private void connection_OnLogin(object sender, string username, string ipAddress)
         {
             new Thread((ThreadStart)(async () =>
-            { 
+            {
                 updateStatus("Connecting to Riot servers", Accountname);
                 this.RegisterNotifications();
-                this.loginPacket = await this.connection.GetLoginDataPacketForUser(); 
+                this.loginPacket = await this.connection.GetLoginDataPacketForUser();
                 if (loginPacket.AllSummonerData == null)
                 {
                     Random rnd = new Random();
@@ -614,15 +643,17 @@ namespace HandsFreeLeveler
                     this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 3", Accountname);
                     queueType = QueueTypes.BEGINNER_BOT;
                     actualQueueType = QueueTypes.NORMAL_5x5;
-                } else if (sumLevel < 6.0 && queueType == QueueTypes.ARAM)
+                }
+                else if (sumLevel < 6.0 && queueType == QueueTypes.ARAM)
                 {
-									
-                  this.updateStatus("Need to be Level 6 before ARAM queue.", Accountname);
-                  this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 6", Accountname);
-                  queueType = QueueTypes.INTRO_BOT;
-                  actualQueueType = QueueTypes.ARAM;
-									
-                } else if (sumLevel < 7.0 && queueType == QueueTypes.NORMAL_3x3)
+
+                    this.updateStatus("Need to be Level 6 before ARAM queue.", Accountname);
+                    this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 6", Accountname);
+                    queueType = QueueTypes.INTRO_BOT;
+                    actualQueueType = QueueTypes.ARAM;
+
+                }
+                else if (sumLevel < 7.0 && queueType == QueueTypes.NORMAL_3x3)
                 {
                     this.updateStatus("Need to be Level 7 before NORMAL_3x3 queue.", Accountname);
                     this.updateStatus("Joins Co-Op vs AI (Beginner) queue until 7", Accountname);
@@ -646,20 +677,22 @@ namespace HandsFreeLeveler
                 Console.Out.WriteLine(" | Choose from List: " + randomIcon);
                 await connection.UpdateProfileIconId(randomIcon);*/
                 updateStatus("Logged in to account level:" + loginPacket.AllSummonerData.SummonerLevel.Level, Accountname);
-				availableChampsArray = await connection.GetAvailableChampions();
+                availableChampsArray = await connection.GetAvailableChampions();
 
-				var randAvailableChampsArray = availableChampsArray.Shuffle();
+                var randAvailableChampsArray = availableChampsArray.Shuffle();
 
                 LoLLauncher.RiotObjects.Team.Dto.PlayerDTO player = await connection.CreatePlayer();
                 if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
                 {
                     this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
-                }else {
+                }
+                else
+                {
                     this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
                 }
             })).Start();
         }
-        
+
         private void connection_OnError(object sender, LoLLauncher.Error error)
         {
             if (error.Message.Contains("is not owned by summoner"))
@@ -689,18 +722,18 @@ namespace HandsFreeLeveler
             }
             this.updateStatus(error.Message, Accountname);
         }
-        
+
         private void connection_OnDisconnect(object sender, EventArgs e)
         {
             Program.connectedAccs -= 1;
             this.updateStatus("Disconnected", Accountname);
         }
-       
+
         private void connection_OnConnect(object sender, EventArgs e)
         {
             Program.connectedAccs += 1;
         }
- 
+
         public void levelUp()
         {
             updateStatus("Congratz, levelup:" + sumLevel, Accountname);
@@ -708,6 +741,10 @@ namespace HandsFreeLeveler
             if (sumLevel >= AccMaxLevel)
             {
                 connection.Disconnect();
+            }
+            else
+            {
+                this.joinQueue();
             }
             if (rpBalance == 400.0 && Program.buyBoost)
             {
@@ -722,6 +759,7 @@ namespace HandsFreeLeveler
                     updateStatus("Couldn't buy RP Boost.\n" + exception, Accountname);
                 }
             }
+            
         }
         async void buyBoost()
         {
@@ -755,9 +793,9 @@ namespace HandsFreeLeveler
                     HttpClient httpClient = new HttpClient();
                     Console.Out.WriteLine(url);
                     await httpClient.GetStringAsync(url);
-                    string storeURL = "https://store." + region.Substring(0,3).ToLower() + "1.lol.riotgames.com/store/tabs/view/boosts/1";
+                    string storeURL = "https://store." + region.Substring(0, 3).ToLower() + "1.lol.riotgames.com/store/tabs/view/boosts/1";
                     await httpClient.GetStringAsync(storeURL);
-                    string purchaseURL = "https://store." + region.Substring(0,3).ToLower() + "1.lol.riotgames.com/store/purchase/item";
+                    string purchaseURL = "https://store." + region.Substring(0, 3).ToLower() + "1.lol.riotgames.com/store/purchase/item";
                     List<KeyValuePair<string, string>> storeItemList = new List<KeyValuePair<string, string>>();
                     storeItemList.Add(new KeyValuePair<string, string>("item_id", "boosts_2"));
                     storeItemList.Add(new KeyValuePair<string, string>("currency_type", "rp"));

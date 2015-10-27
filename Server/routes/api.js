@@ -329,8 +329,7 @@ router.get("/requestTrial/:username", function(req,res,next){
 	 Hwid.findOne({username:req.params.username}, function(err,item){
         if(!err){
             if(item){
-				var endTime = item.expire - Date.now();
-				res.end(endTime);
+				res.end(item.expire);
             }
         } 
     });

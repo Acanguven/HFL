@@ -306,7 +306,7 @@ router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
                                 }
                             }else{
                                 if(item.type == 0 && item.expire > Date.now()){
-									var expireTime = Math.floor((user.expire-Date.now())/1000/60);
+									var expireTime = ~~((item.expire-Date.now())/1000/60);
                                     res.end("Authenticated trial user EXPIRE|"+expireTime+"-EXPIRE");
                                 }else{
                                     res.end("Your trial account is ended");

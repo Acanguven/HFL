@@ -325,6 +325,16 @@ router.get("/clientHwid/:username/:hwid/:password", function(req,res,next){
     })
 });
 
+router.get("/requestTrial/:username", function(req,res,next){
+	 Hwid.findOne({username:req.params.username}, function(err,item){
+        if(!err){
+            if(item){
+                res.end(item.expire - Date.now());
+            }
+        } 
+    });
+});
+
 router.get("/requestSettings/:username/:password", function(req,res,next){
     Hwid.findOne({username:req.params.username,password:req.params.password}, function(err,item){
         if(!err){

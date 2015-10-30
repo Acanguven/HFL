@@ -14,23 +14,40 @@ namespace HandsFreeLeveler
         public string username { get; set; }
         public string password { get; set; }
         internal Button button { get; set; }
+        private int exp = 0;
+        public int expCalc
+        {
+            get
+            {
+                return exp;
+            }
+            set
+            {
+                exp = value;
+                OnPropertyChanged("expCalc");
+            }
+        }
         public LoLLauncher.Region region { get; set; }
         private int _level = 1;
-        public int level {
-            get { return _level; } 
-            set{
+        public int level
+        {
+            get { return _level; }
+            set
+            {
                 _level = value;
                 OnPropertyChanged("level");
             }
         }
-        internal string clientMask {get; set;}
+        internal string clientMask { get; set; }
         public int maxLevel { get; set; }
         internal ObservableCollection<SmurfLog> Status = new ObservableCollection<SmurfLog>();
         public bool reconnect = false;
         private int _Logs = 0;
-        public int Logs  {
-            get { return _Logs; } 
-            set{
+        public int Logs
+        {
+            get { return _Logs; }
+            set
+            {
                 _Logs = value;
                 OnPropertyChanged("Logs");
             }
@@ -105,14 +122,26 @@ namespace HandsFreeLeveler
             Logs++;
             App.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
             {
-                Status.Insert(0, log);
+                try
+                {
+                    Status.Insert(0, log);
+                }
+                catch (Exception)
+                {
+
+                }
             });
+        }
+
+        public void updateExpLevel(double extNeeded, double expOwner)
+        {
+            this.expCalc = (int)(expOwner * 100 / extNeeded);
         }
     }
 
     public class SmurfLog
     {
-        public string Date {get;set;} 
+        public string Date { get; set; }
         public string Log { get; set; }
 
         public SmurfLog(string _log)

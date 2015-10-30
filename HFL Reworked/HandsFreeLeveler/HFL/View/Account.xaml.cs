@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace HandsFreeLeveler
 {
@@ -51,17 +52,38 @@ namespace HandsFreeLeveler
 
         private void multiButton_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=xcfzxb@gmail.com&item_name=Hands+Free+Leveler+(Multi+Smurf)&amount=30&currency_code=USD");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Something went wrong! Rest assured the cleanup monkeys have been sent!", "Woops!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void singleButton_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=xcfzxb@gmail.com&item_name=Hands+Free+Leveler+(Single+Smurf)&amount=20&currency_code=USD");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Something went wrong! Rest assured the cleanup monkeys have been sent!", "Woops!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void upButtonClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                Process.Start("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=xcfzxb@gmail.com&item_name=Hands+Free+Leveler+(Upgrade+to+Multi)&amount=10&currency_code=USD");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Something went wrong! Rest assured the cleanup monkeys have been sent!", "Woops!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

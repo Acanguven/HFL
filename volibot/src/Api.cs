@@ -134,7 +134,6 @@ namespace HandsFreeLeveler
 
         public static void updateDone(object sender, AsyncCompletedEventArgs e)
         {
-
             if (File.Exists("HFLNEW.exe"))
             {
                 System.IO.File.Move("HFL.exe", "HFLOLD.exe");

@@ -22,11 +22,20 @@ namespace HandsFreeLeveler
 
     public partial class App : Application
     {
+
+        public static string version = "3.0";
         public static ObservableCollection<Smurf> smurfList = new ObservableCollection<Smurf>();
         public static GameMask gameContainer = new GameMask();
+
+
         private async void Application_Startup_2(object sender, StartupEventArgs e)
         {
             bool updateExists = await Connection.updateCheck();
+            if (File.Exists("HFLOLD.exe"))
+            {
+                File.Delete("HFLOLD.exe");
+                MessageBox.Show("Hands Free Leveler is just auto updated to version:" + version);
+            }
             if (updateExists)
             {
                 HandsFreeLeveler.HFL.View.Update updater = new HandsFreeLeveler.HFL.View.Update();
@@ -36,13 +45,15 @@ namespace HandsFreeLeveler
             {
                 if (FileHandler.settingsExists())
                 {
-                    var xs = new XmlSerializer(typeof(ObservableCollection<Smurf>));
-                    using (Stream s = File.OpenRead("Smurfs.xml"))
-                    {
-                        smurfList = (ObservableCollection<Smurf>)xs.Deserialize(s);
+                    if (File.Exists("Smurfs.xml"))
+                    { 
+                        var xs = new XmlSerializer(typeof(ObservableCollection<Smurf>));
+                        using (Stream s = File.OpenRead("Smurfs.xml"))
+                        {
+                            smurfList = (ObservableCollection<Smurf>)xs.Deserialize(s);
+                        }
+                        smurfList.Select(c => { c.Logs = 1; c.expCalc = 0; return c; }).ToList();
                     }
-                    smurfList.Select(c => { c.Logs = 1; return c; }).ToList();
-
                     XDocument settings = XDocument.Load("settings.xml");
                     Settings.firstTime = false;
                     //Settings.language = settings.Element("HFL").Element("Settings").Element("language").Value.ToString();

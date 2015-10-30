@@ -37,13 +37,11 @@ namespace HandsFreeLeveler
             string loginStatus = await Connection.login(username_box.Text, pass_box.Password, HWID.Generate());
             if (loginStatus == "true")
             {
-                if (User.multiSmurf)
-                {
-                    
-                }
-                Bol bolUpdate = new Bol();
+                /*Bol bolUpdate = new Bol();*/
+                Dashboard home = new Dashboard();
                 this.Close();
-                bolUpdate.Show();
+                /*bolUpdate.Show();*/
+                home.Show();
             }
             else
             {
@@ -53,21 +51,7 @@ namespace HandsFreeLeveler
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            string registerStatus = await Connection.register(username_box.Text, pass_box.Password, HWID.Generate());
-            if (registerStatus == "true")
-            {
-                if (User.multiSmurf)
-                {
-
-                }
-                Bol bolUpdate = new Bol();
-                this.Close();
-                bolUpdate.Show();
-            }
-            else
-            {
-                MessageBox.Show(registerStatus);
-            }
+            Connection.register();
         }
     }
 }

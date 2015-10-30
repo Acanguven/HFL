@@ -26,7 +26,7 @@ namespace HandsFreeLeveler
         public static string dllPath { get; set; }
         public static bool reconnect = true;
         public static bool disableSpec { get; set; }
-        public static bool mInject = true;
+        public static bool mInject = false;
         public static string championId = "";
         public static string spell1 = "GHOST";
         public static string spell2 = "HEAL";
@@ -34,7 +34,6 @@ namespace HandsFreeLeveler
         public static int smurfTimeoutAfter { get; set; }
         public static int smurfSleep { get; set; }
         public static bool rndSpell = false;
-        public static int version = 1;
         public static string language = "English";
 
         public static void update()

@@ -638,6 +638,7 @@ namespace HandsFreeLeveler
                 updateStatus("Connecting to Riot servers", Accountname);
                 this.RegisterNotifications();
                 this.loginPacket = await this.connection.GetLoginDataPacketForUser();
+                Owner.updateExpLevel(this.loginPacket.AllSummonerData.SummonerLevel.ExpToNextLevel, this.loginPacket.AllSummonerData.SummonerLevelAndPoints.ExpPoints);
                 if (loginPacket.AllSummonerData == null)
                 {
                     Random rnd = new Random();

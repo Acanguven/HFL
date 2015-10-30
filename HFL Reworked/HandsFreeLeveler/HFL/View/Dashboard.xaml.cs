@@ -29,7 +29,7 @@ namespace HandsFreeLeveler
         {
             InitializeComponent();
             smurfListDashBoard.ItemsSource = App.smurfList;
-            App.gameContainer.Show();
+            
             bgWorker.WorkerSupportsCancellation = false;
             bgWorker.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bgWorker.WorkerReportsProgress = true;
@@ -51,6 +51,9 @@ namespace HandsFreeLeveler
             }
             TrLabel.Content = User.trialRemains;
             smurfListDashBoard.SelectionChanged += (obj, e) => Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() => smurfListDashBoard.UnselectAll()));
+
+            App.gameContainer.Show();
+            App.gameContainer.Visibility = Visibility.Hidden;
         }
 
         private void Account_Button_Click(object sender, RoutedEventArgs e)
@@ -132,24 +135,33 @@ namespace HandsFreeLeveler
 
         public void updateLanguage()
         {
-            MessageBox.Show("Hello World of events!");
+            
         }
 
         private void start_stop_Button(object sender, RoutedEventArgs e)
         {
             FrameworkElement ownerGui = ((FrameworkElement)sender);
             Smurf obj = ownerGui.DataContext as Smurf;
-            if (obj.thread == null)
-            {
-                obj.button = ((Button)sender);
-                obj.start();
-                ((Button)sender).Content = "Stop";
+            int index = App.smurfList.IndexOf(obj);
+            if (User.multiSmurf || index == 0) { 
+                if (obj.thread == null)
+                {
+                    obj.button = ((Button)sender);
+                    obj.start();
+                    ((Button)sender).Content = "Stop";
+                }
+                else
+                {
+                    obj.button = ((Button)sender);
+                    obj.stop();
+                    ((Button)sender).Content = "Start";
+                }
             }
             else
             {
-                obj.button = ((Button)sender);
-                obj.stop();
-                ((Button)sender).Content = "Start";
+                MessageBox.Show("You can only start the first smurf you added, to run multiple smurfs you can upgrade your account.");
+                Account toUpgrade = new Account();
+                toUpgrade.Show();
             }
         }
 
@@ -171,6 +183,17 @@ namespace HandsFreeLeveler
 
             LogWindow logger = new LogWindow(obj);
             logger.Show();
+        }
+
+        private void gmWindows_click(object sender, RoutedEventArgs e)
+        {
+            App.gameContainer.Visibility = Visibility.Visible;
+        }
+
+        private void window_terminate(object sender, CancelEventArgs e)
+        {
+            App.gameContainer.killAll();
+            Application.Current.Shutdown();
         }
     }
 }

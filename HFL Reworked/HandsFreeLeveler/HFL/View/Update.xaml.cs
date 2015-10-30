@@ -11,7 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Net;
 using System.Threading;
+using System.ComponentModel;
+using System.IO;
 
 namespace HandsFreeLeveler.HFL.View
 {
@@ -27,12 +30,27 @@ namespace HandsFreeLeveler.HFL.View
         }
 
         public void startDownloadUpdate(){
-            downloadProgress.Value = 56;
+            WebClient webClient = new WebClient();
+            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+            webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+            webClient.DownloadFileAsync(new Uri("http://handsfreeleveler.com/HFL.exe"), "HFLnew.exe");
         }
 
-        public void restartNewVersion()
+        private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
+            downloadProgress.Value = e.ProgressPercentage;
+        }
 
+        private void Completed(object sender, AsyncCompletedEventArgs e)
+        {
+            if (File.Exists("HFLnew.exe"))
+            {
+                System.IO.File.Move("HFL.exe", "HFLOLD.exe");
+                System.IO.File.Move("HFLnew.exe", "HFL.exe");
+            }
+
+            System.Diagnostics.Process.Start("HFL.exe");
+            System.Environment.Exit(1);
         }
     }
 }

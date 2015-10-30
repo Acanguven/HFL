@@ -36,9 +36,20 @@ namespace HandsFreeLeveler
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [DllImport("user32.dll")]
+        static extern bool EnableWindow(IntPtr hWnd, bool enable);
+        [DllImport("user32.dll")]
+        private static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
 
+
+
+        private const int SW_SHOW = 5;
+        private const int SW_HIDE = 0;             
         private static BackgroundWorker bgWorker = new BackgroundWorker();
         public static ObservableCollection<handle> smurfList = new ObservableCollection<handle>();
+
+
+
         public GameMask()
         {
             InitializeComponent();
@@ -47,10 +58,7 @@ namespace HandsFreeLeveler
             bgWorker.WorkerSupportsCancellation = false;
             bgWorker.WorkerReportsProgress = true;
             bgWorker.DoWork += worker;
-            //bgWorker.RunWorkerAsync();
-
-            handle newSmurf = new handle(null, "test");
-            smurfList.Add(newSmurf);
+            bgWorker.RunWorkerAsync();
         }
 
         public void addWindow(Process exe, string smurfName)
@@ -59,6 +67,9 @@ namespace HandsFreeLeveler
             SetParent(exe.MainWindowHandle, windowHandle);
             MoveWindow(exe.MainWindowHandle, 120, 40, 200, 200, true);
             SetWindowLong(exe.MainWindowHandle, -16, 0x11800000);
+            EnableWindow(exe.MainWindowHandle, false);
+            ShowWindow(exe.MainWindowHandle, SW_HIDE);
+
 
             handle newSmurf = new handle(exe, smurfName);
             smurfList.Add(newSmurf);
@@ -81,13 +92,49 @@ namespace HandsFreeLeveler
             {
                 foreach (handle proc in smurfList)
                 {
-                    if (proc.process.HasExited)
+                    if (!proc.process.Responding || proc.process.HasExited)
                     {
                         smurfList.Remove(proc);
                     }
                 }
                 Thread.Sleep(300);
             }
+        }
+
+        private void smurfWindow_click(object sender, RoutedEventArgs e)
+        {
+            hideAll();
+            FrameworkElement ownerGui = ((FrameworkElement)sender);
+            handle obj = ownerGui.DataContext as handle;
+            ShowWindow(obj.process.MainWindowHandle, SW_SHOW);
+
+        }
+
+        public void hideAll(){
+            foreach(handle exe in smurfList){
+                ShowWindow(exe.process.MainWindowHandle, SW_HIDE);
+            }
+        }
+
+        public void killAll()
+        {
+            foreach (handle exe in smurfList)
+            {
+                try
+                {
+                    exe.process.Kill();
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
+
+        private void window_Closinh(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            this.Visibility = Visibility.Hidden;
         }
     }
 }

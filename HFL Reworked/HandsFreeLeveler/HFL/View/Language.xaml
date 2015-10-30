@@ -5,7 +5,7 @@
     <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Height="224" Margin="0,0,0,0" Width="200">
         <Label Content="Please select your language" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontFamily="Tahoma" FontSize="14"/>
         <RadioButton Name="EnButton" Content="English" HorizontalAlignment="Left" Margin="30,42,99,0" VerticalAlignment="Top" Checked="EnButton_Checked"/>
-        <RadioButton Name="TrButton" Content="Türkçe" HorizontalAlignment="Left" Margin="30,63,99,0" VerticalAlignment="Top" Checked="TrButton_Checked"/>
+        <RadioButton Name="TrButton" Content="Türkçe" HorizontalAlignment="Left" Margin="30,63,99,0" VerticalAlignment="Top" Checked="TrButton_Checked" IsEnabled="False"/>
         <RadioButton Name="EsButton" Content="Español" HorizontalAlignment="Left" Margin="30,84,99,0" VerticalAlignment="Top" Checked="EsButton_Checked" IsEnabled="False"/>
         <RadioButton Name="PrButton" Content="Português" HorizontalAlignment="Left" Margin="30,105,99,0" VerticalAlignment="Top" Checked="PrButton_Checked" IsEnabled="False"/>
         <RadioButton Name="JpButton" Content="日本人" HorizontalAlignment="Left" Margin="30,126,99,0" VerticalAlignment="Top" Checked="JpButton_Checked" IsEnabled="False"/>

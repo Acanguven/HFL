@@ -1,16 +1,16 @@
 ﻿<Window x:Class="HandsFreeLeveler.GameMask"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Game Windows" Height="280.343" Width="340.022" Icon="/HandsFreeLeveler;component/Resources/fe1iHm3.ico">
+        Title="Game Windows" Height="280.343" Width="340.022" Icon="/HandsFreeLeveler;component/Resources/fe1iHm3.ico" ResizeMode="NoResize" Closing="window_Closinh">
     <Grid>
         <Label Content="Game Windows" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="200" Margin="120,40,0,0" Stroke="Black" VerticalAlignment="Top" Width="200"/>
-        <DataGrid HorizontalAlignment="Left" Height="200" Margin="3,41,0,0" VerticalAlignment="Top" Width="113" Name="runningSmurfs" HeadersVisibility="None" ItemsSource="{Binding Path=runningSmurf}">
-            <DataGrid.ItemTemplate>
+        <ListBox HorizontalAlignment="Left" Height="200" Margin="3,41,0,0" VerticalAlignment="Top" Width="113" Name="runningSmurfs">
+            <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=smurfName}"></TextBlock>
+                    <Button Content="{Binding Path=smurfName}" Width="100" Click="smurfWindow_click"></Button>
                 </DataTemplate>
-            </DataGrid.ItemTemplate>
-        </DataGrid>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

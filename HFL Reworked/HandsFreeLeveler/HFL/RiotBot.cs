@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -37,8 +36,10 @@ using System.Runtime.InteropServices;
 using LoLLauncher.RiotObjects.Platform.Game.Map;
 using System.Net;
 using System.Net.Http;
+using System.Windows.Threading;
 using System.Runtime.CompilerServices;
 using LoLLauncher.RiotObjects.Platform.Summoner.Icon;
+using System.Windows.Interop;
 using LoLLauncher.RiotObjects.Platform.Catalog.Icon;
 using System.Timers;
 
@@ -68,21 +69,38 @@ namespace HandsFreeLeveler
         public QueueTypes actualQueueType { get; set; }
         public string region { get; set; }
         public string regionURL;
+        public string clientMask { get; set; }
         public bool QueueFlag;
         public int LastAntiBusterAttempt = 0;
         public bool stopForced = false;
+        public Smurf Owner { get; set; }
+        public Thread processStarter { get; set; }
 
-        public RiotBot(string username, string password, int accmaxlevel, string reg, string path, QueueTypes QueueType)
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr Handle, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
+        public RiotBot(string username, string password, int accmaxlevel, string reg, string path, QueueTypes QueueType, string cMask, Smurf own)
         {
             ipath = path;
             Accountname = username;
             Password = password;
+            clientMask = cMask;
             AccMaxLevel = Convert.ToInt32(accmaxlevel);
             queueType = QueueType;
             region = reg;
+            Owner = own;
 
-            connection.OnConnect += new LoLConnection.OnConnectHandler(this.connection_OnConnect);
-            connection.OnDisconnect += new LoLConnection.OnDisconnectHandler(this.connection_OnDisconnect);
+            this.updateStatus("Trying to login...", Accountname);
+
             connection.OnError += new LoLConnection.OnErrorHandler(this.connection_OnError);
             connection.OnLogin += new LoLConnection.OnLoginHandler(this.connection_OnLogin);
             connection.OnLoginQueueUpdate += new LoLConnection.OnLoginQueueUpdateHandler(this.connection_OnLoginQueueUpdate);
@@ -100,53 +118,53 @@ namespace HandsFreeLeveler
             switch (region)
             {
                 case "EUW":
-                    connection.Connect(username, password, LoLLauncher.Region.EUW, "");
+                    connection.Connect(username, password, LoLLauncher.Region.EUW, clientMask);
                     break;
                 case "EUNE":
-                    connection.Connect(username, password, LoLLauncher.Region.EUN, "");
+                    connection.Connect(username, password, LoLLauncher.Region.EUN, clientMask);
                     break;
                 case "NA":
-                    connection.Connect(username, password, LoLLauncher.Region.NA, "");
+                    connection.Connect(username, password, LoLLauncher.Region.NA, clientMask);
                     regionURL = "NA1";
                     break;
                 case "KR":
-                    connection.Connect(username, password, LoLLauncher.Region.KR, "");
+                    connection.Connect(username, password, LoLLauncher.Region.KR, clientMask);
                     break;
                 case "BR":
-                    connection.Connect(username, password, LoLLauncher.Region.BR, "");
+                    connection.Connect(username, password, LoLLauncher.Region.BR, clientMask);
                     break;
                 case "OCE":
-                    connection.Connect(username, password, LoLLauncher.Region.OCE, "");
+                    connection.Connect(username, password, LoLLauncher.Region.OCE, clientMask);
                     break;
                 case "RU":
-                    connection.Connect(username, password, LoLLauncher.Region.RU, "");
+                    connection.Connect(username, password, LoLLauncher.Region.RU, clientMask);
                     break;
                 case "TR":
-                    connection.Connect(username, password, LoLLauncher.Region.TR, "");
+                    connection.Connect(username, password, LoLLauncher.Region.TR, clientMask);
                     break;
                 case "LAS":
-                    connection.Connect(username, password, LoLLauncher.Region.LAS, "");
+                    connection.Connect(username, password, LoLLauncher.Region.LAS, clientMask);
                     break;
                 case "LAN":
-                    connection.Connect(username, password, LoLLauncher.Region.LAN, "");
+                    connection.Connect(username, password, LoLLauncher.Region.LAN, clientMask);
                     break;
                 case "TH":
-                    connection.Connect(username, password, LoLLauncher.Region.TH, "");
+                    connection.Connect(username, password, LoLLauncher.Region.TH, clientMask);
                     break;
                 case "SGMY":
-                    connection.Connect(username, password, LoLLauncher.Region.SGMY, "");
+                    connection.Connect(username, password, LoLLauncher.Region.SGMY, clientMask);
                     break;
                 case "TW":
-                    connection.Connect(username, password, LoLLauncher.Region.TW, "");
+                    connection.Connect(username, password, LoLLauncher.Region.TW, clientMask);
                     break;
                 case "PH":
-                    connection.Connect(username, password, LoLLauncher.Region.PH, "");
+                    connection.Connect(username, password, LoLLauncher.Region.PH, clientMask);
                     break;
                 case "VN":
-                    connection.Connect(username, password, LoLLauncher.Region.VN, "");
+                    connection.Connect(username, password, LoLLauncher.Region.VN, clientMask);
                     break;
                 case "ID":
-                    connection.Connect(username, password, LoLLauncher.Region.ID, "");
+                    connection.Connect(username, password, LoLLauncher.Region.ID, clientMask);
                     break;
             }
         }
@@ -357,7 +375,7 @@ namespace HandsFreeLeveler
             }
             else if (message is PlayerCredentialsDto)
             {
-                string str = Enumerable.Last<string>((IEnumerable<string>)Enumerable.OrderBy<string, DateTime>(Directory.EnumerateDirectories((this.ipath ?? "") + "RADS\\solutions\\lol_game_client_sln\\releases\\"), (Func<string, DateTime>)(f => new DirectoryInfo(f).CreationTime))) + "\\deploy\\";
+                string str = Enumerable.Last<string>((IEnumerable<string>)Enumerable.OrderBy<string, DateTime>(Directory.EnumerateDirectories((this.ipath ?? "").Split(new string[] { "lol.launcher.exe" }, StringSplitOptions.None)[0] + "RADS\\solutions\\lol_game_client_sln\\releases\\"), (Func<string, DateTime>)(f => new DirectoryInfo(f).CreationTime))) + "\\deploy\\";
                 LoLLauncher.RiotObjects.Platform.Game.PlayerCredentialsDto credentials = message as PlayerCredentialsDto;
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.CreateNoWindow = false;
@@ -367,19 +385,9 @@ namespace HandsFreeLeveler
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 startInfo.FileName = "League of Legends.exe";
-                startInfo.Arguments = "\"8394\" \"LoLLauncher.exe\" \"\" \"" + credentials.ServerIp + " " +
-                credentials.ServerPort + " " + credentials.EncryptionKey + " " + credentials.SummonerId + "\"";
+                startInfo.Arguments = string.Concat(new object[] { "\"8394\" \"LoLLauncher.exe\" \"\" \"", credentials.ServerIp, " ", credentials.ServerPort, " ", credentials.EncryptionKey, " ", credentials.SummonerId, "\"" });
                 updateStatus("Starting Game", Accountname);
-                new Thread((ThreadStart)(() =>
-                {
-                    exeProcess = Process.Start(startInfo);
-                    exeProcess.Exited += exeProcess_Exited;
-                    while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
-                    exeProcess.PriorityClass = ProcessPriorityClass.Idle;
-                    exeProcess.EnableRaisingEvents = true;
-                    Thread.Sleep(3000);
-                    BasicInject.Inject(exeProcess, Settings.dllPath);
-                })).Start();
+                startProcessor(startInfo);
             }
             else if (!(message is GameNotification) && !(message is SearchingForMatchNotification))
             {
@@ -407,6 +415,7 @@ namespace HandsFreeLeveler
                         loginPacket = await this.connection.GetLoginDataPacketForUser();
                         archiveSumLevel = sumLevel;
                         sumLevel = loginPacket.AllSummonerData.SummonerLevel.Level;
+                        Owner.level = (int)sumLevel;
                         if (sumLevel != archiveSumLevel)
                         {
                             levelUp();
@@ -414,6 +423,30 @@ namespace HandsFreeLeveler
                     }
                 }
             }
+        }
+
+        public void startProcessor(ProcessStartInfo startInfo)
+        {
+            processStarter = new Thread((ThreadStart)(() =>
+            {
+                exeProcess = Process.Start(startInfo);
+                exeProcess.Exited += exeProcess_Exited;
+                while (exeProcess.MainWindowHandle == IntPtr.Zero) ;
+                exeProcess.PriorityClass = ProcessPriorityClass.Idle;
+                exeProcess.EnableRaisingEvents = true;
+                if (Settings.disableGpu)
+                {
+                    App.gameContainer.Dispatcher.Invoke(new Action(() => {
+                        App.gameContainer.addWindow(exeProcess, Accountname);
+                    }), DispatcherPriority.ContextIdle);
+                }
+                Thread.Sleep(3000);
+                if (Settings.mInject)
+                {
+                    BasicInject.Inject(exeProcess, Settings.dllPath);
+                }
+            }));
+            processStarter.Start();
         }
 
         public async void joinQueue()
@@ -458,43 +491,64 @@ namespace HandsFreeLeveler
                 if (m.PlayerJoinFailures == null)
                 {
                     this.updateStatus("In queue for " + queueType.ToString(), Accountname);
-
                 }
-
                 else
                 {
-
-                    foreach (QueueDodger current in m.PlayerJoinFailures)
+                    List<QueueDodger>.Enumerator enumerator = m.PlayerJoinFailures.GetEnumerator();
+                    try
                     {
-                        if (current.ReasonFailed == "LEAVER_BUSTED")
+                        while (enumerator.MoveNext())
                         {
-                            m_accessToken = current.AccessToken;
-                            if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+                            QueueDodger current = enumerator.Current;
+                            if (current.ReasonFailed == "LEAVER_BUSTED")
                             {
-                                this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+                                this.m_accessToken = current.AccessToken;
+                                if (current.LeaverPenaltyMillisRemaining > this.m_leaverBustedPenalty)
+                                {
+                                    this.m_leaverBustedPenalty = current.LeaverPenaltyMillisRemaining;
+                                }
                             }
                         }
-                        else
+                    }
+                    finally
+                    {
+                        enumerator.Dispose();
+                    }
+                    if (string.IsNullOrEmpty(this.m_accessToken))
+                    {
+                        List<QueueDodger>.Enumerator enumerator2 = m.PlayerJoinFailures.GetEnumerator();
+                        try
                         {
-                            this.updateStatus("Queue busted, login to your account", Accountname);
-                            await Task.Delay(5000);
-                            this.joinQueue();
+                            while (enumerator2.MoveNext())
+                            {
+                                QueueDodger dodger2 = enumerator2.Current;
+                                this.updateStatus("Dodge Remaining Time: " + Convert.ToString((float)(((float)(dodger2.DodgePenaltyRemainingTime / 0x3e8)) / 60f)).Replace(",", ":") + "...", Accountname);
+
+                                if (dodger2.DodgePenaltyRemainingTime == 0 || dodger2.LeaverPenaltyMillisRemaining == 0)
+                                {
+                                    this.updateStatus("You need login to your account using the game client and type 'I accept' to use HFL", Accountname);
+                                    connection.Disconnect();
+                                }
+                            }
+                            return;
+                        }
+                        finally
+                        {
+                            enumerator2.Dispose();
                         }
                     }
-
-                    if (!string.IsNullOrEmpty(this.m_accessToken))
+                    double minutes = ((float)(this.m_leaverBustedPenalty / 0x3e8)) / 60f;
+                    this.updateStatus("Waiting out leaver buster: " + minutes + " minutes!", Accountname);
+                    Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
+                    m = await this.connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
+                    if (m.PlayerJoinFailures == null)
                     {
-                        this.updateStatus("Waiting leaver busted " + (float)(this.m_leaverBustedPenalty / 1000) / 60f, this.Accountname);
-                        Thread.Sleep(TimeSpan.FromMilliseconds((double)this.m_leaverBustedPenalty));
-                        m = await connection.AttachToLowPriorityQueue(matchParams, this.m_accessToken);
-                        if (m.PlayerJoinFailures == null)
-                        {
-                            this.updateStatus("In queue for " + queueType.ToString(), this.Accountname);
-                        }
-                        else
-                        {
-                            this.joinQueue();
-                        }
+                        this.updateStatus("Succesfully joined lower priority queue!", Accountname);
+                    }
+                    else
+                    {
+                        this.updateStatus("There was an error in joining lower priority queue.Disconnecting...", Accountname);
+                        this.connection.Disconnect();
                     }
                 }
             }
@@ -533,32 +587,34 @@ namespace HandsFreeLeveler
                 {
                     CreatePracticeGame();
                 }
-                else { 
+                else
+                {
                     this.updateStatus("Game (" + game.Id + ") created.", Accountname);
                 }
             }
         }
         void exeProcess_Exited(object sender, EventArgs e)
         {
-            updateStatus("Restarting game", Accountname);
-            Thread.Sleep(1000);
-            if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
+            if (Owner.thread != null)
             {
-                this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
+                updateStatus("Restarting game", Accountname);
+                Thread.Sleep(1000);
+                if (this.loginPacket.ReconnectInfo != null && this.loginPacket.ReconnectInfo.Game != null)
+                {
+                    this.connection_OnMessageReceived(sender, (object)this.loginPacket.ReconnectInfo.PlayerCredentials);
+                }
+                else
+                {
+                    this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
+                }
             }
-            else
-                this.connection_OnMessageReceived(sender, (object)new EndOfGameStats());
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         private void updateStatus(string status, string accname)
         {
-            
+            Owner.log(status);
         }
 
         private async void RegisterNotifications()
@@ -593,6 +649,7 @@ namespace HandsFreeLeveler
                     updateStatus("Created Summonername " + summonerName, Accountname);
                 }
                 sumLevel = loginPacket.AllSummonerData.SummonerLevel.Level;
+                Owner.level = (int)sumLevel;
                 string sumName = loginPacket.AllSummonerData.Summoner.Name;
                 double sumId = loginPacket.AllSummonerData.Summoner.SumId;
                 rpBalance = loginPacket.RpBalance;
@@ -698,18 +755,9 @@ namespace HandsFreeLeveler
                 int Spell2 = Convert.ToInt32(randomSpell2);
                 return;
             }
-            this.updateStatus(error.Message, Accountname);
         }
 
-        private void connection_OnDisconnect(object sender, EventArgs e)
-        {
-            this.updateStatus("Disconnected", Accountname);
-        }
 
-        private void connection_OnConnect(object sender, EventArgs e)
-        {
-
-        }
 
         public void levelUp()
         {
@@ -736,7 +784,7 @@ namespace HandsFreeLeveler
                     updateStatus("Couldn't buy RP Boost.\n" + exception, Accountname);
                 }
             }
-            
+
         }
         async void buyBoost()
         {

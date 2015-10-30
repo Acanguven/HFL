@@ -11,8 +11,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace HandsFreeLeveler
 {
@@ -26,11 +29,19 @@ namespace HandsFreeLeveler
         {
             InitializeComponent();
             smurfListDashBoard.ItemsSource = App.smurfList;
-
+            App.gameContainer.Show();
             bgWorker.WorkerSupportsCancellation = false;
-            bgWorker.WorkerReportsProgress = false;
+            bgWorker.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
+            bgWorker.WorkerReportsProgress = true;
             bgWorker.DoWork += dashworker;
             bgWorker.RunWorkerAsync();
+
+            Settings.EventActions += updateLanguage;
+
+            queueTypeButton.Header = "Queue Type: " + Settings.queueType;
+            
+            this.Activate();
+            this.Focus();
 
             UsernameLabel.Content = "Usarname: " + User.username;
             if(User.multiSmurf){
@@ -38,7 +49,8 @@ namespace HandsFreeLeveler
             }else{
                 PType.Content = "Package Type: Single Smurf";
             }
-            TrLabel.Content = "Trial: Unlimited";
+            TrLabel.Content = User.trialRemains;
+            smurfListDashBoard.SelectionChanged += (obj, e) => Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() => smurfListDashBoard.UnselectAll()));
         }
 
         private void Account_Button_Click(object sender, RoutedEventArgs e)
@@ -55,17 +67,110 @@ namespace HandsFreeLeveler
 
         private static void dashworker(object sender, DoWorkEventArgs e)
         {
-            
+            bool bolPre = true;
+            while (true) { 
+                Process[] pname = Process.GetProcessesByName("Bol Studio");
+                Report report = new Report();
+
+                report.smurfCount = App.smurfList.Count.ToString();
+                if (pname.Length == 0)
+                {
+                    if (bolPre) { 
+                        report.bol = false;
+                        bgWorker.ReportProgress(0, report);
+                        bolPre = false;
+                    }
+                }
+                else
+                {
+                    if (!bolPre) { 
+                        report.bol = true;
+                        bgWorker.ReportProgress(0, report);
+                        bolPre = true;
+                    }
+                }
+                Thread.Sleep(200);
+            }
+
+        }
+
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
         }
 
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            dynamic report = e.UserState;
+            if(report.bol){
+                BolStatus.Content = "Running";
+                BolStatus.Foreground = new SolidColorBrush(Colors.Red);
+                MessageBox.Show("Please close Bol Studio!");
+            }else{
+                BolStatus.Content = "Not Running";
+                BolStatus.Foreground = new SolidColorBrush(Colors.Green);
+            }
+            NumOfSums.Content = "Number Of Smurfs: " + report.smurfCount;
         }
 
-        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
+        private class Report{
+            public bool bol;
+            public string smurfCount;
+        }
 
+        private void settingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow sett = new SettingsWindow();
+            sett.Show();
+        }
+
+        private void languageButton_Click(object sender, RoutedEventArgs e)
+        {
+            Language lang = new Language(false);
+            lang.Show();
+        }
+
+        public void updateLanguage()
+        {
+            MessageBox.Show("Hello World of events!");
+        }
+
+        private void start_stop_Button(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement ownerGui = ((FrameworkElement)sender);
+            Smurf obj = ownerGui.DataContext as Smurf;
+            if (obj.thread == null)
+            {
+                obj.button = ((Button)sender);
+                obj.start();
+                ((Button)sender).Content = "Stop";
+            }
+            else
+            {
+                obj.button = ((Button)sender);
+                obj.stop();
+                ((Button)sender).Content = "Start";
+            }
+        }
+
+        private void queueTypeButton_clicked(object sender, RoutedEventArgs e)
+        {
+            Settings.queueType = Enum.GetValues(typeof(LoLLauncher.QueueTypes)).Cast<LoLLauncher.QueueTypes>().Concat(new[] { default(LoLLauncher.QueueTypes) }).SkipWhile(_ => _ != Settings.queueType).Skip(1).First();
+            if (Settings.queueType == 0)
+            {
+                Settings.queueType = LoLLauncher.QueueTypes.NORMAL_5x5;
+            }
+            queueTypeButton.Header = "Queue Type: " + Settings.queueType;
+            Settings.update();
+        }
+
+        private void log_Button(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement ownerGui = ((FrameworkElement)sender);
+            Smurf obj = ownerGui.DataContext as Smurf;
+
+            LogWindow logger = new LogWindow(obj);
+            logger.Show();
         }
     }
 }

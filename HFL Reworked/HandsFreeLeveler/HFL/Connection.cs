@@ -29,24 +29,43 @@ namespace HandsFreeLeveler
                     if (data.IndexOf("Authenticated") > -1 || data.IndexOf("is now registered") > -1)
                     {
                         Match match = Regex.Match(data, "(.*) (.*) ");
-                        if (match.Length < 1)
+
+                        if (data.IndexOf("trial user") > -1)
                         {
+                            string tempSpan = data.Split(new char[] { '|', '-' })[1];
+                            User.trialRemains = "Trial: " + tempSpan + " minutes";
                             User.multiSmurf = true;
                             User.username = username;
                             User.password = password;
                             User.hwid = hwid;
+                            User.trial = true;
                             Settings.update();
                             return "true";
                         }
-                        else
-                        {
-                            User.multiSmurf = false;
-                            User.username = username;
-                            User.password = password;
-                            User.hwid = hwid;
-                            Settings.update();
-                            return "true";
+                        else {
+                            User.trialRemains = "Trial: Unlimited";
+                            if (match.Length < 1)
+                            {
+                                User.multiSmurf = true;
+                                User.username = username;
+                                User.password = password;
+                                User.hwid = hwid;
+                                User.trial = false;
+                                Settings.update();
+                                return "true";
+                            }
+                            else
+                            {
+                                User.multiSmurf = false;
+                                User.username = username;
+                                User.trial = false;
+                                User.password = password;
+                                User.hwid = hwid;
+                                Settings.update();
+                                return "true";
+                            }
                         }
+                        
                     }
                     else
                     {

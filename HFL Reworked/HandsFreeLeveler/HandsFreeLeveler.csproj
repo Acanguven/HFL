@@ -37,6 +37,9 @@
     <ApplicationIcon>
     </ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -68,6 +71,9 @@
     <Compile Include="HFL\Dictionary.cs" />
     <Compile Include="HFL\Enums.cs" />
     <Compile Include="HFL\FileHandler.cs" />
+    <Compile Include="HFL\View\GameMask.xaml.cs">
+      <DependentUpon>GameMask.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HFL\Hwid.cs" />
     <Compile Include="HFL\injector.cs" />
     <Compile Include="HFL\Region.cs" />
@@ -86,6 +92,12 @@
     </Compile>
     <Compile Include="HFL\View\Language.xaml.cs">
       <DependentUpon>Language.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HFL\View\LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HFL\View\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="HFL\View\SmurfListWindow.xaml.cs">
       <DependentUpon>SmurfListWindow.xaml</DependentUpon>
@@ -216,6 +228,10 @@
     <Compile Include="PvPNETConnect\RTMP\RTMPSEncoder.cs" />
     <Compile Include="PvPNETConnect\RTMP\TypedObject.cs" />
     <Compile Include="HFL\Settings.cs" />
+    <Page Include="HFL\View\GameMask.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HFL\View\Account.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -241,6 +257,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="HFL\View\Language.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HFL\View\LogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HFL\View\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -276,6 +300,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

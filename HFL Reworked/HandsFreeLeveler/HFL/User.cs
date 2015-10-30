@@ -13,5 +13,6 @@ namespace HandsFreeLeveler
         public static bool multiSmurf { get; set; }
         public static string hwid { get; set; }
         public static string trialRemains { get; set; }
+        public static bool trial { get; set; }
     }
 }

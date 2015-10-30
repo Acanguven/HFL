@@ -23,6 +23,7 @@ namespace HandsFreeLeveler
     public partial class App : Application
     {
         public static ObservableCollection<Smurf> smurfList = new ObservableCollection<Smurf>();
+        public static GameMask gameContainer = new GameMask();
         private async void Application_Startup_2(object sender, StartupEventArgs e)
         {
             bool updateExists = await Connection.updateCheck();
@@ -40,9 +41,26 @@ namespace HandsFreeLeveler
                     {
                         smurfList = (ObservableCollection<Smurf>)xs.Deserialize(s);
                     }
+                    smurfList.Select(c => { c.Logs = 1; return c; }).ToList();
 
                     XDocument settings = XDocument.Load("settings.xml");
                     Settings.firstTime = false;
+                    //Settings.language = settings.Element("HFL").Element("Settings").Element("language").Value.ToString();
+                    Settings.bolPath = settings.Element("HFL").Element("Paths").Element("BolPath").Value.ToString();
+                    Settings.dllPath = Settings.bolPath.Split(new string[] { "BoL Studio.exe" }, StringSplitOptions.None)[0] + "tangerine.dll";
+                    Settings.gamePath = settings.Element("HFL").Element("Paths").Element("GamePath").Value.ToString();
+                    Settings.buyBoost = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("BuyBoost").Value);
+                    Settings.disableGpu = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("DisableGpu").Value);
+                    if (Settings.disableGpu)
+                    {
+                        Settings.ReplaceGameConfig();
+                    }
+                    Settings.smurfBreak = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("smurfBreak").Value);
+                    Settings.smurfSleep = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfSleep").Value.ToString());
+                    Settings.smurfTimeoutAfter = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfTimeoutAfter").Value.ToString());
+                    Settings.reconnect = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("reconnect").Value);
+                    Settings.mInject = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("mInject").Value);
+                    Settings.disableSpec = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("disableSpec").Value);
                     string username = settings.Element("HFL").Element("Account").Element("Username").Value.ToString();
                     string password = settings.Element("HFL").Element("Account").Element("Password").Value.ToString();
                     User.username = username;
@@ -54,8 +72,8 @@ namespace HandsFreeLeveler
 
                     if (loginStatus == "true")
                     {
-                        //Bol bolde = new Bol();
-                        //bolde.Show();
+                        /*Bol bolde = new Bol();
+                        bolde.Show();*/
                         Dashboard home = new Dashboard();
                         home.Show();
                     }
@@ -74,5 +92,6 @@ namespace HandsFreeLeveler
                 }
             }
         }
+        
     }
 }

@@ -140,29 +140,35 @@ namespace LoLLauncher
                     {
                         Disconnect();
                     }
-
-                    
-
-
-                    using (ar.AsyncWaitHandle)
+                    if (ar == null)
                     {
-                        if (ar.AsyncWaitHandle.WaitOne(-1))
-                        {
-                            sslStream.EndAuthenticateAsClient(ar);
-                        }
+                        Disconnect();
+                        HandsFreeLeveler.App.smurfList.First(smurf => (smurf.username == user)).start();
                     }
+                    else
+                    {
 
-                    if (!Handshake())
-                        return;
 
-                    BeginReceive();
+                        using (ar.AsyncWaitHandle) //Burda manyama var
+                        {
+                            if (ar.AsyncWaitHandle.WaitOne(-1))
+                            {
+                                sslStream.EndAuthenticateAsClient(ar);
+                            }
+                        }
 
-                    if (!SendConnect())
-                        return;
+                        if (!Handshake())
+                            return;
 
-                    if (!Login())
-                        return;
-                    StartHeartbeat();
+                        BeginReceive();
+
+                        if (!SendConnect())
+                            return;
+
+                        if (!Login())
+                            return;
+                        StartHeartbeat();
+                    }
                 });
 
                 t.Start();
@@ -569,24 +575,20 @@ namespace LoLLauncher
             result = GetResult(id);
             if (result["result"].Equals("_error"))
             {
-                /*if (HandsFreeLeveler.Program.AutoUpdate)     Client Update 
+                //newVersion
+                string newVersion = (string)result.GetTO("data").GetTO("rootCause").GetArray("substitutionArguments")[1];
+                HandsFreeLeveler.Smurf owner = HandsFreeLeveler.App.smurfList.First(smurf => (smurf.username == cred.Username));
+                owner.log("Region information updated, restarting...");
+                if (owner != null)
                 {
-                    
-                    string newVersion = (string)result.GetTO("data").GetTO("rootCause").GetArray("substitutionArguments")[1];
-                    if (newVersion != HandsFreeLeveler.Program.cversion)
-                    {
-                        XDocument settings = XDocument.Load("settings.xml");
-                        settings.Element("HFL").Element("Paths").Element("GAMEVERSION").SetValue(newVersion);
-                        settings.Save("settings.xml");
-
-                        HandsFreeLeveler.Program.restartSystem();
-                    }
+                    owner.reconnect = true;
+                    owner.clientMask = newVersion;
                 }
-                else 
-                {
-                    Error(GetErrorMessage(result), ErrorType.Login);
-                }*/
                 Disconnect();
+                if (owner != null)
+                {
+                    owner.start();
+                }
                 return false;
             }
 
@@ -854,12 +856,12 @@ namespace LoLLauncher
                         if (!currentPackets.ContainsKey(channel))
                         {
                             currentPackets.Add(channel, new Packet());
-                            
+
                         }
                         //Console.Out.WriteLine("Packet:" + currentPackets.Count);
                         Packet p = currentPackets[channel];
                         p.AddToRaw(basicHeaderStorage.ToArray());
-                        
+
                         if (headerSize == 12)
                         {
                             //Timestamp

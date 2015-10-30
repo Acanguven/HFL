@@ -24,7 +24,7 @@ namespace HandsFreeLeveler
             InitializeComponent();
             username.Content = "Username: " + User.username;
             password.Content = "Password: " + User.password;
-            Trial.Content = "Trial Remaining: 1000 minutes";
+            Trial.Content = User.trialRemains;
             multiButton.Visibility = System.Windows.Visibility.Hidden;
             singleButton.Visibility = System.Windows.Visibility.Hidden;
             upButton.Visibility = System.Windows.Visibility.Hidden;
@@ -32,9 +32,20 @@ namespace HandsFreeLeveler
             if (User.multiSmurf)
             {
                 AccountType.Content = "Account Type: Multi Smurf";
-            }else{
+            }
+            else
+            {
                 AccountType.Content = "Account Type: Single Smurf";
-                upButton.Visibility = System.Windows.Visibility.Visible;
+                if (!User.trial)
+                {
+                    upButton.Visibility = System.Windows.Visibility.Visible;
+                }
+            }
+
+            if (User.trial)
+            {
+                singleButton.Visibility = System.Windows.Visibility.Visible;
+                multiButton.Visibility = System.Windows.Visibility.Visible;
             }
         }
 

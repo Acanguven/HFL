@@ -164,8 +164,6 @@ namespace LoLLauncher
         NORMAL_3x3 = 8,
         INTRO_BOT = 31,
         BEGINNER_BOT = 32,
-        BEGGINNER_BOT = 32,
-        BEGGINER_BOT = 32,
         MEDIUM_BOT = 33,
         ARAM = 65,
         CUSTOM = 999

@@ -19,28 +19,37 @@ namespace HandsFreeLeveler
     /// </summary>
     public partial class Language : Window
     {
+        
         public static Dictionary dic = new Dictionary(); 
-        public Language()
+        public static bool continueAfter {get; set;}
+        public Language(bool cont = true)
         {
             InitializeComponent();
+            continueAfter = cont;
+            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Login userScreen = new Login();
-            userScreen.Show();
+            if (continueAfter)
+            { 
+                Login userScreen = new Login();
+                userScreen.Show();
+            }
             this.Close();
         }
 
         private void EnButton_Checked(object sender, RoutedEventArgs e)
         {
-            Settings.language = "English";
+            Settings.updateLang("English");
+            Settings.update();
             contBut.Content = dic.text("continue");
         }
 
         private void TrButton_Checked(object sender, RoutedEventArgs e)
         {
-            Settings.language = "Türkçe";
+            Settings.updateLang("Türkçe");
+            Settings.update();
             contBut.Content = dic.text("continue");
         }
 
@@ -63,5 +72,7 @@ namespace HandsFreeLeveler
         {
 
         }
+
+        
     }
 }

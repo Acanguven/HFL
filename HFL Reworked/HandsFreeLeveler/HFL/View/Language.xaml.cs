@@ -73,6 +73,15 @@ namespace HandsFreeLeveler
 
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (continueAfter)
+            {
+                Login userScreen = new Login();
+                userScreen.Show();
+            }
+        }
+
         
     }
 }

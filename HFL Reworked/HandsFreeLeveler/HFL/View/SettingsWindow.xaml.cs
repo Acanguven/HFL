@@ -37,7 +37,7 @@ namespace HandsFreeLeveler
                 bolBox.Text = dlg.FileName;
                 Settings.update();
             }
-            
+
         }
 
         private void setGame_Click(object sender, RoutedEventArgs e)
@@ -47,7 +47,7 @@ namespace HandsFreeLeveler
             if (dlg.ShowDialog() == true)
             {
                 Settings.gamePath = dlg.FileName;
-                
+
                 gameBox.Text = dlg.FileName;
                 Settings.update();
             }
@@ -91,6 +91,7 @@ namespace HandsFreeLeveler
             if (dgpu.IsChecked == true)
             {
                 Settings.disableGpu = true;
+                MessageBox.Show("When you enable this option you can't play normally on your computer even if you close HFL.exe, to play normally you have to uncheck this box again.");
                 Settings.update();
                 Settings.ReplaceGameConfig();
             }
@@ -154,6 +155,36 @@ namespace HandsFreeLeveler
         {
             Settings.smurfTimeoutAfter = Int32.Parse(SleepAfter.Text);
             Settings.update();
+        }
+
+        private void compability_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Title = "Please select the script you want to make compatible with HFL";
+            dlg.Filter = "*.lua" + "|" + "*.lua";
+            if (dlg.ShowDialog() == true)
+            {
+                if (File.Exists(dlg.FileName))
+                {
+                    try
+                    {
+                        string currentContent = File.ReadAllText(dlg.FileName);
+                        if (currentContent.IndexOf("_G.OnDraw = function() --HFL COMPABILITY\n") > -1)
+                        {
+                            MessageBox.Show("This script is already compatible with Hands Free Leveler");
+                        }
+                        else
+                        {
+                            File.WriteAllText(dlg.FileName, "_G.OnDraw = function() --HFL COMPABILITY\n" + currentContent);
+                            MessageBox.Show("Your script is now compatible with the Disable GPU option.");
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Be sure HFL has enough rights to change the selected file.");
+                    }
+                }
+            }
         }
     }
 }

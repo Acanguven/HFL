@@ -20,10 +20,10 @@
         <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="146" Margin="211,100,0,0" Stroke="Black" VerticalAlignment="Top" Width="331"/>
         <TextBox Name="bolBox" HorizontalAlignment="Left" Height="23" Margin="224,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsEnabled="False" Text="{Binding Source={x:Static setts:Settings.bolPath}, Mode=OneWay}"/>
         <TextBox Name="gameBox" HorizontalAlignment="Left" Height="23" Margin="224,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" IsEnabled="False" Text="{Binding Source={x:Static setts:Settings.gamePath}, Mode=OneWay}"/>
-        <Button Content="Restore Config" HorizontalAlignment="Left" Margin="428,215,0,0" VerticalAlignment="Top" Width="100" Name="restoreConfig" Click="restoreConfig_Click"/>
-        <Label Content="To fix Disabled GPU settings click ->" HorizontalAlignment="Left" Margin="224,215,0,0" VerticalAlignment="Top"/>
+        <Button Content="Restore Config" HorizontalAlignment="Left" Margin="385,205,0,0" VerticalAlignment="Top" Width="143" Name="restoreConfig" Click="restoreConfig_Click"/>
         <Button Content="Set BoL Studio Path" HorizontalAlignment="Left" Margin="224,166,0,0" VerticalAlignment="Top" Width="143" Name="setBol" Click="setBol_Click"/>
         <Button Content="Set Game Path" HorizontalAlignment="Left" Margin="385,166,0,0" VerticalAlignment="Top" Width="143" Name="setGame" Click="setGame_Click"/>
         <Label Content="minutes" HorizontalAlignment="Left" Margin="415,64,0,0" VerticalAlignment="Top"/>
+        <Button Content="Script Compability" HorizontalAlignment="Left" Margin="224,205,0,0" VerticalAlignment="Top" Width="143" x:Name="compability" Click="compability_Click"/>
     </Grid>
 </Window>

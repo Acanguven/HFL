@@ -20,6 +20,7 @@ namespace HandsFreeLeveler
     public partial class Login : Window
     {
         public Dictionary dic = new Dictionary();
+        public bool cont = false;
         public Login()
         {
             InitializeComponent();
@@ -38,6 +39,7 @@ namespace HandsFreeLeveler
             if (loginStatus == "true")
             {
                 /*Bol bolUpdate = new Bol();*/
+                cont = true;
                 Dashboard home = new Dashboard();
                 this.Close();
                 /*bolUpdate.Show();*/
@@ -56,7 +58,9 @@ namespace HandsFreeLeveler
 
         private void onCLose(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Application.Current.Shutdown();
+            if (!cont) { 
+                Application.Current.Shutdown();
+            }
         }
     }
 }

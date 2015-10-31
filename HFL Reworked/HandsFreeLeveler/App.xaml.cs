@@ -23,7 +23,7 @@ namespace HandsFreeLeveler
     public partial class App : Application
     {
 
-        public static string version = "3.13";
+        public static string version = "3.15";
         public static ObservableCollection<Smurf> smurfList = new ObservableCollection<Smurf>();
         public static GameMask gameContainer = new GameMask();
 

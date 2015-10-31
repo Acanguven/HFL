@@ -175,7 +175,7 @@ namespace HandsFreeLeveler
                         }
                         else
                         {
-                            File.WriteAllText(dlg.FileName, "_G.OnDraw = function() --HFL COMPABILITY\n" + currentContent);
+                            File.WriteAllText(dlg.FileName, "_G.OnDraw = function() end--HFL COMPABILITY\n" + currentContent);
                             MessageBox.Show("Your script is now compatible with the Disable GPU option.");
                         }
                     }

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Data;
 
 namespace HandsFreeLeveler
 {
@@ -69,18 +70,20 @@ namespace HandsFreeLeveler
 
         void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            DataGrid dg = sender as DataGrid;
-            if (dg != null)
-            {
-                dynamic curSmurf = dg.CurrentItem;
-                if (curSmurf.thread != null)
+            if (e.Key == Key.Delete) { 
+                DataGrid dg = sender as DataGrid;
+                if (dg != null)
                 {
-                    e.Handled = true;
-                }
-                else
-                {
-                    App.smurfList.Remove(curSmurf);
-                    Settings.update();
+                    dynamic curSmurf = dg.CurrentItem;
+                    if (curSmurf.thread != null)
+                    {
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        App.smurfList.Remove(curSmurf);
+                        Settings.update();
+                    }
                 }
             }
         }
@@ -131,6 +134,25 @@ namespace HandsFreeLeveler
             public string host;
             public string regions;
             public string runnigs;
+        }
+
+        private void rowEditedEvent(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            DataGrid dg = sender as DataGrid;
+
+            if (dg != null)
+            {
+                dynamic curSmurf = dg.CurrentItem;
+                if (curSmurf.thread != null)
+                {
+                    e.Cancel = true;
+                }
+
+                if (!e.Row.IsEditing)
+                {
+                    this.smurfLister.Items.Refresh();
+                }
+            }
         }
     }
 }

@@ -53,5 +53,10 @@ namespace HandsFreeLeveler
         {
             Connection.register();
         }
+
+        private void onCLose(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

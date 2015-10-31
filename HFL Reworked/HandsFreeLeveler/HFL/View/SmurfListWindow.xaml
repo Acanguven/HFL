@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Smurf List" Height="326" Width="755" Icon="/HandsFreeLeveler;component/Resources/fe1iHm3.ico" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" WindowStartupLocation="CenterScreen">
     <Grid Margin="0,0,0,5">
-        <DataGrid x:Name="smurfLister" IsReadOnly="True"  Height="240" VerticalAlignment="Top" Margin="257,30,22,0" RowHeaderWidth="0" CanUserAddRows="false" CanUserDeleteRows="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
+        <DataGrid x:Name="smurfLister" IsReadOnly="True"  Height="240" VerticalAlignment="Top" Margin="257,30,22,0" RowHeaderWidth="0" CanUserAddRows="false" CanUserDeleteRows="True" CellEditEnding="rowEditedEvent" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="FontWeight"  Value="Bold" />
@@ -11,16 +11,6 @@
                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                 </Style>
             </DataGrid.ColumnHeaderStyle>
-            <DataGrid.ItemTemplate>
-                <DataTemplate>
-                    <Grid Width="auto">
-                        <TextBlock Text="{Binding username}"  FontSize="14" FontFamily="Tahoma" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding password}" FontSize="14" FontFamily="Tahoma" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding level}" FontSize="14" FontFamily="Tahoma" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding maxLevel}" FontSize="14" FontFamily="Tahoma" HorizontalAlignment="Center"/>
-                    </Grid>
-                </DataTemplate>
-            </DataGrid.ItemTemplate>
         </DataGrid>
         <Button x:Name="addNewSmurfButton" Content="Add New Smurf" HorizontalAlignment="Left" Margin="10,258,0,0" VerticalAlignment="Top" Width="142" Height="30" Click="addNewSmurfButton_Click"/>
         <Label Content="Smurf List" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontFamily="Tahoma" FontSize="14"/>

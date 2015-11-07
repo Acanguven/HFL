@@ -169,13 +169,13 @@ namespace HandsFreeLeveler
                     try
                     {
                         string currentContent = File.ReadAllText(dlg.FileName);
-                        if (currentContent.IndexOf("_G.OnDraw = function() --HFL COMPABILITY\n") > -1)
+                        if (currentContent.IndexOf("_G.OnDraw = function() end--HFL COMPABILITY\n_G.HFL_loaded = true --HFL COMPABILITY\n") > -1)
                         {
                             MessageBox.Show("This script is already compatible with Hands Free Leveler");
                         }
                         else
                         {
-                            File.WriteAllText(dlg.FileName, "_G.OnDraw = function() end--HFL COMPABILITY\n" + currentContent);
+                            File.WriteAllText(dlg.FileName, "_G.OnDraw = function() end--HFL COMPABILITY\n_G.HFL_loaded = true --HFL COMPABILITY\n" + currentContent);
                             MessageBox.Show("Your script is now compatible with the Disable GPU option.");
                         }
                     }

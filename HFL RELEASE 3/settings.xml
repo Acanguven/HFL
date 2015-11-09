@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <HFL>
   <Account>
-    <Username />
-    <Password />
+    <Username>harmankardon</Username>
+    <Password>123321</Password>
   </Account>
   <Paths>
-    <BolPath />
-    <GamePath />
+    <BolPath>C:\BoL Studio\BoL Studio.exe</BolPath>
+    <GamePath>C:\Riot Games\League of Legends\lol.launcher.exe</GamePath>
   </Paths>
   <Settings>
     <MaxSmurf>0</MaxSmurf>
     <DisableGpu>false</DisableGpu>
     <BuyBoost>false</BuyBoost>
-    <FirstTime>true</FirstTime>
+    <FirstTime>false</FirstTime>
     <smurfBreak>false</smurfBreak>
     <smurfTimeoutAfter>0</smurfTimeoutAfter>
     <smurfSleep>0</smurfSleep>

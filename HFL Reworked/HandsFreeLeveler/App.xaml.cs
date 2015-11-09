@@ -24,7 +24,7 @@ namespace HandsFreeLeveler
     public partial class App : Application
     {
 
-        public static string version = "3.16";
+        public static string version = "3.17";
         public static ObservableCollection<Smurf> smurfList = new ObservableCollection<Smurf>();
         public static GameMask gameContainer = new GameMask();
 
@@ -56,7 +56,7 @@ namespace HandsFreeLeveler
                 if (FileHandler.settingsExists())
                 {
                     if (File.Exists("Smurfs.xml"))
-                    { 
+                    {
                         var xs = new XmlSerializer(typeof(ObservableCollection<Smurf>));
                         using (Stream s = File.OpenRead("Smurfs.xml"))
                         {
@@ -66,42 +66,65 @@ namespace HandsFreeLeveler
                     }
                     XDocument settings = XDocument.Load("settings.xml");
                     Settings.firstTime = false;
-                    //Settings.language = settings.Element("HFL").Element("Settings").Element("language").Value.ToString();
-                    Settings.bolPath = settings.Element("HFL").Element("Paths").Element("BolPath").Value.ToString();
-                    Settings.dllPath = Settings.bolPath.Split(new string[] { "BoL Studio.exe" }, StringSplitOptions.None)[0] + "tangerine.dll";
-                    Settings.gamePath = settings.Element("HFL").Element("Paths").Element("GamePath").Value.ToString();
-                    Settings.buyBoost = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("BuyBoost").Value);
-                    Settings.disableGpu = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("DisableGpu").Value);
-                    if (Settings.disableGpu)
+                    var errorSettings = false;
+                    try
                     {
-                        Settings.ReplaceGameConfig();
+                        //Settings.language = settings.Element("HFL").Element("Settings").Element("language").Value.ToString();
+                        Settings.bolPath = settings.Element("HFL").Element("Paths").Element("BolPath").Value.ToString();
+                        Settings.dllPath = Settings.bolPath.Split(new string[] { "BoL Studio.exe" }, StringSplitOptions.None)[0] + "tangerine.dll";
+                        Settings.gamePath = settings.Element("HFL").Element("Paths").Element("GamePath").Value.ToString();
+                        Settings.buyBoost = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("BuyBoost").Value);
+                        Settings.disableGpu = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("DisableGpu").Value);
+                        if (Settings.disableGpu)
+                        {
+                            Settings.ReplaceGameConfig();
+                        }
+                        Settings.smurfBreak = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("smurfBreak").Value);
+                        Settings.smurfSleep = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfSleep").Value.ToString());
+                        Settings.smurfTimeoutAfter = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfTimeoutAfter").Value.ToString());
+                        Settings.reconnect = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("reconnect").Value);
+                        Settings.mInject = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("mInject").Value);
+                        Settings.disableSpec = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("disableSpec").Value);
+                        string username = settings.Element("HFL").Element("Account").Element("Username").Value.ToString();
+                        string password = settings.Element("HFL").Element("Account").Element("Password").Value.ToString();
+                        User.username = username;
+                        User.password = password;
+
+                        Settings.update();
                     }
-                    Settings.smurfBreak = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("smurfBreak").Value);
-                    Settings.smurfSleep = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfSleep").Value.ToString());
-                    Settings.smurfTimeoutAfter = Int32.Parse(settings.Element("HFL").Element("Settings").Element("smurfTimeoutAfter").Value.ToString());
-                    Settings.reconnect = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("reconnect").Value);
-                    Settings.mInject = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("mInject").Value);
-                    Settings.disableSpec = Boolean.Parse(settings.Element("HFL").Element("Settings").Element("disableSpec").Value);
-                    string username = settings.Element("HFL").Element("Account").Element("Username").Value.ToString();
-                    string password = settings.Element("HFL").Element("Account").Element("Password").Value.ToString();
-                    User.username = username;
-                    User.password = password;
-
-                    Settings.update();
-
-                    string loginStatus = await Connection.login(User.username, User.password, HWID.Generate());
-
-                    if (loginStatus == "true")
+                    catch (Exception)
                     {
-                        /*Bol bolde = new Bol();
-                        bolde.Show();*/
-                        Dashboard home = new Dashboard();
-                        home.Show();
+                        errorSettings = true;
+                    }
+
+                    if (!errorSettings)
+                    {
+                        string loginStatus = await Connection.login(User.username, User.password, HWID.Generate());
+
+                        if (loginStatus == "true")
+                        {
+                            /*Bol bolde = new Bol();
+                            bolde.Show();*/
+                            Dashboard home = new Dashboard();
+                            home.Show();
+                        }
+                        else
+                        {
+                            Login loginWindow = new Login();
+                            loginWindow.Show();
+                        }
                     }
                     else
                     {
-                        Login loginWindow = new Login();
-                        loginWindow.Show();
+                        File.Delete("settings.xml");
+                        if (File.Exists("Smurfs.xml"))
+                        {
+                            File.Delete("Smurfs.xml");
+                        }
+                        Settings.firstTime = true;
+                        Settings.update();
+                        Language selector = new Language();
+                        selector.Show();
                     }
                 }
                 else
@@ -113,6 +136,6 @@ namespace HandsFreeLeveler
                 }
             }
         }
-        
+
     }
 }

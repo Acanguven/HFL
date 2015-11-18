@@ -1,5 +1,5 @@
-editMode = true
-debugMode = false
+editMode = false
+debugMode = true
 
 
 -- Encryption Below
@@ -7,7 +7,11 @@ debugMode = false
 MAPNAME = GetGame().map.shortName
 TEAMNUMBER = myHero.team
 --
-
+--
+-- Class Instances
+MINIONS = nil
+ESP = nil
+TASKMANAGER = nil
 
 class 'init'
 	function init:__init()
@@ -32,7 +36,9 @@ class 'init'
 				if debugMode then
 					debugger()
 				end
-				minions()
+				TASKMANAGER = tasks()
+				MINIONS = minions()
+				ESP = esp()
 			end
 		end
 		self:loadSprite()
@@ -74,6 +80,124 @@ class 'init'
 			self.sprite = createSprite(SPRITE_PATH .. "/hfl.png")
 			self.sprite:SetScale(0.5,0.5)
 		end
+	end
+
+class 'tasks'
+	function tasks:__init()	
+		self.taskLane = nil
+		self.towers = {}
+		self.hqs = {}
+		self.baracks = {}
+		self:collectTowers()
+		self:collectHqs()
+		self:collectBaracks()
+		self:buildTaskObjects()
+
+		self:pickLane()
+		self:getCurrentTask()
+
+		return self
+	end
+
+	function tasks:collectTowers()
+		for i = 1, objManager.maxObjects do
+	        local tow = objManager:getObject(i)
+	        if tow and tow.type == "obj_AI_Turret" then
+	        	table.insert(self.towers, tow)
+	        end
+	    end
+	end
+	function tasks:collectHqs()
+		for i = 1, objManager.maxObjects do
+	        local tow = objManager:getObject(i)
+	        if tow and tow.type == "obj_HQ" then
+	        	table.insert(self.towers, tow)
+	        end
+	    end
+	end
+	function tasks:collectBaracks()
+		for i = 1, objManager.maxObjects do
+	        local tow = objManager:getObject(i)
+	        if tow and tow.type == "obj_BarracksDampener" then
+	        	table.insert(self.towers, tow)
+	        end
+	    end
+	end
+
+	function tasks:buildTaskObjects()
+		for i,task in pairs(_G.hflTasks[MAPNAME][TEAMNUMBER]) do
+			if task.type == "Object" then
+				local towerDetected = nil
+				for c,tow in pairs(self.towers) do
+					if GetDistance(tow,mousePos) < 300 then
+						towerDetected = tow
+					end
+				end
+				if towerDetected ~= nil then
+					task.object = towerDetected
+				else
+					local baracksDetected = nil
+					for c,barack in pairs(self.baracks) do
+						if GetDistance(barack,mousePos) < 300 then
+							baracksDetected = barack
+						end
+					end
+					if baracksDetected ~= nil then
+						task.object = baracksDetected
+					else
+						local hqDetected = nil
+						for c,hq in pairs(self.hqs) do
+							if GetDistance(hq,mousePos) < 300 then
+								hqDetected = hq
+							end
+						end
+						if hqDetected ~= nil then
+							task.object = hqDetected
+						else
+							task.type = "Node"
+						end
+					end
+					
+				end
+			end
+		end
+	end
+
+	function tasks:pickLane()
+		if #_G.hflTasks[MAPNAME][TEAMNUMBER][1].lanes > 1 then
+			--Decide best lane
+			self.taskLane = _G.hflTasks[MAPNAME][TEAMNUMBER][1].lanes[1]
+			--simdilik sadece bot
+		else
+			self.taskLane = _G.hflTasks[MAPNAME][TEAMNUMBER][1].lanes[1]
+		end
+	end
+
+	function tasks:getCurrentTask()
+		if self.taskLane ~= nil then
+			local nearestTask = nil
+			local looper = _G.hflTasks[MAPNAME][TEAMNUMBER][self.taskLane]
+			while looper.next ~= nil do
+				local task = looper
+				if nearestTask == nil then
+					nearestTask = task
+					if GetDistance2D(task.point,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point) > GetDistance2D(myHero,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point) then
+						break
+					end
+				else
+					if GetDistance2D(task.point,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point) > GetDistance2D(myHero,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point) + 200 then
+						nearestTask = task
+						break
+					end
+				end
+				looper = _G.hflTasks[MAPNAME][TEAMNUMBER][looper.next]
+			end
+			return nearestTask
+		else
+			print("Lane not selected")
+			--Fix here
+		end
+		return _G.hflTasks[MAPNAME][TEAMNUMBER][1]
 	end
 
 class 'debugger'
@@ -125,47 +249,237 @@ class 'debugger'
 			    DrawLine(po.x, po.y, ms.x, ms.y, 3, ARGB(0xFF,0xFF,0xFF,0xFF))
 			end
 		end
+
+		for i = 1, objManager.maxObjects do
+	        local object = objManager:getObject(i)
+	        if object ~= nil and object.name ~= nil and #object.name > 1 and GetDistance2D(mousePos,object.pos) < 150 and not string.find(object.name,".troy") then
+	          	local po = WorldToScreen(D3DXVECTOR3(object.pos.x,object.pos.y,object.pos.z))
+				DrawText(object.name, 15, po.x, po.y, ARGB(255, 0, 255, 0))
+				DrawText(object.type, 15, po.x, po.y+25, ARGB(255, 255, 255, 0))
+	        end
+      	end
 	end
 
 class 'minions'
 	function minions:__init()
-		self.minions={
-			enemies={},
-			allies={},
-		}
+		self.enemies = minionManager(MINION_ENEMY, 150*9, myHero, MINION_SORT_MAXHEALTH_DEC) --ESP.predictivity burda
+		self.allies = minionManager(MINION_ALLY, 150*9, myHero, MINION_SORT_MAXHEALTH_DEC)
+		self.attackTable = {}
+
+		AddProcessAttackCallback(function(unit, attackProc) 
+			self.attackTable[unit.name]=attackProc.target
+		end)
+
 		AddTickCallback(function ()
-			self:minionLine()
+			self.enemies:update()
+			self.allies:update()
+			--self:minionLine()
 		end)
 		if debugger then
 			AddDrawCallback(function ()
-				self.drawManager()
+				--self.drawManager()
 			end)
 		end
+
+		return self
 	end
 
 	function minions:minionLine()
-		for i, minion in pairs(self.minions.enemies) do
-			if GetDistance2D(myHero,minion) > 3000 or minion.dead then
-				table.remove(self.minions.enemies,i)
+
+	end
+
+	function minions:drawManager()
+
+	end
+class 'esp'
+	function esp:__init()
+		self.lastTick = GetTickCount()
+		self.predictivity = 125
+		self.updateRate = 5
+		self.emptySpace = 150
+		self.nodes = {}
+		self:createNodes()
+
+		if debugger then
+			AddDrawCallback(function ()
+				self:drawManager()
+			end)
+		end
+
+		AddTickCallback(function()
+			if GetTickCount() > self.lastTick + self.updateRate then
+				self:updateNodes()
+				self.lastTick = GetTickCount()
+				self:getMinimumDangerRelativetoTaskWalking()
+			end
+		end)
+
+		return self
+	end
+
+	function esp:createNodes()
+		for x = -7, 7 do
+		  	for z = -7, 7 do
+		  		local node = {
+			  		x=myHero.x+(x*(self.predictivity+self.emptySpace)),
+			  		z=myHero.z+(z*(self.predictivity+self.emptySpace)),
+			  		initx=myHero.x,
+			  		initz=myHero.z,
+			  		danger = {free = 0, action = 0},
+			  		reachable = true,
+			  		best = false
+		  		}
+		  		if GetDistance2D(myHero,node) < self.predictivity*8 then
+				 	table.insert(self.nodes,node)
+				 end
 			end
 		end
-		for i, minion in pairs(self.minions.allies) do
-			if GetDistance2D(myHero,minion) > 3000 or minion.dead then
-				table.remove(self.minions.allies,i)
+	end
+
+	function esp:updateNodes()
+		for i, node in pairs(self.nodes) do
+			local nodeXDiff = myHero.x-node.initx
+			if nodeXDiff > 3 or nodeXDiff < -3 then
+				node.x = node.x + nodeXDiff
+				node.initx = myHero.x
+			end
+
+			local nodeZDiff = myHero.z-node.initz
+			if nodeZDiff > 3 or nodeZDiff < -3 then
+				node.z = node.z + nodeZDiff
+				node.initz = myHero.z
+			end
+			node.danger.free = 0
+			node.danger.action = 0
+
+			self:calculateReachable(node)
+			if node.reachable then
+				self:calculateMinions(node)
 			end
 		end
-        for i = 1, objManager.maxObjects, 1 do
-            local object = objManager:getObject(i)
-            if object ~= nil and object.type == "obj_AI_Minion" and string.find(object.charName,"Minion") then
-            	if not object.dead and GetDistance2D(object,myHero) < 3000 then
-	                if object.team == myHero.team then
-	                	self.minions.allies[object.name] = object
-	                else
-	                	self.minions.enemies[object.name] = object
-	                end
-	            end
-            end
-        end
+	end
+
+	function  esp:calculateMinions(node)
+		node.danger.free = 0
+		node.danger.action = 0
+		for i, minion in pairs(MINIONS.enemies.objects) do
+			local minionRange 	
+			if string.find(minion.charName, "Ranged") then
+				minionRange = 600
+			else
+				minionRange = 100
+			end
+			if GetDistance2D(node, minion) < minionRange and minion.visible and not minion.dead then
+				if MINIONS.attackTable[minion.name] and not MINIONS.attackTable[minion.name].dead and MINIONS.attackTable[minion.name] ~= myHero then
+					node.danger.action = node.danger.action + 35
+				else
+					MINIONS.attackTable[minion.name] = nil
+					node.danger.free = node.danger.free + 35
+					node.danger.action = node.danger.action + 35
+				end
+			end
+		end
+	end
+
+	function esp:calculateReachable(node)
+		node.reachable = not IsWall(D3DXVECTOR3(node.x, myHero.y, node.z))
+	end
+
+	function esp:getMinimumDangerRelativetoTaskWalking() --dont forget melees
+		local minimumNode = nil
+		local currentTask = TASKMANAGER:getCurrentTask()
+		for i, node in pairs(self.nodes) do
+			node.best = false
+			if node.reachable then
+				if minimumNode == nil then
+					minimumNode = node
+				else
+					if GetDistance2D(node,currentTask.point) < GetDistance2D(minimumNode,currentTask.point) and GetDistance2D(node,myHero) > 200 and node.danger.free == 0 then
+						minimumNode = node
+					end
+				end
+			end
+		end
+		minimumNode.best = true
+
+		myHero:MoveTo(minimumNode.x, minimumNode.z) -- use this method for just going to target.
+	end
+
+	function esp:getMinimumDangerRelativetoTaskAction() --dont forget melees
+		local minimumNode = nil
+		local currentTask = TASKMANAGER:getCurrentTask()
+		for i, node in pairs(self.nodes) do
+			node.best = false
+			if node.reachable then
+				if minimumNode == nil then
+					minimumNode = node
+				else
+					if GetDistance2D(node,currentTask.point) < GetDistance2D(minimumNode,currentTask.point) and GetDistance2D(node,myHero) > 200 and node.danger.free == 0 then
+						minimumNode = node
+					end
+				end
+			end
+		end
+		minimumNode.best = true
+
+		myHero:MoveTo(minimumNode.x, minimumNode.z) -- use this method for just going to target.
+	end
+
+	function esp:getMinimumDangerRelativetoTaskFarming() --dont forget melees and add ally minion existence?
+		local minimumNode = nil
+		local dangerNodes = {}
+		local currentTask = TASKMANAGER:getCurrentTask()
+		table.sort(self.nodes, sortByDistanceNodes)
+
+		for i, node in pairs(self.nodes) do
+			if node.danger.action > 0 then
+				table.insert(dangerNodes, node)
+			end
+		end
+		for x, nodeDanger in pairs(dangerNodes) do
+			print(nodeDanger.danger.action)
+			for i, node in pairs(self.nodes) do
+				if GetDistance2D(nodeDanger, _G.hflTasks[MAPNAME][TEAMNUMBER][1].point) < GetDistance2D(node, _G.hflTasks[MAPNAME][TEAMNUMBER][1].point) then
+					node.reachable = false
+				end		
+			end
+		end
+		for i, node in pairs(self.nodes) do
+			node.best = false
+			if node.reachable then
+				if minimumNode == nil then
+					minimumNode = node
+				else
+					if node.danger.free == 0 then
+						if GetDistance2D(node,currentTask.point) < GetDistance2D(minimumNode,currentTask.point) then
+							minimumNode = node
+						end
+					end
+				end
+			end
+		end
+		minimumNode.best = true
+
+		myHero:MoveTo(minimumNode.x, minimumNode.z) -- use this method for just going to target.
+	end
+
+	function esp:drawManager()
+		for i, node in pairs(self.nodes) do
+			if node.reachable then
+				if node.best then
+					DrawCircle(node.x, myHero.y, node.z, self.predictivity, ARGB(255, 255, 255, 255))
+				else
+					DrawCircle(node.x, myHero.y, node.z, self.predictivity, ARGB(255, node.danger.free, 255-node.danger.free, 0))
+				end
+				
+				local po = WorldToScreen(D3DXVECTOR3(node.x,myHero.y,node.z))
+				DrawText("".. node.danger.free, 25, po.x-30, po.y, ARGB(255, 0, 0, 255))
+			else
+				DrawCircle(node.x, myHero.y, node.z, self.predictivity, ARGB(255, 255, 0, 0))
+				local po = WorldToScreen(D3DXVECTOR3(node.x,myHero.y,node.z))
+				DrawText("".. node.danger.action, 25, po.x-30, po.y, ARGB(255, 0, 0, 255))
+			end
+		end
 	end
 
 class 'editor'
@@ -205,13 +519,33 @@ class 'editor'
 		end
 		
 		self.towers = {}
+		self.hqs = {}
+		self.baracks = {}
 		self:collectTowers()
+		self:collectHqs()
+		self:collectBaracks()
 	end
 
 	function editor:collectTowers()
 		for i = 1, objManager.maxObjects do
 	        local tow = objManager:getObject(i)
 	        if tow and tow.type == "obj_AI_Turret" then
+	        	table.insert(self.towers, tow)
+	        end
+	    end
+	end
+	function editor:collectHqs()
+		for i = 1, objManager.maxObjects do
+	        local tow = objManager:getObject(i)
+	        if tow and tow.type == "obj_HQ" then
+	        	table.insert(self.towers, tow)
+	        end
+	    end
+	end
+	function editor:collectBaracks()
+		for i = 1, objManager.maxObjects do
+	        local tow = objManager:getObject(i)
+	        if tow and tow.type == "obj_BarracksDampener" then
 	        	table.insert(self.towers, tow)
 	        end
 	    end
@@ -336,7 +670,28 @@ class 'editor'
 					if towerDetected ~= nil then
 						table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=towerDetected.x,y=towerDetected.y,z=towerDetected.z},type="Object",next=nil})
 					else
-						table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=mousePos.x,y=mousePos.y,z=mousePos.z},type="Node",next=nil})
+						local baracksDetected = nil
+						for c,barack in pairs(self.baracks) do
+							if GetDistance(barack,mousePos) < 300 then
+								baracksDetected = barack
+							end
+						end
+						if baracksDetected ~= nil then
+							table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=towerDetected.x,y=towerDetected.y,z=towerDetected.z},type="Object",next=nil})
+						else
+							local hqDetected = nil
+							for c,hq in pairs(self.hqs) do
+								if GetDistance(hq,mousePos) < 300 then
+									hqDetected = hq
+								end
+							end
+							if hqDetected ~= nil then
+								table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=towerDetected.x,y=towerDetected.y,z=towerDetected.z},type="Object",next=nil})
+							else
+								table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=mousePos.x,y=mousePos.y,z=mousePos.z},type="Node",next=nil})
+							end
+						end
+						
 					end
 				else
 					table.insert(_G.hflTasks[MAPNAME][TEAMNUMBER],{point={x=mousePos.x,y=mousePos.y,z=mousePos.z},type="Base",lanes={}})
@@ -535,6 +890,60 @@ function GetDistance2D( o1, o2 )
     return math.sqrt(math.pow(o1.x - o2.x, 2) + math.pow(o1[c] - o2[c], 2))
 end
 
+function GVD(startPos, distance, endPos)
+	return Vector(startPos) + distance * (Vector(endPos)-Vector(startPos)):normalized()
+end
+
+function IsPassWall(startPos, endPos)
+	count = GetDistance(startPos, endPos)
+	i=1
+	while i < count do
+		i = i+10
+		local pos = GVD(startPos, i, endPos)
+		if IsWall(D3DXVECTOR3(pos.x, pos.y, pos.z)) then return true end
+	end
+	return false
+end
+
+
+function DrawCircleNew(x, y, z, radius, color)
+	local vPos1 = Vector(x, y, z)
+	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
+	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
+	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
+	
+	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y }) then
+		DrawCircleNextLvl(x, y, z, radius, 1, color, 300) 
+	end
+end
+
+_G.DrawCircle = DrawCircleNew
+
+function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
+	radius = radius or 300
+	quality = math.max(8, Round(180 / math.deg((math.asin((chordlength / (2 * radius)))))))
+	quality = 2 * math.pi / quality
+	radius = radius * .92
+	local points = {}
+	
+	for theta = 0, 2 * math.pi + quality, quality do
+		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
+		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
+	end
+	DrawLines2(points, width or 1, color or 4294967295)
+end
+
+function Round(number)
+	if number >= 0 then 
+		return math.floor(number+.5) 
+	else 
+		return math.ceil(number-.5) 
+	end
+end
+
+function sortByDistanceNodes(a,b)
+  return GetDistance2D(a,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point) < GetDistance2D(b,_G.hflTasks[MAPNAME][TEAMNUMBER][1].point)
+end
 
 
 

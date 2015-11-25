@@ -43,17 +43,21 @@ namespace HandsFreeLeveler
             this.Activate();
             this.Focus();
 
-            UsernameLabel.Content = "Usarname: " + User.username;
+            UsernameLabel.Content = "Username: " + User.username;
+
             if(User.multiSmurf){
                 PType.Content = "Package Type: Multi Smurf";
             }else{
                 PType.Content = "Package Type: Single Smurf";
             }
+            
             TrLabel.Content = User.trialRemains;
             smurfListDashBoard.SelectionChanged += (obj, e) => Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() => smurfListDashBoard.UnselectAll()));
 
             App.gameContainer.Show();
             App.gameContainer.Visibility = Visibility.Hidden;
+
+            this.Title = this.Title + " " + App.version;
         }
 
         private void Account_Button_Click(object sender, RoutedEventArgs e)
@@ -194,6 +198,12 @@ namespace HandsFreeLeveler
         {
             App.gameContainer.killAll();
             Application.Current.Shutdown();
+        }
+
+        private void aiscript_Click(object sender, RoutedEventArgs e)
+        {
+            ScriptStatus stats = new ScriptStatus();
+            stats.Show();
         }
     }
 }

@@ -2088,7 +2088,7 @@ end
 	Global Variables
 --]]
 lastNode = ""
-local clock = os.clock
+local 
 
 initDone = false
 comboIN = false

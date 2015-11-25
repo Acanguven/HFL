@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\fe1iHm3.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\hfl_256px.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -94,6 +94,9 @@
     </Compile>
     <Compile Include="HFL\View\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HFL\View\ScriptStatus.xaml.cs">
+      <DependentUpon>ScriptStatus.xaml</DependentUpon>
     </Compile>
     <Compile Include="HFL\View\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
@@ -263,6 +266,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="HFL\View\ScriptStatus.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HFL\View\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -336,6 +343,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\bullet-green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\hfl_256px.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

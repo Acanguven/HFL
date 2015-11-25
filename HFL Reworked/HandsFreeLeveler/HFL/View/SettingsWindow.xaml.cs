@@ -91,7 +91,7 @@ namespace HandsFreeLeveler
             if (dgpu.IsChecked == true)
             {
                 Settings.disableGpu = true;
-                MessageBox.Show("When you enable this option you can't play normally on your computer even if you close HFL.exe, to play normally you have to uncheck this box again.");
+                MessageBox.Show("When you enable GPU Disabling option you can't play normally on your computer even if you close HFL.exe, to play normally you have to uncheck this box again.");
                 Settings.update();
                 Settings.ReplaceGameConfig();
             }
